@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.AuditCommonMapper">
+
+    <sql id="selectCommonAuditInfo">
+        SELECT
+            aa.`status` AS `status`,
+            aa.create_time AS create_time,
+            aa.id AS id,
+            aa.start_time AS start_time,
+            aa.end_time AS end_time,
+            u.user_name AS use_by,
+            '远程提审申请' AS title,
+            '1' AS type
+        FROM
+            umap_arraign_appointment AS aa
+            LEFT JOIN sys_user AS u ON u.user_id = aa.prosecutor_user_id
+            where u.del_flag = '0'
+        UNION
+            SELECT
+                ra.`status` AS `status`,
+                ra.create_time AS create_time,
+                ra.id AS id,
+                ra.start_time AS start_time,
+                ra.end_time AS end_time,
+                u.user_name AS use_by,
+                '专案预约申请' AS title,
+                '2' AS type
+            FROM
+                umap_special_case_appointment AS ra
+			    LEFT JOIN sys_user AS u ON u.login_name = ra.use_by
+                where u.del_flag = '0'
+    </sql>
+
+    <resultMap id="commonAuditInfo" type="com.mkst.umap.app.admin.api.bean.result.auditcommon.CommonAuditInfoResult">
+        <result column="id" property="id"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="use_by" property="useBy"/>
+        <result column="status" property="status"/>
+        <result column="title" property="title"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <select id="getAuditInfoList"
+            resultMap="commonAuditInfo" parameterType="com.mkst.umap.app.admin.api.bean.param.AuditCommonParam">
+        select * from (<include refid="selectCommonAuditInfo"/>) ad
+        <where>
+            <if test="id != null and id != ''">and ad.id = #{id}</if>
+            <if test="type != null and type != ''">and ad.type = #{type}</if>
+            <if test="status != null and status != ''">and ad.status = #{status}</if>
+            <if test="needDeal != null and needDeal != ''">
+                <if test="needDeal == '0'.toString()">and ad.status != '0'</if>
+                <if test="needDeal== '1'.toString()">and ad.status = '0'</if>
+            </if>
+            <if test="types != null and types.length > 0">
+                and ad.type in
+                <foreach item="type" collection="array" open="(" separator="," close=")">
+                    #{types}
+                </foreach>
+            </if>
+            <if test="checkDate != null">and TO_DAYS(ad.create_time) = TO_DAYS(#{checkDate})</if>
+            <if test="checkUseBy != null and checkUseBy != ''">and ad.use_by like CONCAT('%', #{checkUseBy},'%')</if>
+        </where>
+        order by ad.create_time desc
+    </select>
+</mapper>

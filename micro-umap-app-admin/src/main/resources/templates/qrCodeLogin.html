@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>登录后台管理系统</title>
+	<link rel="stylesheet" th:href="@{/loginPage/login2/css/login.css}">
+	<link th:href="@{/systemplus/css/ry-ui.css?v=3.1.0}" rel="stylesheet"/>
+</head>
+<body>
+<div class="ex_box">
+	<div class="con">
+		<div class="flex-row flex-center head">
+			<div class="logo">
+				<img th:src="@{/loginPage/login2/img/logo.png}" alt="" >
+			</div>
+
+			<div class="name">智慧龙检后台管理系统</div>
+		</div>
+		<div>
+			<div class="login_box rel">
+				<div class="login-box-content" id="login_form">
+					<form action="" method="post" id="loginForm">
+						<div class="qrcode">
+							<img id="qrCode" src=""  />
+						</div>
+					</form>
+				</div>
+				<div class="flex-row flex-center">
+					<img class="scan_img" th:src="@{/loginPage/login2/img/scan.png}" alt="">
+					<div>
+						<p>打开<span class="blue">智慧龙检app</span></p>
+						<p>扫一扫上方二维码登录</p>
+					</div>
+				</div>
+<!--			    <div class="return">-->
+<!--&lt;!&ndash;					<img class="return_img" th:src="@{/loginPage/login2/img/return.png}" alt="">&ndash;&gt;-->
+<!--					<span id="login">返回</span>-->
+<!--				</div>-->
+				<div id="login" class="qrlogin_box" >
+					<span>账</span>
+					<span>号</span>
+					<span>登</span>
+					<span>录</span>
+
+				</div>
+			</div>
+
+			<img th:src="@{/loginPage/login2/img/bottom.png}" class="bottom" alt="">
+		</div>
+
+
+	</div>
+</div>
+
+<script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]];var captchaEnabled= [[${captchaEnabled}]]; </script>
+<script th:src="@{/loginPage/mkst/js/jQuery.js}"></script>
+<script th:src="@{/loginPage/mkst/js/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/loginPage/mkst/js/util.js}"></script>
+<script>
+	$(document).ready(function(){
+		$('#login').click(function () {
+			window.location.href = '[[@{/login}]]';
+		});
+	});
+	$('#register').click(function () {
+		window.location.href = '[[@{/register}]]';
+	});
+	function toHome() {
+		window.location.href = '[[@{/}]]';
+	}
+	function forget() {
+//        location.href = 'forget.html';
+	}
+	var ticket = "";
+	$(document).ready(function(){
+
+		setInterval(function(){
+			$.post(ctx+"/qcconnect/getAccessToken",{"ticket":ticket}, function (result) {
+				if (result.code == '0') {
+					$.post(ctx+"/qcconnect/qrCodelogin",{"accessToken":result.data}, function (result) {
+						if(result.code==0){
+							location.href = ctx + 'index';
+						}
+					});
+				} else {
+					window.location.reload();
+				}
+			});
+		},10000)
+		getQrCode();
+	})
+
+	function getQrCode(){
+		$.post(ctx+"/qcconnect/getQrCode",{"clientId":"62vwjyr7tdeizy0dx4"}, function(data) {
+			if(data.code=="0"){
+				ticket = data.data.ticket;
+				$("#qrCode").attr("src", data.data.qrImage);
+			}else{
+				console.log("获取登录二维码错误");
+			}
+		});}
+</script>
+
+</body>
+</html>

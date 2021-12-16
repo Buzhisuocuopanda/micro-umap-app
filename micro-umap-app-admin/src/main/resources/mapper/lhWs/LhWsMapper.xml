@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.LhWsMapper">
+    
+    <resultMap type="LhWs" id="LhWsResult">
+        <result property="id"    column="id"    />
+        <result property="wsId"    column="ws_id"    />
+        <result property="area"    column="area"    />
+        <result property="content"    column="content"    />
+        <result property="title"    column="title"    />
+        <result property="type"    column="type"    />
+        <result property="publishTime"    column="publish_time"    />
+        <result property="img"    column="img"    />
+        <result property="author"    column="author"    />
+        <result property="syncTime"    column="sync_time"    />
+        <result property="replyNum"    column="reply_num"    />
+        <result property="extend3"    column="extend3"    />
+        <result property="extend4"    column="extend4"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+	
+	<sql id="selectLhWsVo">
+        select id, ws_id,area, content, title, type, publish_time, img, author, sync_time, reply_num, extend3, extend4, del_flag from umap_lh_ws
+    </sql>
+	
+    <select id="selectLhWsList" parameterType="LhWs" resultMap="LhWsResult">
+        <include refid="selectLhWsVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="wsId != null  and wsId != '' "> and ws_id = #{wsId}</if>
+            <if test="area != null  and area != '' "> and area = #{area}</if>
+             <if test="content != null  and content != '' "> and content = #{content}</if>
+             <if test="title != null  and title != '' "> and title = #{title}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="publishTime != null  and publishTime != '' "> and publish_time = #{publishTime}</if>
+             <if test="img != null  and img != '' "> and img = #{img}</if>
+             <if test="author != null  and author != '' "> and author = #{author}</if>
+             <if test="syncTime != null "> and sync_time = #{syncTime}</if>
+             <if test="replyNum != null  and replyNum != '' "> and reply_num = #{replyNum}</if>
+             <if test="extend3 != null  and extend3 != '' "> and extend3 = #{extend3}</if>
+             <if test="extend4 != null  and extend4 != '' "> and extend4 = #{extend4}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+         </where>
+    </select>
+
+    <select id="selectLhWsListByAreaAndType" parameterType="com.mkst.umap.app.admin.api.bean.param.lhBook.LhWsParam" resultMap="LhWsResult">
+        <include refid="selectLhWsVo"/>
+        <where>
+            <if test="areaList != null and areaList.size() > 0 ">
+                and area in
+                <foreach collection='areaList' item='area' open='(' separator=',' close=')'>
+                    #{area}
+                </foreach>
+            </if>
+            <if test="typeList != null and typeList.size() > 0 ">
+                and type in
+                <foreach collection='typeList' item='type' open='(' separator=',' close=')'>
+                    #{type}
+                </foreach>
+            </if>
+            <if test="content != null  and content != '' "> and content like CONCAT('%',#{content},'%')</if>
+            <if test="publishTime != null">and publish_time = #{publishTime}</if>
+            <if test="startTime != null and endTime != null and startTime != '' and endTime != ''">
+                and publish_time &gt;= #{startTime} and publish_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY publish_time DESC,sync_time DESC
+    </select>
+    
+    <select id="selectLhWsById" parameterType="Long" resultMap="LhWsResult">
+        <include refid="selectLhWsVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLhWs" parameterType="LhWs" useGeneratedKeys="true" keyProperty="id">
+        insert into umap_lh_ws
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="wsId != null  and wsId != ''  ">ws_id,</if>
+            <if test="area != null  and area != '' "> area ,</if>
+			<if test="content != null  and content != ''  ">content,</if>
+			<if test="title != null  and title != ''  ">title,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="publishTime != null  and publishTime != ''  ">publish_time,</if>
+			<if test="img != null  and img != ''  ">img,</if>
+			<if test="author != null  and author != ''  ">author,</if>
+			<if test="syncTime != null  ">sync_time,</if>
+			<if test="replyNum != null  and replyNum != ''  ">reply_num,</if>
+			<if test="extend3 != null  and extend3 != ''  ">extend3,</if>
+			<if test="extend4 != null  and extend4 != ''  ">extend4,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="wsId != null  and wsId != ''  ">#{wsId},</if>
+            <if test="area != null  and area != '' "> #{area},</if>
+			<if test="content != null  and content != ''  ">#{content},</if>
+			<if test="title != null  and title != ''  ">#{title},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="publishTime != null  and publishTime != ''  ">#{publishTime},</if>
+			<if test="img != null  and img != ''  ">#{img},</if>
+			<if test="author != null  and author != ''  ">#{author},</if>
+			<if test="syncTime != null  ">#{syncTime},</if>
+			<if test="replyNum != null  and replyNum != ''  ">#{replyNum},</if>
+			<if test="extend3 != null  and extend3 != ''  ">#{extend3},</if>
+			<if test="extend4 != null  and extend4 != ''  ">#{extend4},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateLhWs" parameterType="LhWs">
+        update umap_lh_ws
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wsId != null  and wsId != ''  ">ws_id = #{wsId},</if>
+            <if test="area != null  and area != '' "> area = #{area},</if>
+            <if test="content != null  and content != ''  ">content = #{content},</if>
+            <if test="title != null  and title != ''  ">title = #{title},</if>
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="publishTime != null  and publishTime != ''  ">publish_time = #{publishTime},</if>
+            <if test="img != null  and img != ''  ">img = #{img},</if>
+            <if test="author != null  and author != ''  ">author = #{author},</if>
+            <if test="syncTime != null  ">sync_time = #{syncTime},</if>
+            <if test="replyNum != null  and replyNum != ''  ">reply_num = #{replyNum},</if>
+            <if test="extend3 != null  and extend3 != ''  ">extend3 = #{extend3},</if>
+            <if test="extend4 != null  and extend4 != ''  ">extend4 = #{extend4},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteLhWsById" parameterType="Long">
+        delete from umap_lh_ws where id = #{id}
+    </delete>
+	
+    <delete id="deleteLhWsByIds" parameterType="String">
+        delete from umap_lh_ws where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

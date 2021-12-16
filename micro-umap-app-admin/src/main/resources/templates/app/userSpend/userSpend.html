@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								交易类型<input type="text" name="type"/>
+							</li>
+
+							<li>
+								消费小类<input type="text" name="subType"/>
+							</li>
+
+							<li>
+								交易金额<input type="text" name="amount"/>
+							</li>
+
+							<li>
+								当前余额<input type="text" name="balance"/>
+							</li>
+
+							<li>
+								交易时间：<input type="text" name="payTime"/>
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+
+				<a class="btn btn-success" onclick="importExcel()" shiro:hasPermission="admin:userSpend:add">
+					<i class="fa fa-plus"></i> 导入数据
+				</a>
+			</div>
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('admin:userSpend:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:userSpend:remove')}]];
+        var prefix = ctx + "admin/userSpend";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+				importUrl: prefix + "/importData",
+                modalName: "我的消费",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'id', 
+					title : '主键',
+					visible: false
+				},
+				{
+					field : 'userId', 
+					title : '交易用户',
+					sortable: true
+				},
+				{
+					field : 'type', 
+					title : '交易类型（1：充值、2：食堂）',
+					sortable: true
+				},
+				{
+					field : 'subType', 
+					title : '消费小类（1：早餐、2：中餐、3：晚餐）',
+					sortable: true
+				},
+				{
+					field : 'amount', 
+					title : '交易金额',
+					sortable: true
+				},
+				{
+					field : 'balance', 
+					title : '当前余额',
+					sortable: true
+				},
+				{
+					field : 'payTime', 
+					title : '交易时间',
+					sortable: true
+				},
+				{
+					field : 'createTime', 
+					title : '创建时间',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+		// 导入数据
+		function importExcel() {
+			var currentId = 'importForm';
+			$.form.reset(currentId);
+			layer.open({
+				type: 1,
+				area: ['400px', '230px'],
+				fix: false,
+				//不固定
+				maxmin: false,
+				shade: 0.3,
+				title: '导入提审室操作日志数据',
+				content: $('#' + currentId),
+				btn: ['<i class="fa fa-check"></i> 导入', '<i class="fa fa-remove"></i> 取消'],
+				// 弹层外区域关闭
+				shadeClose: false,
+				btn1: function(index, layero){
+					var file = layero.find('#file').val();
+					if (file == '' || (!$.common.endWith(file, '.xls') && !$.common.endWith(file, '.xlsx')&& !$.common.endWith(file, '.et')&& !$.common.endWith(file, '.ett')&& !$.common.endWith(file, '.xlt'))){
+						$.modal.msgWarning("请选择后缀为【.xls/.xlsx/.et/.ett/.xlt】的文件。");
+						return false;
+					}
+					var index = layer.load(2, {shade: false});
+					$.modal.disable();
+					var formData = new FormData();
+					formData.append("file", $('#file')[0].files[0]);
+					formData.append("updateSupport", $("input[name='updateSupport']").is(':checked'));
+					if($('#importId')!=undefined){
+						formData.append("importId",$('#importId').val());//导入公共id
+					}
+					$.ajax({
+						url: $.table._option.importUrl,
+						data: formData,
+						cache: false,
+						contentType: false,
+						processData: false,
+						type: 'POST',
+						success: function (result) {
+							if (result.code == web_status.SUCCESS) {
+								$.modal.closeAll();
+								$.modal.alertSuccess(result.msg);
+								$.table.refresh();
+							} else {
+								layer.close(index);
+								$.modal.enable();
+								$.modal.alertError(result.msg);
+							}
+						}
+					});
+				}
+			});
+		}
+    </script>
+</body>
+<form id="importForm" enctype="multipart/form-data" class="mt20 mb10" style="display: none;">
+	<div class="col-xs-offset-1">
+		<input id="location"  disabled>
+		<a class="btn btn-success" onclick="$('#file').click();" shiro:hasPermission="admin:arraignRoom:edit">
+			<i class="fa fa-plus"></i>选择文件
+		</a>
+		<input type="file" id="file" name="file" accept=".xls,.xlsx,.et,.ett" onchange="$('#location').val($('#file').val());" style="display: none"/>
+		<!--<div class="mt10 pt5">
+            <a onclick="$.table.importTemplate()" class="btn btn-default btn-xs" >
+                <i class="fa fa-file-excel-o"></i> 下载模板</a>
+        </div>-->
+		<font color="red" class="pull-left mt10">提示：仅允许导入【.xls/.xlsx/.et/.ett】格式文件！ </font>
+	</div>
+</form>
+</html>

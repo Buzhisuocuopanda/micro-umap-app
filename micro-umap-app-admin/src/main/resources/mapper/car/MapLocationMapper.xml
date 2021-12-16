@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.MapLocationMapper">
+    
+    <resultMap type="MapLocation" id="MapLocationResult">
+        <result property="locationId"    column="location_id"    />
+        <result property="locationName"    column="location_name"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="latitude"    column="latitude"    />
+    </resultMap>
+	
+	<sql id="selectMapLocationVo">
+        select location_id, location_name, longitude, latitude from umap_map_location
+    </sql>
+	
+    <select id="selectMapLocationList" parameterType="MapLocation" resultMap="MapLocationResult">
+        <include refid="selectMapLocationVo"/>
+        <where>  
+            <if test="locationId != null "> and location_id = #{locationId}</if>
+             <if test="locationName != null  and locationName != '' "> and location_name = #{locationName}</if>
+             <if test="longitude != null "> and longitude = #{longitude}</if>
+             <if test="latitude != null "> and latitude = #{latitude}</if>
+         </where>
+    </select>
+    
+    <select id="selectMapLocationById" parameterType="Long" resultMap="MapLocationResult">
+        <include refid="selectMapLocationVo"/>
+        where location_id = #{locationId}
+    </select>
+        
+    <insert id="insertMapLocation" parameterType="MapLocation" useGeneratedKeys="true" keyProperty="locationId">
+        insert into umap_map_location
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="locationId != null  ">location_id,</if>
+			<if test="locationName != null  and locationName != ''  ">location_name,</if>
+			<if test="longitude != null  ">longitude,</if>
+			<if test="latitude != null  ">latitude,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="locationId != null  ">#{locationId},</if>
+			<if test="locationName != null  and locationName != ''  ">#{locationName},</if>
+			<if test="longitude != null  ">#{longitude},</if>
+			<if test="latitude != null  ">#{latitude},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateMapLocation" parameterType="MapLocation">
+        update umap_map_location
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="locationName != null  and locationName != ''  ">location_name = #{locationName},</if>
+            <if test="longitude != null  ">longitude = #{longitude},</if>
+            <if test="latitude != null  ">latitude = #{latitude},</if>
+        </trim>
+        where location_id = #{locationId}
+    </update>
+
+	<delete id="deleteMapLocationById" parameterType="Long">
+        delete from umap_map_location where location_id = #{locationId}
+    </delete>
+	
+    <delete id="deleteMapLocationByIds" parameterType="String">
+        delete from umap_map_location where location_id in 
+        <foreach item="locationId" collection="array" open="(" separator="," close=")">
+            #{locationId}
+        </foreach>
+    </delete>
+    
+</mapper>

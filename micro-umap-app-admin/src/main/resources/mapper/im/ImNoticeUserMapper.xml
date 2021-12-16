@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ImNoticeUserMapper">
+    
+    <resultMap type="ImNoticeUser" id="ImNoticeUserResult">
+        <result property="id"    column="id"    />
+        <result property="msgTypeKey"    column="msg_type_key"    />
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="isTop"    column="is_top"    />
+        <result property="topOrder"    column="top_order"    />
+        <result property="avatar"    column="avatar"    />
+    </resultMap>
+	
+	<sql id="selectImNoticeUserVo">
+        select id, msg_type_key, user_id, is_top, top_order , avatar , (select t2.user_name from sys_user t2 where t1.user_id = t2.user_id ) as username from umap_im_notice_user t1
+    </sql>
+	
+    <select id="selectImNoticeUserList" parameterType="ImNoticeUser" resultMap="ImNoticeUserResult">
+        <include refid="selectImNoticeUserVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="msgTypeKey != null  and msgTypeKey != '' "> and msg_type_key = #{msgTypeKey}</if>
+             <if test="userId != null "> and user_id = #{userId}</if>
+             <if test="isTop != null "> and is_top = #{isTop}</if>
+             <if test="topOrder != null "> and top_order = #{topOrder}</if>
+         </where>
+    </select>
+    
+    <select id="selectImNoticeUserById" parameterType="Integer" resultMap="ImNoticeUserResult">
+        <include refid="selectImNoticeUserVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectImNoticeUserByTypeKey" parameterType="String" resultMap="ImNoticeUserResult">
+        <include refid="selectImNoticeUserVo"/>
+        where msg_type_key = #{typeKey}
+    </select>
+        
+    <insert id="insertImNoticeUser" parameterType="ImNoticeUser">
+        insert into umap_im_notice_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="msgTypeKey != null  and msgTypeKey != ''  ">msg_type_key,</if>
+			<if test="userId != null  ">user_id,</if>
+			<if test="isTop != null  ">is_top,</if>
+			<if test="topOrder != null  ">top_order,</if>
+            <if test="avatar != null  ">avatar,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="msgTypeKey != null  and msgTypeKey != ''  ">#{msgTypeKey},</if>
+			<if test="userId != null  ">#{userId},</if>
+			<if test="isTop != null  ">#{isTop},</if>
+			<if test="topOrder != null  ">#{topOrder},</if>
+            <if test="avatar != null  ">#{avatar},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateImNoticeUser" parameterType="ImNoticeUser">
+        update umap_im_notice_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="msgTypeKey != null  and msgTypeKey != ''  ">msg_type_key = #{msgTypeKey},</if>
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="isTop != null  ">is_top = #{isTop},</if>
+            <if test="topOrder != null  ">top_order = #{topOrder},</if>
+            <if test="avatar != null  ">avatar = #{avatar},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteImNoticeUserById" parameterType="Integer">
+        delete from umap_im_notice_user where id = #{id}
+    </delete>
+	
+    <delete id="deleteImNoticeUserByIds" parameterType="String">
+        delete from umap_im_notice_user where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

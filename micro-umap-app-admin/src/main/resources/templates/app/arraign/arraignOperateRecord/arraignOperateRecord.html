@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								操作记录：
+								<select name="operateFunction" th:with="type=${@dict.getType('arraign_operate_function')}" style="width: 100px">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								犯罪类型：
+								<select name="crimeType" th:with="type=${@dict.getType('criminal_type')}" style="width: 100px">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								承办人：<input type="text" name="createBy" />
+							</li>
+
+							<li>
+								罪犯姓名：<input type="text" name="criminalName" />
+							</li>
+
+							<li style="display:flex;align-items: center;" >
+								预约时间：<input type="text" name="appointmentTime" class="form-control time-input" />
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('admin:arraignOperateRecord:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:arraignOperateRecord:remove')}]];
+        var prefix = ctx + "admin/arraignOperateRecord";
+		var arraign_operate_function = [[${@dict.getType('arraign_operate_function')}]];
+		var criminal_type = [[${@dict.getType('criminal_type')}]]
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "提审操作日志",
+				search: false,
+				showExport: false,
+				showSearch:false,
+				showRefresh: false,
+				showColumns: false,
+				showToggle: false,
+				columns: [
+				{
+					field : 'id', 
+					title : '',
+					visible: false
+				},
+				{
+					field : 'createBy',
+					title : '承办人',
+					sortable: false
+				},
+				{
+					field : 'criminalName', 
+					title : '罪犯姓名',
+					sortable: false
+				},
+				{
+					field : 'crimeType', 
+					title : '犯罪类型',
+					sortable: false,
+					formatter: function(value, row, index) {
+						return $.table.selectDictLabel(criminal_type, value);
+					}
+				},
+				{
+					field : 'appointmentTime', 
+					title : '预约时间',
+					sortable: true
+				},
+				{
+					field : 'operateFunction',
+					title : '操作记录',
+					sortable: true,
+					formatter: function(value, row, index) {
+						return $.table.selectDictLabel(arraign_operate_function, value);
+					}
+				},
+				{
+					field : 'createTime', 
+					title : '操作时间',
+					sortable: true
+				}]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

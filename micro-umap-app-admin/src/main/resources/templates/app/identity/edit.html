@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-identity-edit" th:object="${identity}">
+			<h4 class="form-header h4">基础信息</h4>
+            <input id="id" name="id" th:field="*{id}"  type="hidden">
+
+			<div class="box-body container">
+				<!-- 展示基本信息 -->
+				<h4 class="form-header h4">基本信息</h4>
+				<div class="row">
+					<label class="col-md-offset-1 col-md-2 form-control-static">身份类型：</label>
+					<div class="col-md-9 form-control-static">
+						<div th:text="${identity.postName}"></div>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-md-offset-1 col-md-2 form-control-static">姓名：</label>
+					<div class="col-md-9 form-control-static">
+						<div th:text="${identity.name}"></div>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-md-offset-1 col-md-2 form-control-static">资格证号：</label>
+					<div class="col-md-9 form-control-static">
+						<div th:text="${identity.certNo}"></div>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-md-offset-1 col-md-2 form-control-static">单位名称：</label>
+					<div class="col-md-9 form-control-static">
+						<div th:text="${identity.companyName}"></div>
+					</div>
+				</div>
+
+				<div class="row">
+					<label class="col-md-offset-1 col-md-2 form-control-static">申请时间：</label>
+					<div class="col-md-9 form-control-static">
+						<div th:text="${#dates.format(identity.applyTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+					</div>
+				</div>
+				<div class="row">
+					<label class="col-md-offset-1 col-md-2 form-control-static">状态：</label>
+					<div class="col-md-9 form-control-static">
+						<div  th:text="${@dict.getLabel('audit_state',identity.status)}"></div>
+					</div>
+				</div>
+
+				<th:block th:if="${not #lists.isEmpty(fileBind)}">
+					<h4 class="form-header h4">附件信息</h4>
+					<div class="row" id="image-file">
+						<div class="col-md-2 form-control-static" th:each="filePath:${fileBind}" >
+							<img th:data-original="@{/} + ${filePath}" th:src="@{/} + ${filePath}" class="img-responsive" style="width: 150px;cursor: pointer">
+						</div>
+					</div>
+				</th:block>
+
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-5 col-sm-10">
+						<th:block th:if="${identity.status} eq 0">
+							<a class="btn btn-success btn-sm ' + auditFlag + '" href="#" onclick="audit(1)">
+								<i class="fa fa-edit"></i>通过申请</a>
+							<a class="btn btn-warning btn-sm ' + auditFlag + '" href="#" onclick="audit(2)">
+								<i class="fa fa-edit"></i>驳回申请</a>
+						</th:block>
+						<button class="btn btn-sm btn-danger" onclick="closeItem()" type="button"><i
+								class="fa fa-close"></i>关 闭
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</form>
+    </div>
+    <div th:include="include::footer"></div>
+	<link  th:href="@{/viewer/css/viewer.css}" rel="stylesheet">
+	<script th:src="@{/viewer/js/viewer.js}"></script>
+    <script th:inline="javascript">
+		var prefix = ctx + "admin/identity";
+		var auditUrl = prefix + "/doAudit/{id}/{status}/{aduitCause}";
+		// 审核
+		function audit(status) {
+			var id = [[${identity.id}]];
+			var statusMsg = status == "1" ? "通过" : "驳回";
+			prompt(status, "填写" + statusMsg + "该条身份申请的原因", function (aduitCause) {
+				var urlReason = $.common.isEmpty(aduitCause) ? 'NoReasonFlag' : aduitCause;
+				var url = $.common.isEmpty(id) ? auditUrl : auditUrl.replace("{id}", id).replace("{status}", status).replace("{aduitCause}", urlReason);
+				$.modal.confirm("请确定当前操作", function() {
+					$.ajax({
+						url: url,
+						type: 'POST',
+						success: function (result) {
+							if (result.code == web_status.SUCCESS) {
+								var topWindow = $(window.parent.document);
+								var currentId = $('.page-tabs-content', topWindow).find('.active').attr('data-panel');
+								var $contentWindow = $('.SystemPlus_iframe[data-id="' + currentId + '"]', topWindow)[0].contentWindow;
+								window.parent.$.modal.msgSuccess(result.msg);
+								$contentWindow.$("#bootstrap-table").bootstrapTable('refresh', {silent: true});
+								closeItem();
+							} else {
+								$.modal.alertError(result.msg);
+							}
+							$.modal.closeLoading();
+						}
+					});
+				});
+			});
+		}
+
+		// 确认窗体
+		function prompt(status, content, callBack) {
+
+			const necessary = status === 2 ? "（必填）" : "（非必填）";
+
+			layer.prompt({
+				formType: 2,
+				placeholder: "请输入原因",
+				title: content + necessary,
+				btn: ['确认', '取消'],
+				btnclass: ['btn btn-primary', 'btn btn-danger'],
+				area: ['400px','200px'],
+				yes: function (index, value) {
+					const reason = value.find(".layui-layer-input").val();
+					if (status === 2 && (typeof reason === "undefined" || reason === "")){
+						$.modal.alertWarning("请填写理由！");
+						return;
+					}
+					layer.close(index);
+					callBack(value.find(".layui-layer-input").val());
+				}
+			});
+		}
+
+		var viewer = new Viewer(document.getElementById('image-file'), {
+			title:false
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignAppointmentAddLogMapper">
+    
+    <resultMap type="ArraignAppointmentAddLog" id="ArraignAppointmentAddLogResult">
+        <result property="id"    column="id"    />
+        <result property="appointmentUserId"    column="appointment_user_id"    />
+        <result property="appointmentDate"    column="appointment_date"    />
+        <result property="timePie"    column="time_pie"    />
+        <result property="roomId"    column="room_id"    />
+        <result property="useStatus"    column="use_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="useTime"    column="use_time"    />
+    </resultMap>
+	
+	<sql id="selectArraignAppointmentAddLogVo">
+        select id, appointment_user_id, appointment_date, time_pie, room_id, use_status, create_by, create_time, use_time from umap_arraign_appointment_add_log
+    </sql>
+	
+    <select id="selectArraignAppointmentAddLogList" parameterType="ArraignAppointmentAddLog" resultMap="ArraignAppointmentAddLogResult">
+        <include refid="selectArraignAppointmentAddLogVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="appointmentUserId != null "> and appointment_user_id = #{appointmentUserId}</if>
+             <if test="appointmentDate != null "> and appointment_date = #{appointmentDate}</if>
+             <if test="timePie != null  and timePie != '' "> and time_pie = #{timePie}</if>
+             <if test="roomId != null  and roomId != '' "> and room_id = #{roomId}</if>
+             <if test="useStatus != null  and useStatus != '' "> and use_status = #{useStatus}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="useTime != null "> and use_time = #{useTime}</if>
+         </where>
+    </select>
+    
+    <select id="selectArraignAppointmentAddLogById" parameterType="Integer" resultMap="ArraignAppointmentAddLogResult">
+        <include refid="selectArraignAppointmentAddLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertArraignAppointmentAddLog" parameterType="ArraignAppointmentAddLog">
+        insert into umap_arraign_appointment_add_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="appointmentUserId != null  ">appointment_user_id,</if>
+			<if test="appointmentDate != null  ">appointment_date,</if>
+			<if test="timePie != null  and timePie != ''  ">time_pie,</if>
+			<if test="roomId != null  and roomId != ''  ">room_id,</if>
+			<if test="useStatus != null  and useStatus != ''  ">use_status,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="useTime != null  ">use_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="appointmentUserId != null  ">#{appointmentUserId},</if>
+			<if test="appointmentDate != null  ">#{appointmentDate},</if>
+			<if test="timePie != null  and timePie != ''  ">#{timePie},</if>
+			<if test="roomId != null  and roomId != ''  ">#{roomId},</if>
+			<if test="useStatus != null  and useStatus != ''  ">#{useStatus},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="useTime != null  ">#{useTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateArraignAppointmentAddLog" parameterType="ArraignAppointmentAddLog">
+        update umap_arraign_appointment_add_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appointmentUserId != null  ">appointment_user_id = #{appointmentUserId},</if>
+            <if test="appointmentDate != null  ">appointment_date = #{appointmentDate},</if>
+            <if test="timePie != null  and timePie != ''  ">time_pie = #{timePie},</if>
+            <if test="roomId != null  and roomId != ''  ">room_id = #{roomId},</if>
+            <if test="useStatus != null  and useStatus != ''  ">use_status = #{useStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="useTime != null  ">use_time = #{useTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteArraignAppointmentAddLogById" parameterType="Integer">
+        delete from umap_arraign_appointment_add_log where id = #{id}
+    </delete>
+	
+    <delete id="deleteArraignAppointmentAddLogByIds" parameterType="String">
+        delete from umap_arraign_appointment_add_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

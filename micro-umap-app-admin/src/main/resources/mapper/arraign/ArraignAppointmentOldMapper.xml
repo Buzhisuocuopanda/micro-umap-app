@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignAppointmentOldMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.ArraignAppointmentOld" id="ArraignAppointmentOldResult">
+        <result property="oldId" column="old_id"/>
+        <result property="arraignAppointmentId" column="arraign_appointment_id"/>
+        <result property="status" column="status"/>
+        <result property="pullTime" column="pull_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectArraignAppointmentOldVo">
+        select old_id,arraign_appointment_id,status, pull_time, update_time
+        from umap_arraign_appointment_old
+    </sql>
+
+    <select id="selectArraignAppointmentOldById" parameterType="Long" resultMap="ArraignAppointmentOldResult">
+        <include refid="selectArraignAppointmentOldVo"/>
+        where old_id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="ArraignAppointmentOldResult">
+        <include refid="selectArraignAppointmentOldVo"/>
+    </select>
+
+    <insert id="insert" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointmentOld">
+        insert into umap_arraign_appointment_old
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oldId != null  ">old_id,</if>
+            <if test="arraignAppointmentId != null  ">arraign_appointment_id,</if>
+            <if test="status != null  ">status,</if>
+            <if test="pullTime != null  ">pull_time,</if>
+            <if test="updateTime != null  ">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="oldId != null  ">#{oldId},</if>
+            <if test="arraignAppointmentId != null  ">#{arraignAppointmentId},</if>
+            <if test="status != null  ">#{status},</if>
+            <if test="pullTime != null  ">#{pullTime},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStatus" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointmentOld">
+        update umap_arraign_appointment_old set status = #{status} where old_id = #{oldId}
+    </update>
+
+</mapper>

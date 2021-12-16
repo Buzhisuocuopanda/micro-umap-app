@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.VacationMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.Vacation" id="VacationResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="content"    column="content"    />
+        <result property="approveTo"    column="approve_to"    />
+        <result property="status"    column="status"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+	
+	<sql id="selectVacationVo">
+        select id, type, start_time, end_time, content, approve_to, status, audit_status, create_by, create_time, update_by, update_time, remark, del_flag from umap_vacation
+    </sql>
+	
+    <select id="selectVacationList" parameterType="com.mkst.umap.app.admin.domain.Vacation" resultMap="VacationResult">
+        <include refid="selectVacationVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="startTime != null "> and start_time = #{startTime}</if>
+             <if test="endTime != null "> and end_time = #{endTime}</if>
+             <if test="content != null  and content != '' "> and content = #{content}</if>
+             <if test="approveTo != null "> and approve_to = #{approveTo}</if>
+             <if test="status != null  and status != '' "> and status = #{status}</if>
+             <if test="auditStatus != null  and auditStatus != '' "> and audit_status = #{auditStatus}</if>
+             <if test="createBy != null "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+         </where>
+    </select>
+    
+    <select id="selectVacationById" parameterType="Long" resultMap="VacationResult">
+        <include refid="selectVacationVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertVacation" parameterType="com.mkst.umap.app.admin.domain.Vacation"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into umap_vacation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="startTime != null  ">start_time,</if>
+			<if test="endTime != null  ">end_time,</if>
+			<if test="content != null  and content != ''  ">content,</if>
+			<if test="approveTo != null  ">approve_to,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+			<if test="auditStatus != null  and auditStatus != ''  ">audit_status,</if>
+			<if test="createBy != null  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="startTime != null  ">#{startTime},</if>
+			<if test="endTime != null  ">#{endTime},</if>
+			<if test="content != null  and content != ''  ">#{content},</if>
+			<if test="approveTo != null  ">#{approveTo},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+			<if test="auditStatus != null  and auditStatus != ''  ">#{auditStatus},</if>
+			<if test="createBy != null  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateVacation" parameterType="com.mkst.umap.app.admin.domain.Vacation">
+        update umap_vacation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="content != null  and content != ''  ">content = #{content},</if>
+            <if test="approveTo != null  ">approve_to = #{approveTo},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="auditStatus != null  and auditStatus != ''  ">audit_status = #{auditStatus},</if>
+            <if test="createBy != null  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteVacationById" parameterType="Long">
+        delete from umap_vacation where id = #{id}
+    </delete>
+	
+    <delete id="deleteVacationByIds" parameterType="String">
+        delete from umap_vacation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <sql id="selectVacationInfoResult">
+        SELECT
+            v.id AS id,
+            v.type AS type,
+            v.start_time AS start_time,
+            v.end_time AS end_time,
+            v.content AS content,
+            v.`status` AS `status`,
+            v.audit_status AS audit_status,
+            v.create_time AS create_time,
+            au.user_name AS approve_to_name,
+            cu.user_name AS create_by_name
+        FROM
+            umap_vacation AS v
+        LEFT JOIN sys_user AS au ON v.approve_to = au.user_id
+        LEFT JOIN sys_user AS cu ON v.create_by = cu.user_id
+    </sql>
+
+    <resultMap id="vacationInfoResult" type="com.mkst.umap.app.admin.api.bean.result.vacation.VacationResult">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="content" property="content"/>
+        <result column="status" property="status"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="approve_to_name" property="approveToName"/>
+        <result column="create_by_name" property="createByName"/>
+    </resultMap>
+    <select id="selectVacationInfo"
+            resultMap="vacationInfoResult" parameterType="com.mkst.umap.app.admin.domain.Vacation">
+        <include refid="selectVacationInfoResult"/>
+        <where>
+            v.del_flag = '0'
+            <if test="id != null and id != ''">and v.id = #{id}</if>
+            <if test="type != null and type != ''">and v.type = #{type} </if>
+            <if test="status != null and status != ''">and v.status = #{status}</if>
+            <if test="auditStatus != null and auditStatus != ''">and v.audit_status = #{auditStatus}</if>
+            <if test="checkDate != null">and TO_DAYS(v.start_time) = TO_DAYS(#{checkDate})</if>
+            <if test="createBy != null and createBy != ''">and v.create_by = #{createBy}</if>
+            <if test="approveTo != null and approveTo != ''">and v.approve_to = #{approveTo}</if>
+        </where>
+        order by v.status,v.audit_status, v.create_time desc
+    </select>
+
+</mapper>

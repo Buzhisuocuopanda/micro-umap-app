@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-carInfo-edit" th:object="${carInfo}">
+            <input id="carId" name="carId" th:field="*{carId}"  type="hidden">
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">车牌号：</label>
+				<div class="col-sm-8">
+					<input id="licensePlateNumber" name="licensePlateNumber" th:field="*{licensePlateNumber}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">车辆类型：</label>
+				<div class="col-sm-8">
+					<select id="carType" name="carType" class="form-control"
+							th:with="type=${@dict.getType('car_info_type')}">
+						<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:field="*{carType}"th:value="${dict.dictValue}"></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">最大载客量：</label>
+				<div class="col-sm-8">
+					<input id="maxCarrying" name="maxCarrying" th:field="*{maxCarrying}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></span>是否可用状态：</label>
+				<div class="col-sm-8">
+					<select id="status" name="status" class="form-control"
+							th:with="type=${@dict.getType('resources_status')}">
+						<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:field="*{status}"th:value="${dict.dictValue}"></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">备注：</label>
+				<div class="col-sm-8">
+					<input id="remark" name="remark" th:field="*{remark}" class="form-control" type="text">
+				</div>
+			</div>
+		</form>
+    </div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "admin/carInfo"
+		$("#form-carInfo-edit").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			}
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	            $.operate.save(prefix + "/edit", $('#form-carInfo-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

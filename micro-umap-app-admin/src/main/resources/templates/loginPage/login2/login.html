@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>登录后台管理系统</title>
+    <link th:href="@{/systemplus/css/ry-ui.css?v=3.1.0}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/loginPage/login2/css/login.css}">
+</head>
+<body>
+    
+    <div class="ex_box">
+        <div class="con">
+            <div class="flex-row flex-center head">
+                <div class="logo">
+                    <img th:src="@{/loginPage/login2/img/logo.png}" alt="" >
+                </div>
+
+                <div class="name">智慧龙检后台管理系统</div>
+            </div>
+
+            <div>
+                <form action=""  method="post" id="loginForm">
+                    <div class="login_box rel">
+                        <div class="input_box rel">
+                            <img th:src="@{/loginPage/login2/img/1.png}" alt="" class="abs">
+                            <input id="username" type="text" name="username" placeholder="请输入用户名">
+                            <!--                    <div class="error-tip"></div>-->
+                        </div>
+                        <div class="input_box rel">
+                            <img th:src="@{/loginPage/login2/img/2.png}" alt="" class="abs">
+                            <input id="password" type="password" name="password" placeholder="请输入密码">
+                            <!--                    <div class="error-tip"></div>-->
+                        </div>
+                        <div class="input_box rel"  th:if="${captchaEnabled==true}">
+                            <img th:src="@{/loginPage/login2/img/3.png}" alt="" class="abs">
+                            <input type="text" placeholder="请输入验证码" name="validateCode" id="validateCode">
+                            <a href="javascript:void(0);" title="点击更换验证码">
+                                <img th:src="@{captcha/captchaImage(type=${captchaType})}" class="radius imgcode" width="100" height="40"/>
+                            </a>
+                            <!--                    <div style="right: 150px;" class="error-tip"></div>-->
+                        </div>
+                        <div class="login" id="btnSubmit" data-loading="正在验证登录，请稍后...">
+                            登录
+                        </div>
+                        <div class="qrlogin_box" id="qrCodeLogin">
+                            <span>扫</span>
+                            <span>码</span>
+                            <span>登</span>
+                            <span>录</span>
+                        </div>
+                    </div>
+
+
+                </form>
+<!--                <div class="qrlogin" >-->
+<!--                    <img th:src="@{/loginPage/login2/img/qrcode.png}" alt="">-->
+<!--                    <span>-->
+<!--                        扫码登录-->
+<!--                    </span>-->
+<!--                </div>-->
+                <img th:src="@{/loginPage/login2/img/bottom.png}" class="bottom" alt="">
+            </div>
+            
+            
+        </div>
+    </div>
+    
+</body>
+<script th:inline="javascript">
+    var ctx = [[@{/}]];
+    var captchaType = [[${captchaType}]];
+    var captchaEnabled= [[${captchaEnabled}]];
+    var encryptEnabled =[[${encryptEnabled}]];
+    var publics = [[${publics}]];
+    var modulus = [[${modulus}]];
+</script>
+<script th:src="@{/loginPage/mkst/js/jQuery.js}"></script>
+<script th:src="@{/loginPage/mkst/js/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/loginPage/mkst/js/util.js}"></script>
+
+<!-- 验证插件 -->
+<script src="../static/ajax/libs/validate/jquery.validate.min.js" th:src="@{/ajax/libs/validate/jquery.validate.min.js}"></script>
+<script src="../static/ajax/libs/validate/messages_zh.min.js" th:src="@{/ajax/libs/validate/messages_zh.min.js}"></script>
+<script src="../static/ajax/libs/layer/layer.min.js" th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script src="../static/ajax/libs/blockUI/jquery.blockUI.js" th:src="@{/ajax/libs/blockUI/jquery.blockUI.js}"></script>
+<script src="../static/systemplus/js/ry-ui.js" th:src="@{/systemplus/js/ry-ui.js?v=3.1.0}"></script>
+<script src="../static/systemplus/security.js" th:src="@{/systemplus/js/security.js}"></script>
+<script src="../static/systemplus/js/base64.js" th:src="@{/systemplus/js/base64.js}"></script>
+<script src="../static/systemplus/login.js" th:src="@{/systemplus/login.js}"></script>
+
+<script>
+
+
+
+    $(document).ready(function(){
+        $('#register').click(function () {
+            window.location.href = '[[@{/register}]]';
+        });
+        $('#qrCodeLogin').click(function () {
+            window.location.href = '[[@{/qrCodeLogin}]]';
+        });
+    });
+
+    function toHome() {
+        window.location.href = '[[@{/}]]';
+    }
+    function forget() {
+//        location.href = 'forget.html';
+    }
+    $(document).keydown(function (e) {
+        if (e.keyCode == 13) {
+            $("#btnSubmit").click();
+        }
+    });
+    $(document).ready(function(){
+
+        $("#username").focusin(function(){
+            $(this).siblings("label").addClass("label-name-focus");
+            $(this).parent().addClass("form-body-div-focus");
+        }).focusout(function(){
+            $(this).siblings("label").removeClass("label-name-focus");
+            $(this).parent().removeClass("form-body-div-focus");
+        });
+        $("#password,#simpleValidateCode").focusin(function(){
+            $(this).siblings("label").addClass("label-password-focus");
+            $(this).parent().addClass("form-body-div-focus");
+        }).focusout(function(){
+            $(this).siblings("label").removeClass("label-password-focus");
+            $(this).parent().removeClass("form-body-div-focus");
+        });
+
+        $("#btnSubmit").click(function() {
+            $("#loginForm").submit();
+        });
+    })
+</script>
+
+</body>
+</html>
+</html>

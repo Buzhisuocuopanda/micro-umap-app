@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignOperateRecordMapper">
+    
+    <resultMap type="ArraignOperateRecord" id="ArraignOperateRecordResult">
+        <result property="id"    column="id"    />
+        <result property="operateFunction"    column="operate_function"    />
+        <result property="criminalName"    column="criminal_name"    />
+        <result property="crimeType"    column="crime_type"    />
+        <result property="appointmentTime"    column="appointment_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectArraignOperateRecordVo">
+        select id, operate_function, criminal_name, crime_type, appointment_time, create_time, create_by, update_time, update_by, remark from umap_arraign_operate_record
+    </sql>
+	
+    <select id="selectArraignOperateRecordList" parameterType="ArraignOperateRecord" resultMap="ArraignOperateRecordResult">
+        <include refid="selectArraignOperateRecordVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="operateFunction != null  and operateFunction != '' "> and operate_function = #{operateFunction}</if>
+             <if test="criminalName != null  and criminalName != '' "> and criminal_name like concat ('%',#{criminalName},'%')</if>
+             <if test="crimeType != null  and crimeType != '' "> and crime_type = #{crimeType}</if>
+             <if test="appointmentTime != null and appointmentTime!= '' "> and date_format(appointment_time,'%Y%m%d')= date_format(#{appointmentTime},'%Y%m%d')</if>
+             <if test="createTime != null "> and date_format(create_time,'%Y%m%d')= date_format(#{createTime},'%Y%m%d')</if>
+             <if test="createBy != null  and createBy != '' "> and create_by like concat ('%',#{createBy},'%') </if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+         order by create_time desc
+    </select>
+    
+    <select id="selectArraignOperateRecordById" parameterType="Integer" resultMap="ArraignOperateRecordResult">
+        <include refid="selectArraignOperateRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertArraignOperateRecord" parameterType="ArraignOperateRecord">
+        insert into umap_arraign_operate_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="operateFunction != null  and operateFunction != ''  ">operate_function,</if>
+			<if test="criminalName != null  and criminalName != ''  ">criminal_name,</if>
+			<if test="crimeType != null  and crimeType != ''  ">crime_type,</if>
+			<if test="appointmentTime != null and appointmentTime != '' ">appointment_time,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="operateFunction != null  and operateFunction != ''  ">#{operateFunction},</if>
+			<if test="criminalName != null  and criminalName != ''  ">#{criminalName},</if>
+			<if test="crimeType != null  and crimeType != ''  ">#{crimeType},</if>
+			<if test="appointmentTime != null and appointmentTime != '' ">#{appointmentTime},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateArraignOperateRecord" parameterType="ArraignOperateRecord">
+        update umap_arraign_operate_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="operateFunction != null  and operateFunction != ''  ">operate_function = #{operateFunction},</if>
+            <if test="criminalName != null  and criminalName != ''  ">criminal_name = #{criminalName},</if>
+            <if test="crimeType != null  and crimeType != ''  ">crime_type = #{crimeType},</if>
+            <if test="appointmentTime != null">appointment_time = #{appointmentTime},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteArraignOperateRecordById" parameterType="Integer">
+        delete from umap_arraign_operate_record where id = #{id}
+    </delete>
+	
+    <delete id="deleteArraignOperateRecordByIds" parameterType="String">
+        delete from umap_arraign_operate_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

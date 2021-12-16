@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.CarApplyMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.CarApply" id="CarApplyResult">
+        <result property="needExtraApproval" column="need_extra_approval"/>
+        <result property="carApplyId" column="car_apply_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="carId" column="car_id"/>
+        <result property="driverId" column="driver_id"/>
+        <result property="telphone" column="telphone"/>
+        <result property="driverWhether" column="driver_whether"/>
+        <result property="peopleNumber" column="people_number"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="areaSelect" column="area_select"/>
+        <result property="startLocationId" column="start_location_id"/>
+        <result property="endLocationId" column="end_location_id"/>
+        <result property="driverStatus" column="driver_status"/>
+        <result property="approveStatus" column="approve_status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="progress" column="progress"/>
+        <result property="applyStatus" column="apply_status"/>
+        <result property="approvalUserId" column="approval_user_id"/>
+        <result property="feeType" column="fee_type"/>
+        <result property="feeTotal" column="fee_total"/>
+        <result property="userName" column="user_name"/>
+        <result property="orderState" column="order_state"/>
+        <result property="status" column="status"/>
+        <result property="driverName" column="driver_name"/>
+    </resultMap>
+
+    <resultMap type="com.mkst.umap.app.admin.api.bean.result.car.CarDetailResult" id="CarDetailResult">
+        <result property="needExtraApproval" column="need_extra_approval"/>
+        <result property="carApplyId" column="car_apply_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="driverId" column="driver_id"/>
+        <result property="carId" column="car_id"/>
+        <result property="telphone" column="telphone"/>
+        <result property="driverWhether" column="driver_whether"/>
+        <result property="peopleNumber" column="people_number"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="areaSelect" column="area_select"/>
+        <result property="startLocationId" column="start_location_id"/>
+        <result property="endLocationId" column="end_location_id"/>
+        <result property="approveStatus" column="approve_status"/>
+        <result property="remark" column="remark"/>
+        <result property="userName" column="user_name"/>
+        <result property="licensePlateNumber" column="license_plate_number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="approvalUserId" column="approval_user_id"/>
+    </resultMap>
+
+    <resultMap type="com.mkst.umap.app.admin.dto.carApply.CarApplyInfoDto" id="CarApplyInfoDtoResult">
+        <result property="carApplyId" column="car_apply_id"/>
+        <result property="telphone" column="telphone"/>
+        <result property="driverWhether" column="driver_whether"/>
+        <result property="peopleNumber" column="people_number"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="areaSelect" column="area_select"/>
+        <result property="driverStatus" column="driver_status"/>
+        <result property="approveStatus" column="approve_status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="applicant" column="applicant"/>
+        <result property="carName" column="car_name"/>
+        <result property="driverName" column="driver_name"/>
+        <result property="createByName" column="create_by_name"/>
+        <result property="startLocation" column="start_location"/>
+        <result property="endLocation" column="end_location"/>
+    </resultMap>
+
+    <sql id="selectCarApplyVo">
+        select need_extra_approval,
+               car_apply_id,
+               user_id,
+               car_id,
+               driver_id,
+               telphone,
+               driver_whether,
+               people_number,
+               start_time,
+               end_time,
+               area_select,
+               start_location_id,
+               end_location_id,
+               driver_status,
+               approve_status,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               del_flag,
+               progress,
+               apply_status,
+               approval_user_id,
+               fee_type,
+               fee_total
+        from umap_car_apply
+    </sql>
+
+    <sql id="selectCarApplyDto">
+        SELECT a.car_apply_id,
+               a.telphone,
+               a.driver_whether,
+               a.people_number,
+               a.start_time,
+               a.end_time,
+               a.area_select,
+               a.approve_status,
+               a.driver_status,
+               a.remark,
+               a.create_time,
+               a.create_by,
+               u.user_name            as applicant,
+               u1.user_name           as driver_name,
+               u2.user_name           as create_by_name,
+               i.license_plate_number as car_name,
+               s.location_name        as start_location,
+               e.location_name        as end_location
+        FROM umap_car_apply a
+                 LEFT JOIN sys_user u ON a.user_id = u.user_id
+                 LEFT JOIN sys_user u1 ON a.driver_id = u1.user_id
+                 LEFT JOIN sys_user u2 ON a.create_by = u2.user_id
+                 LEFT JOIN umap_car_info i on a.car_id = i.car_id
+                 LEFT JOIN umap_map_location s on a.start_location_id = s.location_id
+                 LEFT JOIN umap_map_location e on a.end_location_id = e.location_id
+    </sql>
+
+    <select id="selectCarApplyList" parameterType="com.mkst.umap.app.admin.domain.CarApply" resultMap="CarApplyResult">
+        SELECT
+        u.car_apply_id,
+        r.approval_user_id,
+        r.create_by,
+        r.status,
+        u.approve_status,
+        u.create_time,
+        u.update_time,
+        u.start_time,
+        u.end_time,
+        s.user_name
+        FROM
+        wf_event_audit_record r
+        LEFT JOIN
+        umap_car_apply u ON r.apply_id = u.car_apply_id
+        left join
+        sys_user s on u.user_id =s.user_id
+        <where>
+            apply_type like '%car_approve%'
+            <if test="startTime != null ">and start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and end_time &lt;= #{endTime}</if>
+            <if test="approvalUserId != null  and approvalUserId != '' ">and r.approval_user_id = #{approvalUserId}</if>
+            <if test="approveStatus != null  and approveStatus != '' and approveStatus == 0 ">and r.status =
+                #{approveStatus}
+            </if>
+            <if test="approveStatus != null  and approveStatus != '' and approveStatus != 0 ">and r.status != '0'</if>
+
+        </where>
+        order by r.status asc, create_time desc
+    </select>
+
+    <select id="selectCarApplyList1" parameterType="CarApply" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        <where>
+            <if test="carApplyId != null ">and car_apply_id = #{carApplyId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="carId != null ">and car_id = #{carId}</if>
+            <if test="driverId != null ">and driver_id = #{driverId}</if>
+            <if test="driverId == null ">and driver_id IS NULL</if>
+            <if test="telphone != null  and telphone != '' ">and telphone = #{telphone}</if>
+            <if test="driverWhether != null  and driverWhether != '' ">and driver_whether = #{driverWhether}</if>
+            <if test="peopleNumber != null ">and people_number = #{peopleNumber}</if>
+            <if test="startTime != null ">and start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and end_time &lt;= #{endTime}</if>
+            <if test="areaSelect != null  and areaSelect != '' ">and area_select = #{areaSelect}</if>
+            <if test="startLocationId != null ">and start_location_id = #{startLocationId}</if>
+            <if test="endLocationId != null ">and end_location_id = #{endLocationId}</if>
+            <if test="approveStatus != null  ">and approve_status = #{approveStatus}</if>
+            <if test="driverStatus != null ">and driver_status = #{driverStatus}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+        </where>
+        order by approve_status asc, create_time desc
+    </select>
+
+    <select id="selectCarApplyByStatus" parameterType="CarApply" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        <where>
+            <if test="approveStatus != null and  approveStatus != ''">and approve_status = #{approveStatus}</if>
+            <if test="userId != null and userId !=''">and (user_id = #{userId} or create_by = #{userId})</if>
+            <if test="startTime != null ">and start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and end_time &lt;= #{endTime}</if>
+        </where>
+        order by approve_status asc, create_time desc
+    </select>
+
+    <select id="selectCarApplyByDriver" parameterType="CarApply" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        <where>
+            <if test="approveStatus != null  ">and approve_status = #{approveStatus}</if>
+            <if test="driverId != null ">and driver_id = #{driverId}</if>
+            <if test="driverId == null ">and driver_id IS NULL</if>
+            <if test="driverStatus != null ">and driver_status = #{driverStatus}</if>
+            <if test="driverWhether != null  and driverWhether != '' ">and driver_whether = #{driverWhether}</if>
+            <if test="startTime != null ">and start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and end_time &lt;= #{endTime}</if>
+        </where>
+        order by approve_status asc, create_time desc
+    </select>
+
+    <select id="checkCarUseByTime" parameterType="CarApply" resultType="java.lang.Long">
+        select distinct a.car_id
+        from (
+                 SELECT car_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &lt;= start_time
+                   AND #{endTime} &gt;= start_time
+                   AND #{endTime} &lt;= end_time
+                   AND car_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY car_id
+                 UNION
+                 SELECT car_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &gt;= start_time
+                   AND #{endTime} &gt;= start_time
+                   AND #{endTime} &lt;= end_time
+                   AND car_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY car_id
+                 UNION
+                 SELECT car_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &gt;= start_time
+                   AND #{startTime} &lt;= end_time
+                   AND #{endTime} &gt;= end_time
+                   AND car_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY car_id
+                 UNION
+                 SELECT car_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &lt;= start_time
+                   AND #{endTime} &gt;= end_time
+                   AND car_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY car_id) as a
+    </select>
+
+    <select id="checkDriverByTime" parameterType="CarApply" resultType="java.lang.Long">
+        select distinct a.driver_id
+        from (
+                 SELECT driver_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &lt;= start_time
+                   AND #{endTime} &gt;= start_time
+                   AND #{endTime} &lt;= end_time
+                   AND driver_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY driver_id
+                 UNION
+                 SELECT driver_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &gt;= start_time
+                   AND #{endTime} &gt;= start_time
+                   AND #{endTime} &lt;= end_time
+                   AND driver_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY driver_id
+                 UNION
+                 SELECT driver_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &gt;= start_time
+                   AND #{startTime} &lt;= end_time
+                   AND #{endTime} &gt;= end_time
+                   AND driver_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY driver_id
+                 UNION
+                 SELECT driver_id
+                 FROM umap_car_apply
+                 WHERE #{startTime} &lt;= start_time
+                   AND #{endTime} &gt;= end_time
+                   AND driver_id is not null
+                   AND approve_status IN (0, 1)
+                   AND del_flag = '0'
+                 GROUP BY driver_id) as a
+    </select>
+
+    <select id="selectCarApplyDtoList" parameterType="CarApply" resultMap="CarApplyInfoDtoResult">
+        <include refid="selectCarApplyDto"/>
+        <where>
+            <if test="carApplyId != null ">and a.car_apply_id = #{carApplyId}</if>
+            <if test="userId != null ">and a.user_id = #{userId}</if>
+            <if test="applicant != null ">and u.user_name like CONCAT('%',#{applicant},'%')</if>
+            <if test="carId != null ">and a.car_id = #{carId}</if>
+            <if test="driverId != null ">and a.driver_id = #{driverId}</if>
+            <if test="telphone != null  and telphone != '' ">and a.telphone = #{telphone}</if>
+            <if test="driverWhether != null  and driverWhether != '' ">and a.driver_whether = #{driverWhether}</if>
+            <if test="peopleNumber != null ">and a.people_number = #{peopleNumber}</if>
+            <if test="startTime != null ">and a.start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and a.end_time &lt;= #{endTime}</if>
+            <if test="areaSelect != null  and areaSelect != '' ">and a.area_select = #{areaSelect}</if>
+            <if test="startLocationId != null ">and a.start_location_id = #{startLocationId}</if>
+            <if test="endLocationId != null ">and a.end_location_id = #{endLocationId}</if>
+            <if test="approveStatus != null  ">and a.approve_status = #{approveStatus}</if>
+            <if test="driverStatus != null ">and driver_status = #{driverStatus}</if>
+            <if test="createBy != null  and createBy != '' ">and a.create_by = #{createBy}</if>
+            <if test="createTime != null ">and a.create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and a.update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and a.update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and a.remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and a.del_flag = #{delFlag}</if>
+        </where>
+        order by a.approve_status asc, a.create_time desc
+    </select>
+
+    <select id="selectCarDetailById" parameterType="Long" resultMap="CarDetailResult">
+        SELECT a.need_extra_approval,
+               a.car_apply_id,
+               a.user_id,
+               a.car_id,
+               a.driver_id,
+               a.telphone,
+               a.driver_whether,
+               a.people_number,
+               a.start_time,
+               a.end_time,
+               a.area_select,
+               a.start_location_id,
+               a.end_location_id,
+               a.driver_status,
+               a.approve_status,
+               a.create_time,
+               a.remark,
+               u.user_name,
+               c.license_plate_number,
+               a.progress,
+               a.approval_user_id,
+               d.user_name as driver_name
+        FROM umap_car_apply a
+                 left join sys_user u on a.user_id = u.user_id
+                 left join sys_user d on a.driver_id = d.user_id
+                 left join umap_car_info c on a.car_id = c.car_id
+        where a.car_apply_id = #{carApplyId}
+    </select>
+
+    <select id="selectCarApplyById" parameterType="Long" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        where car_apply_id = #{carApplyId}
+    </select>
+
+    <insert id="insertCarApply" parameterType="CarApply" useGeneratedKeys="true" keyProperty="carApplyId">
+        insert into umap_car_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carApplyId != null  ">car_apply_id,</if>
+            <if test="needExtraApproval != null  ">need_extra_approval,</if>
+            <if test="userId != null  ">user_id,</if>
+            <if test="approvalUserId != null  ">approval_user_id,</if>
+            <if test="carId != null ">car_id,</if>
+            <if test="driverId != null ">driver_id,</if>
+            <if test="telphone != null  and telphone != ''  ">telphone,</if>
+            <if test="driverWhether != null ">driver_whether,</if>
+            <if test="peopleNumber != null  ">people_number,</if>
+            <if test="startTime != null  ">start_time,</if>
+            <if test="endTime != null  ">end_time,</if>
+            <if test="areaSelect != null  and areaSelect != ''  ">area_select,</if>
+            <if test="startLocationId != null  ">start_location_id,</if>
+            <if test="endLocationId != null  ">end_location_id,</if>
+            <if test="approveStatus != null   ">approve_status,</if>
+            <if test="driverStatus != null ">driver_status,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+            <if test="progress != null  and progress != ''  ">progress,</if>
+            <if test="applyStatus != null  and applyStatus != ''  ">apply_status,</if>
+            <if test="feeType != null  and feeType != ''  ">fee_type,</if>
+            <if test="feeTotal != null  and feeTotal != ''  ">fee_total</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carApplyId != null  ">#{carApplyId},</if>
+            <if test="needExtraApproval != null">#{needExtraApproval},</if>
+            <if test="userId != null  ">#{userId},</if>
+            <if test="approvalUserId != null  ">#{approvalUserId},</if>
+            <if test="carId != null ">#{carId},</if>
+            <if test="driverId != null ">#{driverId},</if>
+            <if test="telphone != null  and telphone != ''  ">#{telphone},</if>
+            <if test="driverWhether != null ">#{driverWhether},</if>
+            <if test="peopleNumber != null  ">#{peopleNumber},</if>
+            <if test="startTime != null  ">#{startTime},</if>
+            <if test="endTime != null  ">#{endTime},</if>
+            <if test="areaSelect != null  and areaSelect != ''  ">#{areaSelect},</if>
+            <if test="startLocationId != null  ">#{startLocationId},</if>
+            <if test="endLocationId != null  ">#{endLocationId},</if>
+            <if test="approveStatus != null   ">#{approveStatus},</if>
+            <if test="driverStatus != null ">#{driverStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+            <if test="progress != null  and progress != ''  ">#{progress},</if>
+            <if test="applyStatus != null  and applyStatus != ''  ">#{apply_status},</if>
+            <if test="feeType != null  and feeType != ''  ">fee_type,</if>
+            <if test="feeTotal != null  and feeTotal != ''  ">fee_total</if>
+        </trim>
+    </insert>
+
+    <update id="updateCarApply" parameterType="CarApply">
+        update umap_car_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="carId != null ">car_id = #{carId},</if>
+            <if test="driverId != null ">driver_id = #{driverId},</if>
+            <if test="driverId == null ">driver_id = null,</if>
+            <if test="telphone != null  and telphone != ''  ">telphone = #{telphone},</if>
+            <if test="driverWhether != null  and driverWhether != ''  ">driver_whether = #{driverWhether},</if>
+            <if test="peopleNumber != null  ">people_number = #{peopleNumber},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="areaSelect != null  and areaSelect != ''  ">area_select = #{areaSelect},</if>
+            <if test="startLocationId != null  ">start_location_id = #{startLocationId},</if>
+            <if test="endLocationId != null  ">end_location_id = #{endLocationId},</if>
+            <if test="approveStatus != null   ">approve_status = #{approveStatus},</if>
+            <if test="driverStatus != null ">driver_status = #{driverStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="progress != null  and progress != ''  ">progress = #{progress},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="orderState != null  and orderState != ''  ">order_state = #{orderState},</if>
+            <if test="approvalUserId != null  and approvalUserId != ''  ">approval_user_id = #{approvalUserId},</if>
+            <if test="feeType != null  and feeType != ''  ">fee_type=#{feeType},</if>
+            <if test="feeTotal != null  and feeTotal != ''  ">fee_total=#{feeTotal}</if>
+        </trim>
+        where car_apply_id = #{carApplyId}
+    </update>
+
+    <update id="updateCarApplyFee" parameterType="CarApply">
+        update umap_car_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="carId != null ">car_id = #{carId},</if>
+            <if test="driverId != null ">driver_id = #{driverId},</if>
+            <if test="telphone != null  and telphone != ''  ">telphone = #{telphone},</if>
+            <if test="driverWhether != null  and driverWhether != ''  ">driver_whether = #{driverWhether},</if>
+            <if test="peopleNumber != null  ">people_number = #{peopleNumber},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="areaSelect != null  and areaSelect != ''  ">area_select = #{areaSelect},</if>
+            <if test="startLocationId != null  ">start_location_id = #{startLocationId},</if>
+            <if test="endLocationId != null  ">end_location_id = #{endLocationId},</if>
+            <if test="approveStatus != null   ">approve_status = #{approveStatus},</if>
+            <if test="driverStatus != null ">driver_status = #{driverStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="progress != null  and progress != ''  ">progress = #{progress},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="orderState != null  and orderState != ''  ">order_state = #{orderState},</if>
+            <if test="approvalUserId != null  and approvalUserId != ''  ">approval_user_id = #{approvalUserId},</if>
+            <if test="feeType != null  and feeType != ''  ">fee_type=#{feeType},</if>
+            <if test="feeTotal != null  and feeTotal != ''  ">fee_total=#{feeTotal}</if>
+        </trim>
+        where car_apply_id = #{carApplyId}
+    </update>
+
+    <delete id="deleteCarApplyById" parameterType="Long">
+        delete
+        from umap_car_apply
+        where car_apply_id = #{carApplyId}
+    </delete>
+
+    <delete id="deleteCarApplyByIds" parameterType="String">
+        delete from umap_car_apply where car_apply_id in
+        <foreach item="carApplyId" collection="array" open="(" separator="," close=")">
+            #{carApplyId}
+        </foreach>
+    </delete>
+
+    <!--    <select id="selectCarTodayOrder" resultType="Integer">
+            select count(1) as todayTotal from umap_car_apply where TO_DAYS(create_time) = TO_DAYS(NOW()) and approve_status= 1
+        </select>-->
+
+    <!--    <select id="selectCarTotalOrder" resultType="integer">
+            select count(1) from umap_car_apply WHERE approve_status= 1
+        </select>-->
+
+    <select id="selectTotal" resultType="Long">
+        select count(1)
+        from umap_car_apply
+        where approve_status = 1
+    </select>
+
+    <select id="selectTotalByDay" resultType="integer">
+        select count(1)
+        from umap_car_apply
+        where create_time >= #{startTime}
+          and create_time &lt;= #{endTime}
+          and approve_status = 1
+    </select>
+
+    <select id="selectCarOrderList" resultType="com.mkst.umap.app.admin.statistics.AnalysisCountResult">
+        select d1.date `date`, IFNULL(d2.sumappointment, 0) `value`
+        from (
+                 select date
+                 from
+                     (select adddate('1970-01-01', t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from
+                     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+                     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+                     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+                     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+                     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
+                 where date between #{startDay}
+                   and #{endDay}
+             ) d1
+                 left join
+             (
+                 select DATE_FORMAT(create_time, "%Y-%m-%d") date , count(1) sumappointment
+                 from umap_car_apply
+                 where create_time >= '${startDay} 00:00:00'
+                   and create_time &lt;= '${endDay} 23:59:59'
+                   and approve_status= 1
+                 GROUP BY date
+             ) d2 on d1.date = d2.date
+        order by date asc
+    </select>
+
+
+</mapper>

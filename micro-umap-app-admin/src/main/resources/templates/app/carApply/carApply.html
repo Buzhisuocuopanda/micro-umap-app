@@ -1,0 +1,249 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								申请人：<input type="text" name="applicant"/>
+							</li>
+
+							<li>
+								开始时间：
+								<input name="startTime" class="just-time-input" data-type="datetime">
+							</li>
+
+							<li>
+								结束时间：
+								<input name="endTime" class="just-time-input" data-type="datetime">
+							</li>
+							<li>
+								审批状态：
+								<select id="approveStatus" name="approveStatus"
+										th:with="type=${@dict.getType('car_approve_status')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	       <!-- <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-success disabled" onclick="$.operate.add()" shiro:hasPermission="admin:carApply:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="admin:carApply:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="admin:carApply:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-warning disabled" onclick="$.table.exportExcel()" shiro:hasPermission="admin:carApply:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>-->
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+		var auditFlag = [[${@permission.hasPermi('admin:carApply:audit')}]];
+        var editFlag = [[${@permission.hasPermi('admin:carApply:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:carApply:remove')}]];
+		var approve_status = [[${@dict.getType('car_approve_status')}]];
+		var boolean_type = [[${@dict.getType('boolean_type')}]];
+        var prefix = ctx + "admin/carApply";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+				auditUrl: prefix + "/audit/{id}/{status}/{reason}",
+				updateUrl: prefix + "/detail/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "车辆申请管理",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'carApplyId', 
+					title : '车辆预约申请id',
+					visible: false
+				},
+				{
+					field : 'applicant',
+					title : '申请人',
+					sortable: true
+				},
+					{
+						field : 'carName',
+						title : '车牌号',
+						sortable: true
+					},
+				{
+					field : 'telphone', 
+					title : '联系方式',
+					sortable: true
+				},
+				{
+					field : 'driverWhether', 
+					title : '需要司机',
+					sortable: true,
+					formatter: function (value, row, index) {
+						return $.table.selectDictLabel(boolean_type, value);
+					}
+				},
+					{
+						field : 'driverName',
+						title : '司机姓名',
+						sortable: true
+					},
+				{
+					field : 'peopleNumber',
+					title : '总人数',
+					sortable: true
+				},
+				{
+					field : 'startTime', 
+					title : '开始时间',
+					sortable: true
+				},
+				{
+					field : 'endTime', 
+					title : '结束时间',
+					sortable: true
+				},
+				{
+					field : 'areaSelect', 
+					title : '地区',
+					sortable: true
+				},
+				{
+					field : 'startLocation',
+					title : '起点',
+					sortable: true
+				},
+				{
+					field : 'endLocation',
+					title : '终点',
+					sortable: true
+				},
+				{
+					field : 'approveStatus', 
+					title : '审批状态',
+					sortable: true,
+					formatter: function (value, row, index) {
+						return $.table.selectDictLabel(approve_status, value);
+					}
+				},
+				{
+					field : 'createByName',
+					title : '创建人',
+					sortable: true
+				},
+				{
+					field : 'createTime', 
+					title : '创建时间',
+					sortable: true
+				},
+				{
+					field : 'remark',
+					title : '备注',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+						var actions = [];
+						if(row.approveStatus === 0){
+							/*actions.push('<a class="btn btn-success btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.carApplyId + '\', 1)"><i class="fa fa-edit"></i>通过</a> ');
+							actions.push('<a class="btn btn-danger btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.carApplyId + '\', 2)"><i class="fa fa-edit"></i>驳回</a>');*/
+						}else {
+							actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="auditDetailCommon(\'' + row.carApplyId + '\')"><i class="fa fa-edit"></i>审核记录</a> ');
+						}
+		            	/*actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.carApplyId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.carApplyId + '\')"><i class="fa fa-remove"></i>删除</a>');*/
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+		layui.use('laydate', function () {
+			var laydate = layui.laydate;
+			//时间选择器
+			//同时绑定多个
+			lay('.just-time-input').each(function () {
+				laydate.render({
+					elem: this
+					, type: 'datetime'
+				});
+			});
+		});
+
+		// 修改信息
+		function audit(id, status) {
+
+			var statusMsg = status == "1" ? "通过" : "驳回";
+
+			prompt(status, "填写" + statusMsg + "该条" + $.table._option.modalName + "的原因", function (reason) {
+				var urlReason = $.common.isEmpty(reason) ? 'NoReasonFlag' : reason;
+				var url = $.common.isEmpty(id) ? $.table._option.auditUrl : $.table._option.auditUrl.replace("{id}", id).replace("{status}", status).replace("{reason}", urlReason);
+				$.operate.submit(url, "post", "json");
+			});
+		}
+
+		// 确认窗体
+		function prompt(status, content, callBack) {
+
+			layer.prompt({
+				formType: 2,
+				placeholder: "请输入原因",
+				title: content + "(非必填)",
+				btn: ['确认', '取消'],
+				btnclass: ['btn btn-primary', 'btn btn-danger'],
+				yes: function (index, value) {
+					layer.close(index);
+					callBack(value.find(".layui-layer-input").val());
+				}
+			});
+		}
+
+		auditDetailCommon = function (id) {
+			var url = "/404.html";
+			if ($.common.isNotEmpty(id)) {
+				url = $.table._option.updateUrl.replace("{id}", id);
+			} else {
+				var id = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns($.table._option.uniqueId);
+				if (id.length == 0) {
+					$.modal.alertWarning("请至少选择一条记录");
+					return;
+				}
+				url = $.table._option.updateUrl.replace("{id}", id);
+			}
+			$.modal.open($.table._option.modalName + "审核记录", url);
+		}
+    </script>
+</body>
+</html>

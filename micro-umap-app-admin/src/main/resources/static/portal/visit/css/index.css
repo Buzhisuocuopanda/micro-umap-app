@@ -1,0 +1,146 @@
+html{
+    font-size: 62.5%;
+}
+body{
+    background-color: white;
+}
+ul {
+    padding: 0;
+    margin: 0;
+}
+li {
+    list-style: none;
+}
+
+a{
+    text-decoration: none;
+}
+a:link {
+    text-decoration: none;
+}
+a:visited {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: none;
+}
+a:active {
+    text-decoration: none;
+}
+
+.box{
+    width: 100%;
+}
+.box .top-img{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    min-height: 44rem;
+    background: url('../images/invitation_bg.png') no-repeat;
+    background-size: 100%;
+}
+.box .pass-code-box{
+    color: #fff;
+    position: relative;
+    padding: 5rem 2rem 0;
+}
+.pass-code-box .code-title .name{
+    font-size: 1.8rem;
+    color: #fff;
+}
+.pass-code-box .code-title .node{
+    margin-top: 0.5rem;
+    font-size: 1.4rem;
+}
+.code-box{
+    width: 100%;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-top: 1.5rem;
+    box-shadow: 0 1px 0.6rem #e7e7e7;
+    color: red;
+}
+.code-box .top-times{
+    background-color: #fff;
+    width: 100%;
+    padding: 1.5rem 4rem;
+}
+.code-box .top-times .time{
+    background-image: linear-gradient(180deg, #285FDA, #2CAED9);
+    height: 4rem;
+    line-height: 4rem;
+    text-align: center;
+    width: 100%;
+    border-radius: 4rem;
+    color: #fff;
+    display: flex;
+    padding: 0 2.5rem;
+    justify-content: space-between;
+}
+.mid-code{
+    width: 100%;
+    padding: 2.5rem 0;
+    text-align: center;
+    background-color: #CCF1FF;
+}
+.mid-code .code{
+    width: 60%;
+}
+.bottom-info{
+    background-color: #fff;
+    height: 6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+}
+.bottom-info .flush{
+    font-size: 1.4rem;
+    color: #285FDA;
+}
+.bottom-info .note{
+    color: #999999;
+    font-size: 1.4rem;
+}
+.code-info{
+    margin: 1.5rem 0;
+    color: #333;
+    font-size: 1.4rem;
+}
+.code-info .info-title{
+    font-size: 1.8rem;
+    color: #333;
+}
+.code-info .info-box{
+    box-shadow: 0 1px 0.6rem #e7e7e7;
+    border-radius: .5rem;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+.code-info .info-box .box-item{
+    min-height: 4.5rem;
+    line-height: 4.5rem;
+    padding: 0 1.5rem;
+}
+.code-info .info-box .box-item .left{
+    color: #999;
+}
+.box-item+.box-item{
+    border-top: .1rem solid #ededed;
+}
+
+.box-between{
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
+.box-wrap{
+    display: flex;
+    flex-direction: column;
+}
+
+
+.glyphicon{
+    color: #285FDA;
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.PetitionMatterBindMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.PetitionMatterBind" id="PetitionMatterBindResult">
+        <result property="id"    column="id"    />
+        <result property="matterId"    column="matter_id"    />
+        <result property="petitionId"    column="petition_id"    />
+    </resultMap>
+	
+	<sql id="selectPetitionMatterBindVo">
+        select id, matter_id, petition_id from umap_petition_matter_bind
+    </sql>
+	
+    <select id="selectPetitionMatterBindList" parameterType="com.mkst.umap.app.admin.domain.PetitionMatterBind" resultMap="PetitionMatterBindResult">
+        <include refid="selectPetitionMatterBindVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="matterId != null "> and matter_id = #{matterId}</if>
+             <if test="petitionId != null "> and petition_id = #{petitionId}</if>
+         </where>
+    </select>
+    
+    <select id="selectPetitionMatterBindById" parameterType="Long" resultMap="PetitionMatterBindResult">
+        <include refid="selectPetitionMatterBindVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPetitionMatterBind" parameterType="com.mkst.umap.app.admin.domain.PetitionMatterBind">
+        insert into umap_petition_matter_bind
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="matterId != null  ">matter_id,</if>
+			<if test="petitionId != null  ">petition_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="matterId != null  ">#{matterId},</if>
+			<if test="petitionId != null  ">#{petitionId},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updatePetitionMatterBind" parameterType="com.mkst.umap.app.admin.domain.PetitionMatterBind">
+        update umap_petition_matter_bind
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="matterId != null  ">matter_id = #{matterId},</if>
+            <if test="petitionId != null  ">petition_id = #{petitionId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deletePetitionMatterBindById" parameterType="Long">
+        delete from umap_petition_matter_bind where id = #{id}
+    </delete>
+	
+    <delete id="deletePetitionMatterBindByIds" parameterType="String">
+        delete from umap_petition_matter_bind where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

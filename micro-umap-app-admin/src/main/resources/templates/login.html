@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title th:if="${not #strings.isEmpty(@config.getKey('site.name'))}" th:text="${@config.getKey('site.name')}">迈科思腾</title>
+	<title th:if="${#strings.isEmpty(@config.getKey('site.name'))}">迈科思腾</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+	<link rel="stylesheet" th:href="@{/loginPage/mkst/js/bootstrap/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/loginPage/mkst/css/index.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/loginPage/mkst/css/indexMob.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/loginPage/mkst/css/login.css}">
+	<link rel="stylesheet" th:href="@{/loginPage/mkst/css/animate.css}" />
+	<link th:href="@{/systemplus/css/ry-ui.css?v=3.1.0}" rel="stylesheet"/>
+	<link rel="shortcut icon" href="../static/favicon.ico" th:href="@{favicon.ico}"/>
+	<style type="text/css">label.error { position:inherit;  }</style>
+	<script>
+		if(window.top!==window.self){window.top.location=window.location};
+	</script>
+</head>
+<body>
+
+<div class="login-box">
+	<div class="login-top-bar">
+		<!--<span onclick="toHome()" class="pointer">返回首页</span>-->
+	</div>
+	<div class="login-middle-box">
+		<div class="login-form" id="login_form_bar">
+			<div class="form-top">
+				<div class="top-btn active-login-btn" id="login">
+					<span >登录</span>
+				</div>
+				<div class="top-btn" id="qrCodeLogin">
+					<span class="pointer">扫码登录</span>
+				</div>
+				<div class="top-btn" id="register" th:if="${@config.getKey('sys.account.registerUser')}">
+					<span class="pointer">注册</span>
+				</div>
+			</div>
+
+			<div class="login-box-content" id="login_form">
+				<form action="" method="post" id="loginForm">
+					<div class="form-login-content">
+						<input type="text" id="username" name="username" class="form-control" placeholder="请输入账号">
+					</div>
+					<div class="form-login-content">
+						<input type="password" id="password" name="password" class="form-control" placeholder="请输入密码">
+					</div>
+					<div class="form-login-content" th:if="${captchaEnabled==true}">
+						<div class="input-group">
+							<input type="text" class="form-control" id="validateCode" name="validateCode" placeholder="请输入验证码" style="width: 165px;">
+							<a href="javascript:void(0);" title="点击更换验证码">
+								<img th:src="@{captcha/captchaImage(type=${captchaType})}" class="radius imgcode" width="100" height="40" style="position:absolute;right:-105px;top:0px;"/>
+							</a>
+						</div>
+					</div>
+					<div class="login-btn">
+						<button type="button" class="btn btn-danger" id="btnSubmit" data-loading="正在验证登录，请稍后...">登录</button>
+					</div>
+
+					<!--<div class="remember">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox">下次自动登录
+							</label>
+						</div>
+						<span class="forget pointer" onclick="forget()">忘记密码</span>
+					</div>-->
+				</form>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="footer">
+	<!-- <div class="footer-logo">
+         <img th:src="${@config.getKey('site.logo.pic')}" alt="">
+     </div>-->
+	<span class="copyright" th:if="${not #strings.isEmpty(@config.getKey('site.copyright'))}" th:text="${@config.getKey('site.copyright')}">版权所有 © 2020 迈科思腾</span>
+	<span class="copyright" th:if="${#strings.isEmpty(@config.getKey('site.copyright'))}">版权所有 © 2020 迈科思腾</span>
+	<span class="icp-number" th:if="${not #strings.isEmpty(@config.getKey('site.beian'))}" th:text="${@config.getKey('site.beian')}">粤ICP备12345678号</span>
+</div>
+
+<script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]];var captchaEnabled= [[${captchaEnabled}]]; </script>
+<script th:src="@{/loginPage/mkst/js/jQuery.js}"></script>
+<script th:src="@{/loginPage/mkst/js/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/loginPage/mkst/js/util.js}"></script>
+<!-- 验证插件 -->
+<script src="../static/ajax/libs/validate/jquery.validate.min.js" th:src="@{/ajax/libs/validate/jquery.validate.min.js}"></script>
+<script src="../static/ajax/libs/validate/messages_zh.min.js" th:src="@{/ajax/libs/validate/messages_zh.min.js}"></script>
+<script src="../static/ajax/libs/layer/layer.min.js" th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script src="../static/ajax/libs/blockUI/jquery.blockUI.js" th:src="@{/ajax/libs/blockUI/jquery.blockUI.js}"></script>
+<script src="../static/systemplus/js/ry-ui.js" th:src="@{/systemplus/js/ry-ui.js?v=3.1.0}"></script>
+<script src="../static/systemplus/js/base64.js" th:src="@{/systemplus/js/base64.js}"></script>
+<script src="../static/systemplus/login.js" th:src="@{/systemplus/login.js}"></script>
+<script>
+	$(document).ready(function(){
+		$('#register').click(function () {
+			window.location.href = '[[@{/register}]]';
+		});
+		$('#qrCodeLogin').click(function () {
+			window.location.href = '[[@{/qrCodeLogin}]]';
+		});
+	});
+
+	function toHome() {
+		window.location.href = '[[@{/}]]';
+	}
+	function forget() {
+//        location.href = 'forget.html';
+	}
+	$(document).keydown(function (e) {
+		if (e.keyCode == 13) {
+			$("#btnSubmit").click();
+		}
+	});
+	$(document).ready(function(){
+
+		$("#username").focusin(function(){
+			$(this).siblings("label").addClass("label-name-focus");
+			$(this).parent().addClass("form-body-div-focus");
+		}).focusout(function(){
+			$(this).siblings("label").removeClass("label-name-focus");
+			$(this).parent().removeClass("form-body-div-focus");
+		});
+		$("#password,#simpleValidateCode").focusin(function(){
+			$(this).siblings("label").addClass("label-password-focus");
+			$(this).parent().addClass("form-body-div-focus");
+		}).focusout(function(){
+			$(this).siblings("label").removeClass("label-password-focus");
+			$(this).parent().removeClass("form-body-div-focus");
+		});
+
+		$("#btnSubmit").click(function() {
+			$("#loginForm").submit();
+		});
+	})
+</script>
+
+</body>
+</html>

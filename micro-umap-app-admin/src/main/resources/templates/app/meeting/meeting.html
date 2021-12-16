@@ -1,0 +1,308 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            会议主题：<input name="subject" type="text"/>
+                        </li>
+
+                        <li>
+                            会议日期：<input id="checkDate" name="checkDate" placeholder="选择日期" type="text">
+                        </li>
+
+                        <li style="display: flex;align-items: center;">
+                            使用部门：
+                            <input id="deptId" name="deptId" type="hidden"/>
+                            <input class="form-control" id="deptName" name="deptName" onclick="selectDeptTree()"
+                                   readonly="true" style="width: 155px;" type="text">
+                        </li>
+
+                        <li>
+                            申请人：
+                            <input id="useBy" name="useBy" type="hidden"/>
+                            <input id="useByName" name="useByName" onclick="selectUserTree()" readonly="true"
+                                   style="width: 155px;"
+                                   type="text">
+                        </li>
+
+                        <!--<li>
+                            申请状态：
+                            <select id="status" name="status" style="width:120px"
+                                    th:with="type=${@dict.getType('event_cancel')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>-->
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            房间：<select id="roomId" name="roomId"
+                                       th:with="roomList=${@arraignRoomServiceImpl.selectRoomByType('5')}">
+                            <option value="">所有</option>
+                            <option th:each="room : ${roomList}" th:text="${room.name}"
+                                    th:value="${room.id}"></option>
+                        </select>
+                        <li>
+                            审核状态：
+                            <select id="auditStatus" name="auditStatus" style="width:120px"
+                                    th:with="type=${@dict.getType('event_audit_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table data-mobile-responsive="true" id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('admin:meeting:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('admin:meeting:remove')}]];
+    var prefix = ctx + "admin/meeting";
+    var event_audit_status = [[${@dict.getType('event_audit_status')}]];
+    var event_cancel = [[${@dict.getType('event_cancel')}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            auditUrl: prefix + "/audit/{id}/{auditStatus}/{reason}",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "会议申请",
+            search: false,
+            showExport: true,
+            columns: [
+                {
+                    field: 'id',
+                    title: '申请序号',
+                    sortable: true,
+                    visible: false
+                },
+                {
+                    field: 'roomName',
+                    title: '会议室',
+                    sortable: true
+                },
+                {
+                    field: 'roomAddr',
+                    title: '地址',
+                    sortable: true
+                },
+                {
+                    title: "会议时间",
+                    formatter: function (value, row, index) {
+                        return row.startTime.slice(0, 4) + "年" + row.startTime.slice(5, 7) + "月" + row.startTime.slice(8, 10) + "日 "
+                            + row.startTime.slice(11, 16) + "-" + row.endTime.slice(11, 16);
+                    }
+                },
+                {
+                    field: 'subject',
+                    title: '主题',
+                    sortable: true,
+                    cellStyle: formatTableUnit,
+                    formatter: paramsMatter
+                },
+                {
+                    field: 'dept',
+                    title: '部门',
+                    sortable: true
+                },
+                {
+                    field: 'useBy',
+                    title: '申请人',
+                    sortable: true
+                },
+                {
+                    field: 'status',
+                    title: '申请状态',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(event_cancel, value);
+                    }
+                },
+                {
+                    field: 'auditStatus',
+                    title: '审核状态',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(event_audit_status, value);
+                    }
+                },
+                {
+                    field: 'createBy',
+                    title: '创建人',
+                    sortable: true
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-default btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="detail(\'' + row.id + '\')"><i class="fa fa-eye"></i>详情</a> ');
+                        if (row.status === '0' && row.auditStatus === '0') {
+                            actions.push('<a  class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="audit(\'' + row.id + '\', 1)"><i class="fa fa-edit"></i>通过</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + editFlag + '" href="#" onclick="audit(\'' + row.id + '\', 2)"><i class="fa fa-edit"></i>驳回</a> ');
+                            /*if (isOverdue(row.startTime)) {
+                                actions.push('<a style="width: 100px;" class="btn btn-disabled btn-xs "><i class="fa fa-close"></i>已逾期</a> ')
+                            } else {
+
+                            }*/
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+        $(".columns.columns-right.btn-group.pull-right").hide();
+    });
+
+
+    //表格超出宽度鼠标悬停显示td内容
+    paramsMatter = function (value, row, index, field) {
+        var span = document.createElement('span');
+        span.setAttribute('title', value);
+        span.innerHTML = value;
+        return span.outerHTML;
+    }
+    //td宽度以及内容超过宽度隐藏
+    formatTableUnit = function (value, row, index) {
+        return {
+            css: {
+                "white-space": 'nowrap',
+                "text-overflow": 'ellipsis',
+                "overflow": 'hidden',
+                "max-width": "150px"
+            }
+        }
+    }
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#checkDate'
+        });
+    })
+
+    /*用户管理-新增-选择部门树*/
+    function selectDeptTree() {
+        var treeId = $("#treeId").val();
+        var deptId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
+        var url = ctx + "system/dept/selectDeptTree/" + deptId;
+        var options = {
+            title: '选择部门',
+            width: "380",
+            url: url,
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        if ($.tree.notAllowParents(tree)) {
+            var body = layer.getChildFrame('body', index);
+            $("#deptId").val(body.find('#treeId').val());
+            $("#deptName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    }
+
+    /* 用户树开始 */
+    function selectUserTree() {
+        var options = {
+            title: '选择用户',
+            width: "380",
+            url: ctx + "system/user/selectUserTree?userIds=",
+            callBack: doUserTreeSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doUserTreeSubmit(index, layero) {
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        if ($.tree.notAllowParents(tree)) {
+            var body = layer.getChildFrame('body', index);
+            $("#useBy").val(body.find('#treeId').val());
+            $("#useByName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    }
+
+    /* 会议详细查看页面 */
+    function detail(meetingId) {
+        var url = prefix + '/detail/' + meetingId;
+        $.modal.openTab("查看会议详情", url);
+    }
+
+    // 审核会议
+    function audit(id, status) {
+        var statusMsg = status !== 1 ? "驳回" : "通过";
+        prompt(status, "填写" + statusMsg + "该条" + $.table._option.modalName + "的原因", function (reason) {
+            var urlReason = $.common.isEmpty(reason) ? 'NoReasonFlag' : reason;
+            var url = $.common.isEmpty(id) ? $.table._option.auditUrl : $.table._option.auditUrl.replace("{id}", id).replace("{auditStatus}", status).replace("{reason}", urlReason);
+            $.operate.submit(url, "post", "json");
+        });
+    }
+
+    // 确认窗体
+    function prompt(status, content, callBack) {
+
+        const necessary = status === 2 ? "（必填）" : "（非必填）";
+
+        layer.prompt({
+            formType: 2,
+            placeholder: "请输入原因",
+            title: content + necessary,
+            btn: ['确认', '取消'],
+            btnclass: ['btn btn-primary', 'btn btn-danger'],
+            area: ['400px','200px'],
+            yes: function (index, value) {
+                const reason = value.find(".layui-layer-input").val();
+                if (status === 2 && (typeof reason === "undefined" || reason === "")){
+                    alert("请填写理由！");
+                    return;
+                }
+                layer.close(index);
+                callBack(value.find(".layui-layer-input").val());
+                location.reload();
+            }
+        });
+    }
+
+    // 会议审核是否逾期
+    function isOverdue(startTime) {
+        let nowTime = new Date();
+        let startTimeN = new Date(startTime)
+        return nowTime > startTimeN;
+    }
+</script>
+</body>
+</html>

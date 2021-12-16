@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-imNoticeUser-add">
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">消息类型：</label>
+				<div class="col-sm-8">
+					<input id="msgTypeKey" name="msgTypeKey" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">用户绑定：</label>
+				<div class="col-sm-8" id="receiveDiv">
+					<input id="userId" name="userId" type="hidden" required="true"/>
+					<input class="form-control" type="text" onclick="selectReceiveTree()" id="userName" name="userNames" readonly="true" >
+				</div>
+
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">是否置顶：</label>
+				<div class="col-sm-8">
+					<div class="radio check-box">
+						<label>
+							<input type="radio" value="1" name="isTop">是</label>
+					</div>
+					<div class="radio check-box">
+						<label>
+							<input type="radio" value="0" name="isTop">否</label>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">置顶排序：</label>
+				<div class="col-sm-8">
+					<input id="topOrder" name="topOrder" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">头像：</label>
+				<div class="col-sm-8" onclick="editLogo()">
+					<input type="hidden" name="avatar" id="logoFile" value="">
+					<img alt="image" id="logo" class=" m-t-xs img-responsive" style="width: 50px;cursor: pointer;" th:src=" @{/img/appLogo.png}">
+				</div>
+			</div>
+
+		</form>
+	</div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "admin/imNoticeUser"
+
+		var appPrefix = ctx + "appmanager/appManager";
+		$("#form-imNoticeUser-add").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			}
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	            $.operate.save(prefix + "/add", $('#form-imNoticeUser-add').serialize());
+	        }
+	    }
+
+		/*修改logo*/
+		function editLogo() {
+			var url = appPrefix + '/logo';
+			$.modal.open("修改头像", url,800,600);
+		}
+
+		/*选择接受者*/
+		function selectReceiveTree() {
+			url = 'system/user/selectUserTree?userIds=';
+			var url = ctx + url +$("#userId").val();
+			var options = {
+				title: '选择绑定用户',
+				width: "380",
+				url: url,
+				callBack:doSubmit
+			};
+			$.modal.openOptions(options);
+		}
+
+		function doSubmit(index, layero){
+			var tree = layero.find("iframe")[0].contentWindow.$._tree;
+			if ($.tree.notAllowParents(tree)) {
+				var body = layer.getChildFrame('body', index);
+				var receiveCode = body.find('#treeId').val();
+				var receiveName = body.find('#treeName').val();
+				$("#userId").val(receiveCode);
+				$("#userName").val(receiveName);
+				layer.close(index);
+			}
+		}
+
+		function doSubmit1(index, layero){
+			var tree = layero.find("iframe")[0].contentWindow.$._tree;
+			var receiveCode = $.tree.getCheckedNodesByTree(tree,"id");
+			var receiveName = $.tree.getCheckedNodesByTree(tree,"name");
+			$("#userId").val(receiveCode);
+			$("#userName").val(receiveName);
+			layer.close(index);
+		}
+
+	</script>
+</body>
+</html>

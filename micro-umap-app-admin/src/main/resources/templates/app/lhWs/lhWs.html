@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								龙华文书id：<input type="text" name="wsId"/>
+							</li>
+
+							<li>
+								内容：<input type="text" name="content"/>
+							</li>
+
+							<li>
+								标题：<input type="text" name="title"/>
+							</li>
+
+							<li>
+								类型：<input type="text" name="type"/>
+							</li>
+
+							<li>
+								发布时间：<input type="text" name="publishTime"/>
+							</li>
+
+							<li>
+								图片：<input type="text" name="img"/>
+							</li>
+
+							<li>
+								作者：<input type="text" name="author"/>
+							</li>
+
+							<li>
+								同步时间：<input type="text" name="syncTime"/>
+							</li>
+
+							<li>
+								扩展字段2：<input type="text" name="extend2"/>
+							</li>
+
+							<li>
+								扩展字段3：<input type="text" name="extend3"/>
+							</li>
+
+							<li>
+								扩展字段4：<input type="text" name="extend4"/>
+							</li>
+
+							<li>
+								逻辑删除标志 0 正常  1删除：<input type="text" name="delFlag"/>
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="admin:lhWs:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="admin:lhWs:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="admin:lhWs:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="admin:lhWs:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('admin:lhWs:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:lhWs:remove')}]];
+        var prefix = ctx + "admin/lhWs";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "龙华文书同步",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'id', 
+					title : 'id',
+					visible: false
+				},
+				{
+					field : 'wsId', 
+					title : '龙华文书id',
+					sortable: true
+				},
+				{
+					field : 'content', 
+					title : '内容',
+					sortable: true
+				},
+				{
+					field : 'title', 
+					title : '标题',
+					sortable: true
+				},
+				{
+					field : 'type', 
+					title : '类型',
+					sortable: true
+				},
+				{
+					field : 'publishTime', 
+					title : '发布时间',
+					sortable: true
+				},
+				{
+					field : 'img', 
+					title : '图片',
+					sortable: true
+				},
+				{
+					field : 'author', 
+					title : '作者',
+					sortable: true
+				},
+				{
+					field : 'syncTime', 
+					title : '同步时间',
+					sortable: true
+				},
+				{
+					field : 'extend2', 
+					title : '扩展字段2',
+					sortable: true
+				},
+				{
+					field : 'extend3', 
+					title : '扩展字段3',
+					sortable: true
+				},
+				{
+					field : 'extend4', 
+					title : '扩展字段4',
+					sortable: true
+				},
+				{
+					field : 'delFlag', 
+					title : '逻辑删除标志 0 正常  1删除',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

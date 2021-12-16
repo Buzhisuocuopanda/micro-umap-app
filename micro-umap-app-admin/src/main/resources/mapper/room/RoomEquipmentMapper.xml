@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.RoomEquipmentMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.RoomEquipment" id="RoomEquipmentResult">
+        <result property="id"    column="id"    />
+        <result property="roomType"    column="room_type"    />
+        <result property="roomId"    column="room_id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="uniqueId"    column="unique_id"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectRoomEquipmentVo">
+        select id, room_type, room_id, equipment_id, unique_id, status from umap_room_equipment
+    </sql>
+
+    <select id="selectRoomEquipmentList" parameterType="com.mkst.umap.app.admin.domain.RoomEquipment" resultMap="RoomEquipmentResult">
+        <include refid="selectRoomEquipmentVo"/>
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="roomType != null  and roomType != '' "> and room_type = #{roomType}</if>
+            <if test="roomId != null  and roomId != '' "> and room_id = #{roomId}</if>
+            <if test="equipmentId != null  and equipmentId != '' "> and equipment_id = #{equipmentId}</if>
+            <if test="uniqueId != null  and uniqueId != '' "> and unique_id = #{uniqueId}</if>
+            <if test="status != null  and status != '' "> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectRoomEquipmentById" parameterType="Long" resultMap="RoomEquipmentResult">
+        <include refid="selectRoomEquipmentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRoomEquipment" parameterType="com.mkst.umap.app.admin.domain.RoomEquipment">
+        insert into umap_room_equipment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="roomType != null  and roomType != ''  ">room_type,</if>
+            <if test="roomId != null  and roomId != ''  ">room_id,</if>
+            <if test="equipmentId != null  and equipmentId != ''  ">equipment_id,</if>
+            <if test="uniqueId != null  and uniqueId != ''  ">unique_id,</if>
+            <if test="status != null  and status != ''  ">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="roomType != null  and roomType != ''  ">#{roomType},</if>
+            <if test="roomId != null  and roomId != ''  ">#{roomId},</if>
+            <if test="equipmentId != null  and equipmentId != ''  ">#{equipmentId},</if>
+            <if test="uniqueId != null  and uniqueId != ''  ">#{uniqueId},</if>
+            <if test="status != null  and status != ''  ">#{status},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRoomEquipment" parameterType="com.mkst.umap.app.admin.domain.RoomEquipment">
+        update umap_room_equipment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomType != null  and roomType != ''  ">room_type = #{roomType},</if>
+            <if test="roomId != null  and roomId != ''  ">room_id = #{roomId},</if>
+            <if test="equipmentId != null  and equipmentId != ''  ">equipment_id = #{equipmentId},</if>
+            <if test="uniqueId != null  and uniqueId != ''  ">unique_id = #{uniqueId},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRoomEquipmentById" parameterType="Long">
+        delete from umap_room_equipment where id = #{id}
+    </delete>
+
+    <delete id="deleteRoomEquipmentByIds" parameterType="String">
+        delete from umap_room_equipment where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoomEquipmentByRoomId" parameterType="String">
+        delete from umap_room_equipment where room_id = #{id}
+    </delete>
+</mapper>

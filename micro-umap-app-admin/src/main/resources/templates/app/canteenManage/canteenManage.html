@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								用餐类型：
+								<select id="diningType" name="diningType"
+										th:with="type=${@dict.getType('dining_type')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								用餐状态：
+								<select id="diningStatus" name="diningStatus"
+										th:with="type=${@dict.getType('dining_status')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <!--<div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-success disabled" onclick="$.operate.add()" shiro:hasPermission="admin:canteenManage:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="admin:canteenManage:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="admin:canteenManage:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-warning disabled" onclick="$.table.exportExcel()" shiro:hasPermission="admin:canteenManage:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>-->
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+		var auditFlag = [[${@permission.hasPermi('admin:carApply:audit')}]];
+        var editFlag = [[${@permission.hasPermi('admin:canteenManage:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:canteenManage:remove')}]];
+		var approve_status = [[${@dict.getType('canteen_approve_status')}]];
+		var dining_type = [[${@dict.getType('dining_type')}]];
+		var dining_status = [[${@dict.getType('dining_status')}]];
+        var prefix = ctx + "admin/canteenManage";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+				auditUrl: prefix + "/audit/{id}/{status}",
+                updateUrl: prefix + "/detail/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "食堂申请",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'canteenApplyId', 
+					title : '食堂申请id',
+					visible: false
+				},
+				{
+					field : 'boxName',
+					title : '包厢名',
+					sortable: true
+				},
+					{
+						field : 'meal',
+						title : '餐次',
+						sortable: true
+					},
+					{
+						field : 'dateTime',
+						title : '日期',
+						sortable: true
+					},
+				{
+					field : 'diningType', 
+					title : '用餐类型',
+					sortable: true,
+					formatter: function (value, row, index) {
+						return $.table.selectDictLabel(dining_type, value);
+					}
+				},
+				{
+					field : 'diningNumber', 
+					title : '用餐人数',
+					sortable: true
+				},
+				{
+					field : 'diningStatus', 
+					title : '用餐状态',
+					sortable: true,
+					formatter: function (value, row, index) {
+						return $.table.selectDictLabel(dining_status, value);
+					}
+				},
+					{
+						field : 'applyStatus',
+						title : '审核状态',
+						sortable: true,
+						formatter: function (value, row, index) {
+							return $.table.selectDictLabel(approve_status, value);
+						}
+					},
+				{
+					field : 'applyName',
+					title : '申请人',
+					sortable: true
+				},
+				{
+					field : 'deptName',
+					title : '部门名',
+					sortable: true
+				},
+				{
+					field : 'createName',
+					title : '创建人',
+					sortable: true
+				},
+				{
+					field : 'createTime', 
+					title : '创建时间',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+						if(row.applyStatus === 0 || row.applyStatus ===4 || row.applyStatus === 5){
+							actions.push('<a class="btn btn-success btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.canteenApplyId + '\', 1)"><i class="fa fa-edit"></i>通过</a> ');
+							actions.push('<a class="btn btn-danger btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.canteenApplyId + '\', 2)"><i class="fa fa-edit"></i>驳回</a>');
+						}else {
+							actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="auditDetailCommon(\'' + row.canteenApplyId + '\')"><i class="fa fa-edit"></i>审核记录</a> ');
+						}
+		            	//actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.canteenApplyId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        //actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.canteenApplyId + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+		// 修改信息
+		function audit(id, status) {
+			var url = $.common.isEmpty(id) ? $.table._option.auditUrl : $.table._option.auditUrl.replace("{id}", id).replace("{status}", status);
+			$.operate.submit(url, "post", "json");
+			/*var statusMsg = status == "1" ? "通过" : "驳回";
+
+			prompt(status, "填写" + statusMsg + "该条" + $.table._option.modalName + "的原因", function (reason) {
+				var urlReason = $.common.isEmpty(reason) ? 'NoReasonFlag' : reason;
+				var url = $.common.isEmpty(id) ? $.table._option.auditUrl : $.table._option.auditUrl.replace("{id}", id).replace("{status}", status).replace("{reason}", urlReason);
+				$.operate.submit(url, "post", "json");
+			});*/
+		}
+
+		// 确认窗体
+		function prompt(status, content, callBack) {
+
+			layer.prompt({
+				formType: 2,
+				placeholder: "请输入原因",
+				title: content + "(非必填)",
+				btn: ['确认', '取消'],
+				btnclass: ['btn btn-primary', 'btn btn-danger'],
+				yes: function (index, value) {
+					layer.close(index);
+					callBack(value.find(".layui-layer-input").val());
+				}
+			});
+		}
+
+		auditDetailCommon = function (id) {
+			var url = "/404.html";
+			if ($.common.isNotEmpty(id)) {
+				url = $.table._option.updateUrl.replace("{id}", id);
+			} else {
+				var id = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns($.table._option.uniqueId);
+				if (id.length == 0) {
+					$.modal.alertWarning("请至少选择一条记录");
+					return;
+				}
+				url = $.table._option.updateUrl.replace("{id}", id);
+			}
+			$.modal.open($.table._option.modalName + "审核记录", url);
+		}
+    </script>
+</body>
+</html>

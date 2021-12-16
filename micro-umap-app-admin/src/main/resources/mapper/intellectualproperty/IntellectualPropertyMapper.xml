@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.IntellectualPropertyMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.IntellectualProperty" id="IntellectualPropertyResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="hasReplied" column="has_replied"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectIntellectualPropertyVo">
+        select id, title, content, has_replied, create_by, create_time, update_by, update_time, remark, del_flag from umap_intellectual_property
+    </sql>
+
+    <select id="selectIntellectualPropertyList" parameterType="com.mkst.umap.app.admin.domain.IntellectualProperty"
+            resultMap="IntellectualPropertyResult">
+        <include refid="selectIntellectualPropertyVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="title != null  and title != '' ">and title = #{title}</if>
+            <if test="content != null  and content != '' ">and content = #{content}</if>
+            <if test="hasReplied != null  and hasReplied != '' ">and has_replied = #{hasReplied}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="checkDate != null">and TO_DAYS(create_time) = TO_DAYS(#{checkDate})</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectIntellectualPropertyById" parameterType="Long" resultMap="IntellectualPropertyResult">
+        <include refid="selectIntellectualPropertyVo"/>
+        where id = #{id}
+    </select>
+
+
+    <resultMap id="webInfoVo" type="com.mkst.umap.app.admin.dto.intellectualproperty.IntelProInfoWebDto">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="has_replied" property="hasReplied"/>
+        <result column="create_by_name" property="createByName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <select id="selectWebInfo"
+            resultMap="webInfoVo"
+            parameterType="com.mkst.umap.app.admin.domain.IntellectualProperty">
+        SELECT
+            i.id id,
+            i.title title,
+            i.content content,
+            i.has_replied has_replied,
+            u.user_name create_by_name,
+            i.create_time create_time
+        FROM
+            umap_intellectual_property AS i
+        LEFT JOIN sys_user AS u ON i.create_by = u.login_name
+        <where>
+            <if test="title != null and title != ''">and i.title like concat('%',#{title},'%')</if>
+            <if test="hasReplied != null and hasReplied != ''">and i.has_replied = #{hasReplied}</if>
+            <if test="createBy != null and createBy != ''">and i.create_by = #{createBy}</if>
+            <if test="checkDate != null">and TO_DAYS(i.create_time) = TO_DAYS(#{checkDate})</if>
+        </where>
+        order by i.has_replied ,i.create_time desc
+    </select>
+
+    <insert id="insertIntellectualProperty" parameterType="com.mkst.umap.app.admin.domain.IntellectualProperty"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into umap_intellectual_property
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="title != null  and title != ''  ">title,</if>
+            <if test="content != null  and content != ''  ">content,</if>
+            <if test="hasReplied != null  and hasReplied != ''  ">has_replied,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="title != null  and title != ''  ">#{title},</if>
+            <if test="content != null  and content != ''  ">#{content},</if>
+            <if test="hasReplied != null  and hasReplied != ''  ">#{hasReplied},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateIntellectualProperty" parameterType="com.mkst.umap.app.admin.domain.IntellectualProperty">
+        update umap_intellectual_property
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null  and title != ''  ">title = #{title},</if>
+            <if test="content != null  and content != ''  ">content = #{content},</if>
+            <if test="hasReplied != null  and hasReplied != ''  ">has_replied = #{hasReplied},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteIntellectualPropertyById" parameterType="Long">
+        delete from umap_intellectual_property where id = #{id}
+    </delete>
+
+    <delete id="deleteIntellectualPropertyByIds" parameterType="String">
+        delete from umap_intellectual_property where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

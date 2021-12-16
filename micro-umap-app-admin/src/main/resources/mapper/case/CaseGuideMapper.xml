@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.CaseGuideMapper">
+    
+    <resultMap type="CaseGuide" id="CaseGuideResult">
+        <result property="id"    column="id"    />
+        <result property="caseTypeCode"    column="case_type_code"    />
+        <result property="maintitle"    column="maintitle"    />
+        <result property="subhead"    column="subhead"    />
+        <result property="detail"    column="detail"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="replytype"    column="replytype"    />
+        <result property="lable"    column="lable"    />
+    </resultMap>
+	
+	<sql id="selectCaseGuideVo">
+        select id, case_type_code, maintitle, subhead, detail, create_by, create_time, update_by, update_time, replytype, lable from umap_case_guide
+    </sql>
+	
+    <select id="selectCaseGuideList" parameterType="CaseGuide" resultMap="CaseGuideResult">
+        <include refid="selectCaseGuideVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="caseTypeCode != null  and caseTypeCode != '' "> and case_type_code = #{caseTypeCode}</if>
+             <if test="maintitle != null  and maintitle != '' "> and maintitle = #{maintitle}</if>
+             <if test="subhead != null  and subhead != '' "> and subhead = #{subhead}</if>
+             <if test="detail != null  and detail != '' "> and detail = #{detail}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="replytype != null "> and replytype = #{replytype}</if>
+             <if test="lable != null  and lable != '' "> and lable = #{lable}</if>
+         </where>
+    </select>
+    
+    <select id="selectCaseGuideById" parameterType="Integer" resultMap="CaseGuideResult">
+        <include refid="selectCaseGuideVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCaseGuide" parameterType="CaseGuide">
+        insert into umap_case_guide
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="caseTypeCode != null  and caseTypeCode != ''  ">case_type_code,</if>
+			<if test="maintitle != null  and maintitle != ''  ">maintitle,</if>
+			<if test="subhead != null  and subhead != ''  ">subhead,</if>
+			<if test="detail != null  and detail != ''  ">detail,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="replytype != null  ">replytype,</if>
+			<if test="lable != null  and lable != ''  ">lable,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="caseTypeCode != null  and caseTypeCode != ''  ">#{caseTypeCode},</if>
+			<if test="maintitle != null  and maintitle != ''  ">#{maintitle},</if>
+			<if test="subhead != null  and subhead != ''  ">#{subhead},</if>
+			<if test="detail != null  and detail != ''  ">#{detail},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="replytype != null  ">#{replytype},</if>
+			<if test="lable != null  and lable != ''  ">#{lable},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateCaseGuide" parameterType="CaseGuide">
+        update umap_case_guide
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="caseTypeCode != null  and caseTypeCode != ''  ">case_type_code = #{caseTypeCode},</if>
+            <if test="maintitle != null  and maintitle != ''  ">maintitle = #{maintitle},</if>
+            <if test="subhead != null  and subhead != ''  ">subhead = #{subhead},</if>
+            <if test="detail != null  and detail != ''  ">detail = #{detail},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="replytype != null  ">replytype = #{replytype},</if>
+            <if test="lable != null  and lable != ''  ">lable = #{lable},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteCaseGuideById" parameterType="Integer">
+        delete from umap_case_guide where id = #{id}
+    </delete>
+	
+    <delete id="deleteCaseGuideByIds" parameterType="String">
+        delete from umap_case_guide where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

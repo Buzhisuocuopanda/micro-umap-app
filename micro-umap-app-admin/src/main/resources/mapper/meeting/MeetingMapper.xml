@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.MeetingMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.Meeting" id="MeetingResult">
+        <result property="id" column="id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="subject" column="subject"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="useBy" column="use_by"/>
+        <result property="status" column="status"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="auditProgress" column="audit_progress"/>
+    </resultMap>
+
+    <sql id="selectMeetingVo">
+        select id, room_id, start_time, end_time, subject, dept_id, use_by, status,audit_status, create_by, create_time, update_by, update_time, remark, del_flag,audit_progress from umap_meeting
+    </sql>
+
+    <select id="selectMeetingList" parameterType="com.mkst.umap.app.admin.domain.Meeting" resultMap="MeetingResult">
+        <include refid="selectMeetingVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="roomId != null  and roomId != '' ">and room_id = #{roomId}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="subject != null  and subject != '' ">and subject = #{subject}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="useBy != null ">and use_by = #{useBy}</if>
+            <if test="status != null  and status != '' ">and status = #{status}</if>
+            <if test="auditStatus != null and auditStatus != ''">and audit_status = #{auditStatus}</if>
+            <if test="auditStatusArr != null and auditStatusArr.length !=0">
+                and audit_status in
+                <foreach collection="auditStatusArr" item="auditStatus" index="index"
+                         open="(" close=")" separator=",">
+                    #{auditStatus}
+                </foreach>
+            </if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+            <if test="checkDate != null">and TO_DAYS(start_time) = TO_DAYS(#{checkDate})</if>
+            <if test="reqStartTime != null and reqEndTime != null">
+                and (
+                (start_time &lt;= #{reqStartTime} and end_time &gt; #{reqStartTime})
+                or (start_time &lt; #{reqEndTime} and end_time &gt;= #{reqEndTime})
+                or (end_time &lt;= #{reqEndTime} and start_time &gt;= #{reqStartTime})
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMeetingById" parameterType="Long" resultMap="MeetingResult">
+        <include refid="selectMeetingVo"/>
+        where id = #{id}
+    </select>
+
+
+    <insert id="insertMeeting" parameterType="com.mkst.umap.app.admin.domain.Meeting"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into umap_meeting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="roomId != null  and roomId != ''  ">room_id,</if>
+            <if test="startTime != null  ">start_time,</if>
+            <if test="endTime != null  ">end_time,</if>
+            <if test="subject != null  and subject != ''  ">subject,</if>
+            <if test="deptId != null  ">dept_id,</if>
+            <if test="useBy != null  ">use_by,</if>
+            <if test="status != null  and status != ''  ">status,</if>
+            <if test="auditStatus != null  and auditStatus != ''  ">audit_status,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="roomId != null  and roomId != ''  ">#{roomId},</if>
+            <if test="startTime != null  ">#{startTime},</if>
+            <if test="endTime != null  ">#{endTime},</if>
+            <if test="subject != null  and subject != ''  ">#{subject},</if>
+            <if test="deptId != null  ">#{deptId},</if>
+            <if test="useBy != null  ">#{useBy},</if>
+            <if test="status != null  and status != ''  ">#{status},</if>
+            <if test="auditStatus != null  and auditStatus != ''  ">#{auditStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMeeting" parameterType="com.mkst.umap.app.admin.domain.Meeting">
+        update umap_meeting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomId != null  and roomId != ''  ">room_id = #{roomId},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="subject != null  and subject != ''  ">subject = #{subject},</if>
+            <if test="deptId != null  ">dept_id = #{deptId},</if>
+            <if test="useBy != null  ">use_by = #{useBy},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="auditStatus != null  and auditStatus != ''  ">audit_status = #{auditStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="auditProgress != null  and auditProgress != ''  ">audit_progress = #{auditProgress},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMeetingById" parameterType="Long">
+        delete from umap_meeting where id = #{id}
+    </delete>
+
+    <delete id="deleteMeetingByIds" parameterType="String">
+        delete from umap_meeting where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getNextStartTime" resultType="java.util.Date">
+        SELECT
+        m.start_time
+        FROM
+        umap_meeting AS m
+        <where>
+            <if test="roomId != null and roomId != ''">
+                and m.room_id = #{roomId}
+            </if>
+            <if test="chooseStartTime != null">and m.start_time &gt; #{chooseStartTime}</if>
+            <if test="chooseStartTime != null">and TO_DAYS(m.start_time) = TO_DAYS(#{chooseStartTime})</if>
+            and m.status = '0' and m.audit_status in ('1','0')
+        </where>
+        ORDER BY
+        m.start_time
+        LIMIT 1
+    </select>
+
+
+    <sql id="selectMeetingInfoVo">
+        SELECT
+            m.id,
+            m.start_time,
+            m.end_time,
+            m.`subject`,
+            u.user_name,
+            d.dept_name,
+            m.status,
+            m.audit_status,
+            r.`name`,
+            m.room_id,
+            m.use_by,
+            m.audit_progress
+        FROM
+            umap_meeting AS m
+        LEFT JOIN sys_dept AS d ON m.dept_id = d.dept_id
+        LEFT JOIN umap_arraign_room AS r ON m.room_id = r.id
+        LEFT JOIN sys_user AS u ON u.user_id = m.use_by
+    </sql>
+
+    <resultMap id="meetingInfoResult" type="com.mkst.umap.app.admin.api.bean.result.meeting.MeetingInfoResult">
+        <result column="id" property="id"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="dept_name" property="dept"/>
+        <result column="subject" property="subject"/>
+        <result column="status" property="status"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="name" property="roomName"/>
+    </resultMap>
+
+    <select id="selectMeetingInfoList" resultMap="meetingInfoResult"
+            parameterType="com.mkst.umap.app.admin.domain.Meeting">
+        <include refid="selectMeetingInfoVo"/>
+        <where>
+            <if test="id != null">and m.id = #{id}</if>
+            <if test="auditStatus != null and auditStatus != ''">
+                and m.audit_status = #{auditStatus}
+            </if>
+            <if test="auditStatusArr != null and auditStatusArr.length != 0">
+                and m.audit_status in
+                <foreach collection="auditStatusArr" item="auditStatus" index="index"
+                         open="(" close=")" separator=",">
+                    #{auditStatus}
+                </foreach>
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and m.create_by = #{createBy}
+            </if>
+            <if test="useBy != null and useBy != ''">
+                and m.use_by = #{useBy}
+            </if>
+            <if test="checkDate != null">and TO_DAYS(m.start_time) = TO_DAYS(#{checkDate})</if>
+            <if test="subject != null and subject != ''">and m.subject like concat('%',#{subject}, '%')</if>
+            <if test="roomId != null and roomId != ''">and m.room_id = #{roomId}</if>
+        </where>
+        and m.status = '0'
+        order by m.status, m.audit_status, m.start_time desc
+    </select>
+
+    <resultMap id="meetingDetailResult" type="com.mkst.umap.app.admin.dto.meeting.MeetingDetailDto">
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="dept_name" property="dept"/>
+        <result column="subject" property="subject"/>
+        <result column="status" property="status"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="user_name" property="useBy"/>
+        <result column="use_by" property="useById"/>
+        <result column="name" property="roomName"/>
+        <result column="room_id" property="roomId"/>
+        <result column="id" property="id"/>
+        <result column="audit_progress" property="auditProgress"/>
+    </resultMap>
+
+    <select id="getDetailById" resultMap="meetingDetailResult" parameterType="Long">
+        <include refid="selectMeetingInfoVo"/>
+        where m.id = #{meetingId}
+    </select>
+
+    <select id="getNowMeetingInfoList" resultMap="meetingDetailResult"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.device.MeetingDeviceParam">
+        <include refid="selectMeetingInfoVo"/>
+        <where>
+            m.del_flag = '0' and m.status ='0' and m.audit_status = '1'
+            <if test="roomId != null  and roomId != '' ">and m.room_id = #{roomId}</if>
+            <if test="checkDate != null">and m.start_time &lt; #{checkDate} and m.end_time &gt; #{checkDate}</if>
+        </where>
+        order by m.start_time desc
+    </select>
+
+    <select id="getNextMeetingInfoList" resultMap="meetingDetailResult"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.device.MeetingDeviceParam">
+        <include refid="selectMeetingInfoVo"/>
+        <where>
+            m.del_flag = '0' and m.status ='0' and m.audit_status = '1'
+            <if test="roomId != null  and roomId != '' ">and m.room_id = #{roomId}</if>
+            <if test="checkDate != null">and m.start_time &gt; #{checkDate} and TO_DAYS(m.start_time) =
+                TO_DAYS(#{checkDate})
+            </if>
+        </where>
+        order by m.start_time
+    </select>
+
+
+    <sql id="selectMeetingWebInfoList">
+        SELECT
+            m.id AS id,
+            m.start_time AS start_time,
+            m.end_time AS end_time,
+            m.`subject` AS `subject`,
+            m.`status` AS `status`,
+            m.audit_status AS audit_status,
+            u.user_name AS use_by,
+            cu.user_name AS create_by,
+            m.create_time create_time,
+            d.dept_name AS dept,
+            r.`name` AS room_name,
+            r.address AS room_addr
+        FROM
+            umap_meeting AS m
+        LEFT JOIN sys_dept AS d ON m.dept_id = d.dept_id
+        LEFT JOIN umap_arraign_room AS r ON m.room_id = r.id
+        LEFT JOIN sys_user AS u ON u.user_id = m.use_by
+        LEFT JOIN sys_user AS cu ON cu.login_name = m.create_by
+    </sql>
+
+    <resultMap id="meetingWebInfoVo" type="com.mkst.umap.app.admin.domain.vo.meeting.MeetingWebInfoVo">
+        <id property="id" column="id"/>
+        <result property="roomName" column="room_name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="subject" column="subject"/>
+        <result property="dept" column="dept"/>
+        <result property="useBy" column="use_by"/>
+        <result property="createBy" column="create_by"/>
+        <result property="status" column="status"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="roomAddr" column="room_addr"/>
+        <result property="createTime" column="create_time"/>
+        <result property="rAuditStatus" column="r_audit_status"/>
+    </resultMap>
+
+    <select id="selectMeetingWebList" resultMap="meetingWebInfoVo"
+            parameterType="com.mkst.umap.app.admin.domain.Meeting">
+        <include refid="selectMeetingWebInfoList"/>
+        <where>
+            <if test="id != null ">and m.id = #{id}</if>
+            <if test="roomId != null  and roomId != '' ">and m.room_id = #{roomId}</if>
+            <if test="subject != null  and subject != '' ">and m.subject like concat('%',#{subject}, '%')</if>
+            <if test="deptId != null ">and m.dept_id = #{deptId}</if>
+            <if test="useBy != null ">and m.use_by = #{useBy}</if>
+            <if test="status != null  and status != '' ">and m.status = #{status}</if>
+            <if test="auditStatus != null and auditStatus != ''">and m.audit_status = #{auditStatus}</if>
+            <if test="createBy != null  and createBy != '' ">and m.create_by = #{createBy}</if>
+            <if test="checkDate != null">and TO_DAYS(m.start_time) = TO_DAYS(#{checkDate})</if>
+        </where>
+        order by m.audit_status , m.create_time desc
+    </select>
+
+
+    <resultMap id="myApplyResultMap" type="com.mkst.umap.app.admin.api.bean.result.meeting.MeetingInfoResult">
+        <id property="id" column="id"/>
+        <result property="roomName" column="name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="subject" column="subject"/>
+        <result property="dept" column="dept_name"/>
+        <result property="status" column="status"/>
+        <result property="auditStatus" column="audit_status"/>
+    </resultMap>
+    <select id="selectMyApply"
+            resultMap="myApplyResultMap"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.meeting.MeetingParam">
+        <include refid="selectMeetingInfoVo"/>
+        <where>
+            <if test="auditStatus != null and auditStatus != ''">and m.audit_status = #{auditStatus}</if>
+            <if test="checkDate != null">and TO_DAYS(m.start_time) = TO_DAYS(#{checkDate})</if>
+            and (
+            m.use_by = #{nowUserId} or m.create_by = #{nowUserLoginName}
+            )
+        </where>
+        order by m.status,field(m.audit_status,'0','1','2' ), m.start_time desc
+    </select>
+    <select id="getOccupyMeeting" resultMap="meetingDetailResult"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.meeting.MeetingParam">
+        <include refid="selectMeetingInfoVo"/>
+        <where>
+            <if test="id != null and id != ''">and m.id != #{id}</if>
+            <if test="roomId != null and roomId != ''">and m.room_id = #{roomId}</if>
+            <if test="startTime != null and endTime != null">
+                and (
+                (
+                m.start_time &lt;= #{startTime}
+                AND m.end_time &gt; #{startTime}
+                )
+                OR (
+                m.start_time &lt; #{endTime}
+                AND m.end_time &gt;= #{endTime}
+                )
+                OR (
+                m.start_time &gt;= #{startTime}
+                AND m.end_time &lt;= #{endTime}
+                )
+                )
+            </if>
+            and m.status = 0
+        </where>
+        order by m.start_time desc
+    </select>
+    <resultMap id="dayCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
+        <result column="dayName" property="name"/>
+        <result column="dayCount" property="count"/>
+        <result column="info" property="info"/>
+    </resultMap>
+    <select id="selectDayCount" resultMap="dayCountResultMap"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.meeting.MeetingParam">
+        SELECT
+        date_format(m.start_time, '%Y-%m-%d') dayName,
+        COUNT(1) dayCount,
+        '已预约' info
+        FROM
+        umap_meeting m
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="year != null and year != ''">and YEAR (m.start_time) = #{year}</if>
+            <if test="month != null and month != ''">and MONTH (m.start_time) = #{month}</if>
+            <if test="nowUserId != null">and m.use_by = #{nowUserId}</if>
+            <if test="status != null and status != ''">and m.status = #{status}</if>
+            <if test="auditStatus != null">and m.audit_status = #{auditStatus}</if>
+            <if test="auditStatusArr != null and auditStatusArr.length != 0">
+                and m.audit_status in
+                <foreach collection="auditStatusArr" item="auditStatus" index="index"
+                         open="(" close=")" separator=",">
+                    #{auditStatus}
+                </foreach>
+            </if>
+        </trim>
+        GROUP BY TO_DAYS(m.start_time)
+        order by dayName
+    </select>
+
+
+    <resultMap id="timeApplyResult" type="com.mkst.umap.app.admin.api.bean.result.arraign.TimeApplyResult">
+        <result property="id" column="id"/>
+        <result property="timeCon" column="time_con"/>
+        <result property="nowStatus" column="now_status"/>
+        <result property="roomName" column="room_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="status" column="status"/>
+        <result property="useByName" column="use_by_name"/>
+    </resultMap>
+    <select id="selectTimeApplyList"
+            resultMap="timeApplyResult">
+        SELECT
+            CONCAT(
+                DATE_FORMAT(m.start_time, '%H:%i'),
+                '-',
+                DATE_FORMAT(m.end_time, '%H:%i')
+            ) AS time_con,
+            m.id id,
+            m.`status` status,
+            m.`audit_status` audit_status,
+            /*这里要求参数必须传递当前时间状态*/
+            #{nowStatus} now_status,
+            u.user_name use_by_name,
+            d.dept_name dept_name,
+            r.`name` room_name
+        FROM
+            umap_meeting AS m
+        LEFT JOIN umap_arraign_room r ON m.room_id = r.id
+        LEFT JOIN sys_user u ON m.use_by = u.user_id
+        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+        <where>
+            <if test="checkDate != null">AND TO_DAYS(m.start_time) = TO_DAYS(#{checkDate})</if>
+            <if test="nowStatus != null and nowStatus != ''">
+                <if test="nowStatus == '0'.toString()">AND NOW() &lt; m.start_time</if>
+                <if test="nowStatus == '1'.toString()">AND (NOW() &gt;= m.start_time and NOW() &lt; m.end_time)</if>
+                <if test="nowStatus == '2'.toString()">AND NOW() &gt; m.end_time</if>
+            </if>
+            <if test="status != null and status != ''">AND m.status = #{status}</if>
+            <if test="auditStatus != null and auditStatus != ''">AND m.audit_statsu = #{auditStatus}</if>
+            <if test="auditStatusArr != null and auditStatusArr.length != 0">
+                and m.audit_status in
+                <foreach collection="auditStatusArr" item="auditStatus" index="index"
+                         open="(" close=")" separator=",">
+                    #{auditStatus}
+                </foreach>
+            </if>
+            <if test="nowUserLoginName != null and nowUserLoginName != '' and nowUserId != null">and (m.create_by = #{nowUserLoginName} or m.use_by = #{nowUserId})</if>
+        </where>
+        order by m.start_time
+    </select>
+
+    <sql id="selectMeetingAuditInfoList">
+        SELECT
+            m.id AS id,
+            m.start_time AS start_time,
+            m.end_time AS end_time,
+            m.`subject` AS `subject`,
+            m.`status` AS `status`,
+            m.audit_status AS audit_status,
+            u.user_name AS use_by,
+            cu.user_name AS create_by,
+            m.create_time create_time,
+            d.dept_name AS dept,
+            r.`name` AS room_name,
+            r.address AS room_addr,
+            ar.`status` r_audit_status
+        FROM
+            umap_audit_progress p
+        LEFT JOIN umap_meeting AS m ON p.business_id = m.id
+        LEFT JOIN umap_audit_record AS ar ON p.record_id = ar.id
+        LEFT JOIN sys_dept AS d ON m.dept_id = d.dept_id
+        LEFT JOIN umap_arraign_room AS r ON m.room_id = r.id
+        LEFT JOIN sys_user AS u ON u.user_id = m.use_by
+        LEFT JOIN sys_user AS cu ON cu.login_name = m.create_by
+    </sql>
+
+    <select id="selectMeetingAuditList" resultMap="meetingWebInfoVo"
+            parameterType="com.mkst.umap.app.admin.domain.Meeting">
+        <include refid="selectMeetingAuditInfoList"/>
+        <where>
+            <if test="id != null ">and m.id = #{id}</if>
+            <if test="roomId != null  and roomId != '' ">and m.room_id = #{roomId}</if>
+            <if test="subject != null  and subject != '' ">and m.subject like concat('%',#{subject}, '%')</if>
+            <if test="deptId != null ">and m.dept_id = #{deptId}</if>
+            <if test="useBy != null ">and m.use_by = #{useBy}</if>
+            <if test="target != null ">and p.create_by = #{target}</if>
+            <if test="status != null  and status != '' ">and m.status = #{status}</if>
+            <if test="auditStatus != null and auditStatus != ''">
+                <choose>
+                    <when test="auditStatus == '0'.toString()">and ar.status is null</when>
+                    <otherwise>and ar.status = #{auditStatus}</otherwise>
+                </choose>
+            </if>
+            <if test="createBy != null  and createBy != '' ">and m.create_by = #{createBy}</if>
+            <if test="checkDate != null">and TO_DAYS(m.start_time) = TO_DAYS(#{checkDate})</if>
+            and p.progress != 0
+        </where>
+        order by ar.status , m.create_time desc
+    </select>
+
+    <sql id="selectAuditProgressResult">
+        SELECT
+            p.id p_id,
+            m.audit_status m_audit_status,
+            p.create_by p_create_by,
+            p.create_time p_create_time,
+            p.progress p_progress,
+            p.target p_target,
+            r.reason reason,
+            r.`status` r_status
+        FROM
+            umap_audit_progress p
+        LEFT JOIN umap_meeting m ON p.business_id = m.id
+        LEFT JOIN umap_audit_record r ON p.record_id = r.id
+    </sql>
+    <resultMap id="meetingAuditProgressResultMap" type="com.mkst.umap.app.admin.api.bean.result.meeting.MeetingAuditResult">
+        <result property="pId" column="p_id"/>
+        <result property="mAuditStatus" column="m_audit_status"/>
+        <result property="pCreateBy" column="p_create_by"/>
+        <result property="pCreateTime" column="p_create_time"/>
+        <result property="pProgress" column="p_progress"/>
+        <result property="pTarget" column="p_target"/>
+        <result property="reason" column="reason"/>
+        <result property="rStatus" column="r_status"/>
+    </resultMap>
+    <select id="selectAuditProgressList" resultMap="meetingAuditProgressResultMap" parameterType="Long">
+        <include refid="selectAuditProgressResult"/>
+        where m.id = #{meetingId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.SysUserAnalysisMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.statistics.AnalysisCountResult" id="AnalysisCountResult">
+        <result property="date"    column="date"    />
+        <result property="registerNum"    column="registerNum"    />
+        <result property="onlineNum"    column="onlineNum"    />
+        <result property="value"    column="value"    />
+    </resultMap>
+
+    <select id="getTodayRegister" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from sys_user where create_time >= #{date}
+    </select>
+    
+    <select id="analysisList" resultType="com.mkst.umap.app.admin.statistics.AnalysisCountResult">
+        select d1.date `date` , IFNULL(d2.sumappointment,0) `registerNum` , IFNULL(d3.loginNum,0) onlineNum from  (
+        select date from
+            (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from
+            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
+            where date between #{startDay} and #{endDay}
+        ) d1 left join
+        (
+            select DATE_FORMAT(create_time,"%Y-%m-%d") date , count(1) sumappointment
+            from sys_user
+            where del_flag = "0" and  create_time >= '${startDay} 00:00:00' and create_time &lt;= '${endDay} 23:59:59'
+            GROUP BY date
+        ) d2 on d1.date = d2.date
+        left join
+        (
+            select DATE_FORMAT(oper_time,"%Y-%m-%d") date , count(DISTINCT(oper_name)) loginNum
+            from sys_app_log
+            where status = 0 and oper_time >= '${startDay} 00:00:00' and oper_time &lt;= '${endDay} 23:59:59'
+            GROUP BY date
+        ) d3 on d1.date = d3.date
+        order by date
+
+    </select>
+    
+</mapper>

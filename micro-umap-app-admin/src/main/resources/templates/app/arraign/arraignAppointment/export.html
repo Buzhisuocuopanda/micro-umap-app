@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header">
+</head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <li class="select-list">
+                    <ul>
+                        <li style="margin-left: 5px; margin-right: 55px">
+                            罪犯姓名：<input type="text" name="criminalName" id="criminalName"/>
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            检查官证件号：<input type="text" name="prosecutorId" id="prosecutorId" />
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            检察官：<input type="text" name="prosecutorName" id="prosecutorName" onclick="selectUserTree()"/>
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            犯罪类型：
+                            <select id="criminalType" name="criminalType" class="form-control"
+                                    th:with="type=${@dict.getType('criminal_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            统计类型：
+                            <select id="totalType" name="totalType" class="form-control"
+                                    th:with="type=${@dict.getType('total_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            导出类型：
+                            <select id="reportType" name="reportType" class="form-control"
+                                    th:with="type=${@dict.getType('report_type')}">
+                                <option value="">按时间导出</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            审核状态：<select id="status" name="status" class="form-control"
+                                         th:with="type=${@dict.getType('event_audit_status')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li class="sub-hidden" style="display: none; margin-left: 5px;margin-right: 55px">
+                            <label>开始时间：</label>
+                            <input name="startTime" class="just-time-input" data-type="datetime">
+                        </li>
+                        <li class="sub-hidden" style="display: none;margin-right: 60px">
+                            <label>结束时间：</label>
+                            <input  name="endTime" class="just-time-input" data-type="datetime">
+                        </li>
+                        <li class="sub-hidden" style="display: none;margin-left: 20px; margin-right: 39px">
+                            <label>出生日期： </label>
+                            <input type="text" class="time-input" id="criminalBirth" placeholder="出生日期" name="criminalBirth"/>
+                        </li>
+                        <li class="sub-hidden" style="display: none;margin-left: 5px; margin-right: 55px">
+                            案件阶段：<select id="stage" name="stage" class="form-control"
+                                         th:with="type=${@dict.getType('event_audit_status')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <br><br>
+                        <li class="sub-hidden" style="display: none;margin-left: 7px; margin-right: 55px">
+                            认罪状态：<select id="criminalAdmit" name="criminalAdmit" class="form-control"
+                                         th:with="type=${@dict.getType('sys_yes_no')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li class="sub-hidden" style="display: none;margin-left: 5px; margin-right: 55px">
+                            援助状态：<select id="needLegalAid" name="needLegalAid" class="form-control"
+                                           th:with="type=${@dict.getType('sys_yes_no')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <!--<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>-->
+                            <a class="btn btn-primary btn-rounded btn-sm sub-unfold" onclick="unfoldHide(this)"><i
+                                    class="fa fa-search"></i>&nbsp;展开</a>
+                            <a class="btn btn-primary btn-rounded btn-sm sub-hidden" onclick="packUp(this)" style="display: none"><i
+                                    class="fa fa-search"></i>&nbsp;收起</a>
+                            <a class="btn btn-warning" onclick="exportByCondition()"
+                               shiro:hasPermission="admin:arraignAppointment:export">
+                                <i class="fa fa-download"></i> 导出
+                            </a>
+                        </li>
+                    </ul>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('admin:arraignAppointment:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('admin:arraignAppointment:remove')}]];
+    var prefix = ctx + "admin/arraignAppointment";
+    var event_audit_status = [[${@dict.getType('event_audit_status')}]];
+    var sys_yes_no = [[${@dict.getType('sys_yes_no')}]];
+    var criminal_type = [[${@dict.getType('criminal_type')}]];
+    var case_stage = [[${@dict.getType('case_stage')}]];
+
+    function exportByCondition(){
+        /*$.ajax({
+            type : "POST",
+            url : prefix + "/statisticalReports",
+            data: {
+                criminalName: $("#criminalName").val(),
+                prosecutorId: $("#prosecutorId").val(),
+                prosecutorName: $("#prosecutorName").val(),
+                criminalType: $("#criminalType").val(),
+                status: $("#status").val(),
+                startTime: $("#startTime").val(),
+                endTime: $("#endTime").val(),
+                criminalBirth: $("#criminalBirth").val(),
+                stage: $("#stage").val(),
+                criminalAdmit: $("#criminalAdmit").val(),
+                totalType: $("#totalType").val(),
+                needLegalAid: $("#needLegalAid").val(),
+                reportType: $("#reportType").val()
+            }
+        })*/
+        var reportType = $("#reportType").val();
+        var totalType = $("#totalType").val();
+        url = prefix + "/statisticalReports?reportType="+reportType+"&totalType="+totalType;
+        //url = prefix + "/statisticalReports"
+        window.location.href =url;
+    }
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            exportUrl: prefix + "/export",
+            modalName: "备勤间",
+            search: false,
+            showExport: true,
+            columns: []
+        };
+        $.table.init(options);
+    });
+
+
+
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //时间选择器
+        //同时绑定多个
+        lay('.just-time-input').each(function () {
+            laydate.render({
+                elem: this
+                , type: 'datetime'
+            });
+        });
+    });
+
+    function unfoldHide(self) {
+        $('.sub-hidden').show();
+        $(self).hide();
+    }
+
+    function packUp(self) {
+        $('.sub-unfold').show();
+        $('.sub-hidden').hide();
+        $(self).hide();
+    }
+
+    function selectUserTree() {
+        var options = {
+            title: '选择用户',
+            width: "380",
+            url: ctx + "system/user/selectUserTree?userIds=",
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero){
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        if ($.tree.notAllowParents(tree)) {
+            var body = layer.getChildFrame('body', index);
+            $("#promoter").val(body.find('#treeId').val());
+            $("#promoterName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    }
+</script>
+</body>
+</html>

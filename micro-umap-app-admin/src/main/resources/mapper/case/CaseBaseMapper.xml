@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.CaseBaseMapper">
+    
+    <resultMap type="CaseBase" id="CaseBaseResult">
+        <result property="id"    column="id"    />
+        <result property="caseTypeCode"    column="case_type_code"    />
+        <result property="caseTypeName"    column="case_type_name"    />
+        <result property="title"    column="title"    />
+        <result property="length"    column="length"    />
+        <result property="penalty"    column="penalty"    />
+        <result property="reprieve"    column="reprieve"    />
+        <result property="details"    column="details"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="lable"    column="lable"    />
+    </resultMap>
+	
+	<sql id="selectCaseBaseVo">
+        select id, case_type_code, case_type_name, title, length, penalty, reprieve, details, create_by, create_time, update_by, update_time, lable from umap_case_base t1
+    </sql>
+	
+    <select id="selectCaseBaseList" parameterType="CaseBase" resultMap="CaseBaseResult">
+        <include refid="selectCaseBaseVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="caseTypeCode != null "> and case_type_code = #{caseTypeCode}</if>
+             <if test="caseTypeName != null  and caseTypeName != '' "> and case_type_name = #{caseTypeName}</if>
+             <if test="title != null  and title != '' "> and title = #{title}</if>
+             <if test="length != null "> and length = #{length}</if>
+             <if test="penalty != null  and penalty != '' "> and penalty = #{penalty}</if>
+             <if test="reprieve != null  and reprieve != '' "> and reprieve = #{reprieve}</if>
+             <if test="details != null  and details != '' "> and details = #{details}</if>
+             <if test="createBy != null "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="lable != null  and lable != '' "> and lable = #{lable}</if>
+         </where>
+        <if test="params != null ">
+            <if test="params.plotIds != null">
+                <foreach item="plotId" index="index" collection="params.plotIds"  open=" and " separator=" and " close=" ">
+                    EXISTS (select t2.id from umap_case_extend t2 where t1.id = t2.case_id and t2.plot_id = #{plotId} )
+                </foreach>
+            </if>
+            <if test="params.plotParams != null">
+                <foreach item="pvalue" index ="pkey" collection="params.plotParams"  open=" and " separator=" and " close=" ">
+                    EXISTS (
+                    select t2.id from umap_case_extend t2 left join umap_case_plot t3 on t2.plot_id = t3.id
+                    where t1.id = t2.case_id and t2.plot_id = #{pkey}
+                    and (
+                    case when t3.`offset` = 0 and t2.valuess = #{pvalue} then 1
+                    when t3.`offset` > 0 and t2.valuess >= (#{pvalue}  - t3.`offset`) and t2.valuess &lt;= (#{pvalue}  + t3.`offset`) then 1
+                    else 0 end
+                    ) = 1 )
+                </foreach>
+            </if>
+         </if>
+
+    </select>
+    
+    <select id="selectCaseBaseById" parameterType="Integer" resultMap="CaseBaseResult">
+        <include refid="selectCaseBaseVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCaseBase" parameterType="CaseBase">
+        insert into umap_case_base
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="caseTypeCode != null  ">case_type_code,</if>
+			<if test="caseTypeName != null  and caseTypeName != ''  ">case_type_name,</if>
+			<if test="title != null  and title != ''  ">title,</if>
+			<if test="length != null  ">length,</if>
+			<if test="penalty != null  and penalty != ''  ">penalty,</if>
+			<if test="reprieve != null  and reprieve != ''  ">reprieve,</if>
+			<if test="details != null  and details != ''  ">details,</if>
+			<if test="createBy != null  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="lable != null  and lable != ''  ">lable,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="caseTypeCode != null  ">#{caseTypeCode},</if>
+			<if test="caseTypeName != null  and caseTypeName != ''  ">#{caseTypeName},</if>
+			<if test="title != null  and title != ''  ">#{title},</if>
+			<if test="length != null  ">#{length},</if>
+			<if test="penalty != null  and penalty != ''  ">#{penalty},</if>
+			<if test="reprieve != null  and reprieve != ''  ">#{reprieve},</if>
+			<if test="details != null  and details != ''  ">#{details},</if>
+			<if test="createBy != null  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="lable != null  and lable != ''  ">#{lable},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateCaseBase" parameterType="CaseBase">
+        update umap_case_base
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="caseTypeCode != null  ">case_type_code = #{caseTypeCode},</if>
+            <if test="caseTypeName != null  and caseTypeName != ''  ">case_type_name = #{caseTypeName},</if>
+            <if test="title != null  and title != ''  ">title = #{title},</if>
+            <if test="length != null  ">length = #{length},</if>
+            <if test="penalty != null  and penalty != ''  ">penalty = #{penalty},</if>
+            <if test="reprieve != null  and reprieve != ''  ">reprieve = #{reprieve},</if>
+            <if test="details != null  and details != ''  ">details = #{details},</if>
+            <if test="createBy != null  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="lable != null  and lable != ''  ">lable = #{lable},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteCaseBaseById" parameterType="Integer">
+        delete from umap_case_base where id = #{id}
+    </delete>
+	
+    <delete id="deleteCaseBaseByIds" parameterType="String">
+        delete from umap_case_base where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="statisticsPenalties" parameterType="CaseBase" resultType="com.mkst.umap.app.admin.api.bean.result.basecase.PointResult">
+        SELECT penalty as `x` , count(t1.id) as `y` FROM umap_case_base t1
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="caseTypeCode != null "> and case_type_code = #{caseTypeCode}</if>
+            <if test="caseTypeName != null  and caseTypeName != '' "> and case_type_name = #{caseTypeName}</if>
+            <if test="title != null  and title != '' "> and title = #{title}</if>
+            <if test="length != null "> and length = #{length}</if>
+            <if test="penalty != null  and penalty != '' "> and penalty = #{penalty}</if>
+            <if test="reprieve != null  and reprieve != '' "> and reprieve = #{reprieve}</if>
+            <if test="details != null  and details != '' "> and details = #{details}</if>
+            <if test="createBy != null "> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null "> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="lable != null  and lable != '' "> and lable = #{lable}</if>
+        </where>
+        <if test="params != null ">
+            <if test="params.plotIds != null">
+                <foreach item="plotId" index="index" collection="params.plotIds"  open=" and " separator=" and " close=" ">
+                    EXISTS (select t2.id from umap_case_extend t2 where t1.id = t2.case_id and t2.plot_id = #{plotId} )
+                </foreach>
+            </if>
+            <if test="params.plotParams != null">
+                <foreach item="pvalue" index ="pkey" collection="params.plotParams"  open=" and " separator=" and " close=" ">
+                    EXISTS (
+                    select t2.id from umap_case_extend t2 left join umap_case_plot t3 on t2.plot_id = t3.id
+                    where t1.id = t2.case_id and t2.plot_id = #{pkey}
+                    and (
+                    case when t3.`offset` = 0 and t2.valuess = #{pvalue} then 1
+                    when t3.`offset` > 0 and t2.valuess >= (#{pvalue}  - t3.`offset`) and t2.valuess &lt;= (#{pvalue}  + t3.`offset`) then 1
+                    else 0 end
+                    ) = 1 )
+                </foreach>
+            </if>
+        </if>
+        GROUP BY `penalty` order by penalty
+    </select>
+
+    <select id="statisticsPrisonTerm" parameterType="CaseBase" resultType="com.mkst.umap.app.admin.api.bean.result.basecase.PointResult">
+        SELECT `length` as `x` , count(t1.id) as `y` FROM umap_case_base t1
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="caseTypeCode != null "> and case_type_code = #{caseTypeCode}</if>
+            <if test="caseTypeName != null  and caseTypeName != '' "> and case_type_name = #{caseTypeName}</if>
+            <if test="title != null  and title != '' "> and title = #{title}</if>
+            <if test="length != null "> and length = #{length}</if>
+            <if test="penalty != null  and penalty != '' "> and penalty = #{penalty}</if>
+            <if test="reprieve != null  and reprieve != '' "> and reprieve = #{reprieve}</if>
+            <if test="details != null  and details != '' "> and details = #{details}</if>
+            <if test="createBy != null "> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null "> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="lable != null  and lable != '' "> and lable = #{lable}</if>
+        </where>
+        <if test="params != null ">
+            <if test="params.plotIds != null">
+                <foreach item="plotId" index="index" collection="params.plotIds"  open=" and " separator=" and " close=" ">
+                    EXISTS (select t2.id from umap_case_extend t2 where t1.id = t2.case_id and t2.plot_id = #{plotId} )
+                </foreach>
+            </if>
+            <if test="params.plotParams != null">
+                <foreach item="pvalue" index ="pkey" collection="params.plotParams"  open=" and " separator=" and " close=" ">
+                    EXISTS (
+                    select t2.id from umap_case_extend t2 left join umap_case_plot t3 on t2.plot_id = t3.id
+                    where t1.id = t2.case_id and t2.plot_id = #{pkey}
+                    and (
+                    case when t3.`offset` = 0 and t2.valuess = #{pvalue} then 1
+                    when t3.`offset` > 0 and t2.valuess >= (#{pvalue}  - t3.`offset`) and t2.valuess &lt;= (#{pvalue}  + t3.`offset`) then 1
+                    else 0 end
+                    ) = 1 )
+                </foreach>
+            </if>
+        </if>
+        GROUP BY `length` order by `length`
+    </select>
+
+    <select id="statisticsSuspension" parameterType="CaseBase" resultType="com.mkst.umap.app.admin.api.bean.result.basecase.PointResult">
+        SELECT `reprieve` as `x` , count(t1.id) as `y` FROM umap_case_base t1
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="caseTypeCode != null "> and case_type_code = #{caseTypeCode}</if>
+            <if test="caseTypeName != null  and caseTypeName != '' "> and case_type_name = #{caseTypeName}</if>
+            <if test="title != null  and title != '' "> and title = #{title}</if>
+            <if test="length != null "> and length = #{length}</if>
+            <if test="penalty != null  and penalty != '' "> and penalty = #{penalty}</if>
+            <if test="reprieve != null  and reprieve != '' "> and reprieve = #{reprieve}</if>
+            <if test="details != null  and details != '' "> and details = #{details}</if>
+            <if test="createBy != null "> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null "> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="lable != null  and lable != '' "> and lable = #{lable}</if>
+        </where>
+        <if test="params != null ">
+            <if test="params.plotIds != null">
+                <foreach item="plotId" index="index" collection="params.plotIds"  open=" and " separator=" and " close=" ">
+                    EXISTS (select t2.id from umap_case_extend t2 where t1.id = t2.case_id and t2.plot_id = #{plotId} )
+                </foreach>
+            </if>
+            <if test="params.plotParams != null">
+                <foreach item="pvalue" index ="pkey" collection="params.plotParams"  open=" and " separator=" and " close=" ">
+                    EXISTS (
+                    select t2.id from umap_case_extend t2 left join umap_case_plot t3 on t2.plot_id = t3.id
+                    where t1.id = t2.case_id and t2.plot_id = #{pkey}
+                    and (
+                    case when t3.`offset` = 0 and t2.valuess = #{pvalue} then 1
+                    when t3.`offset` > 0 and t2.valuess >= (#{pvalue}  - t3.`offset`) and t2.valuess &lt;= (#{pvalue}  + t3.`offset`) then 1
+                    else 0 end
+                    ) = 1 )
+                </foreach>
+            </if>
+        </if>
+        GROUP BY `reprieve` order by `reprieve`
+    </select>
+    
+</mapper>

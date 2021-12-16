@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+
+                        <li>
+                            标题：<input type="text" name="title"/>
+                        </li>
+
+                        <li>
+                            回复：
+							<select name="hasReplied" th:with="type=${@dict.getType('is_replied')}">
+								<option value="">所有</option>
+								<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+							</select>
+                        </li>
+
+                        <li>
+                            匿名：
+							<select name="anonymous" th:with="type=${@dict.getType('is_anonymous')}">
+								<option value="">所有</option>
+								<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+							</select>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="cancel" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="width:1000px;">
+            <div class="modal-content form-horizontal">
+                <div class="modal-body">
+                    <input id="temId" name="temId" type="hidden">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label"><span style="color: #ff0000; ">*</span>回复内容：</label>
+                        <div class="col-sm-6">
+                            <textarea id="content" name="content" class="form-control"  rows="30" type="text" required="required"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"  onclick="doTrue()">确定</button>
+                    <button type="button" class="btn btn-primary"  onclick="doCancel()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('admin:petition:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('admin:petition:remove')}]];
+    var prefix = ctx + "admin/petition";
+    var is_replied = [[${@dict.getType('is_replied')}]];
+    var is_anonymous = [[${@dict.getType('is_anonymous')}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            detailUrl: prefix + "/detail/{id}",
+            modalName: "建言献策详情",
+			search: false,
+			showExport: false,
+			showSearch:false,
+			showRefresh: false,
+			showColumns: false,
+			showToggle: false,
+            columns: [
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    title: '标题',
+                    width:'400px',
+                    sortable: false
+                },
+                {
+                    field: 'content',
+                    title: '详细内容',
+                    sortable: false,
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value, '30');
+                    }
+                },
+                {
+                    field: 'hasReplied',
+                    title: '是否被回复',
+                    width:'150px',
+                    sortable: true,
+					formatter: function(value, row, index) {
+						return $.table.selectDictLabel(is_replied, value);
+					}
+                },
+                {
+                    field: 'anonymous',
+                    title: '是否匿名',
+                    width:'150px',
+                    sortable: true,
+					formatter: function(value, row, index) {
+						return $.table.selectDictLabel(is_anonymous, value);
+					}
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    width:'200px',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.operate.detailTab(\'' + row.id + '\')"><i class="fa fa-id-card-o"></i>详情</a> ');
+                        if(row.hasReplied =='0') {
+                            actions.push('<a class="btn btn-success btn-xs ' +'" href="#" onclick="reply(\'' + row.id + '\')"><i class="fa fa-edit"></i>回复</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function reply(id) {
+        $("#temId").val(id);
+        $('#cancel').modal('show');
+    }
+
+    function doCancel() {
+        $('#cancel').modal('hide');
+    }
+
+    function doTrue() {
+        var url = prefix + "/reply";
+        var content = $("#content").val();
+        if(content == null ||content ==""){
+            $("#content").css('border','solid 1px red'); //添加css样式
+            $("#content").attr('placeholder',"回复内容不能为空");
+            return;
+        }
+        var data = {
+            "id": $("#temId").val(),
+            "content": content,
+        };
+        $.operate.submit(url, "post", "json", data);
+        $('#cancel').modal('hide');
+        window.location.reload();
+    }
+</script>
+</body>
+</html>

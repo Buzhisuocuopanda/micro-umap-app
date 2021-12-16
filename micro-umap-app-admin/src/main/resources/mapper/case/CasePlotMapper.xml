@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.CasePlotMapper">
+    
+    <resultMap type="CasePlot" id="CasePlotResult">
+        <result property="id"    column="id"    />
+        <result property="caseTypeCode"    column="case_type_code"    />
+        <result property="plotName"    column="plot_name"    />
+        <result property="plotType"    column="plot_type"    />
+        <result property="dataformat"    column="dataformat"    />
+        <result property="offset"    column="offset"    />
+        <result property="orders"    column="orders"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="valuess"    column="valuess"    />
+    </resultMap>
+	
+	<sql id="selectCasePlotVo">
+        select id, case_type_code, plot_name, plot_type, dataformat, offset, orders, create_by, create_time, update_by, update_time from umap_case_plot
+    </sql>
+	
+    <select id="selectCasePlotList" parameterType="CasePlot" resultMap="CasePlotResult">
+        <include refid="selectCasePlotVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="caseTypeCode != null "> and case_type_code = #{caseTypeCode}</if>
+             <if test="plotName != null  and plotName != '' "> and plot_name = #{plotName}</if>
+             <if test="plotType != null "> and plot_type = #{plotType}</if>
+             <if test="dataformat != null  and dataformat != '' "> and dataformat = #{dataformat}</if>
+             <if test="offset != null "> and offset = #{offset}</if>
+             <if test="orders != null "> and orders = #{orders}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+         </where>
+         order by plot_type
+    </select>
+
+    <select id="selectCasePlotListByCaseId" parameterType="Integer" resultMap="CasePlotResult">
+        SELECT
+            id, case_type_code, plot_name, plot_type, dataformat, offset, orders, create_by, create_time, update_by, update_time
+        FROM
+            umap_case_plot t1
+        WHERE
+            t1.plot_type != 1
+        AND EXISTS (
+            SELECT
+                *
+            FROM
+                umap_case_extend t2
+            WHERE
+                t2.case_id = #{caseId}
+            AND t2.plot_id = t1.id
+        )
+    </select>
+
+    <select id="selectParamCasePlotListByCaseId" parameterType="Integer" resultMap="CasePlotResult">
+        SELECT
+            t1.id, t1.case_type_code, t1.plot_name, t1.plot_type, t1.dataformat,
+            t1.offset, t1.orders, t1.create_by, t1.create_time, t1.update_by, t1.update_time,
+            t2.valuess
+        FROM
+            umap_case_plot t1
+        LEFT JOIN umap_case_extend t2 ON t1.id = t2.plot_id
+        WHERE
+            t1.plot_type = 1
+        AND t2.case_id = #{caseId}  and t2.valuess is not null
+    </select>
+    
+    <select id="selectCasePlotById" parameterType="Integer" resultMap="CasePlotResult">
+        <include refid="selectCasePlotVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCasePlot" parameterType="CasePlot">
+        insert into umap_case_plot
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="caseTypeCode != null  ">case_type_code,</if>
+			<if test="plotName != null  and plotName != ''  ">plot_name,</if>
+			<if test="plotType != null  ">plot_type,</if>
+			<if test="dataformat != null  and dataformat != ''  ">dataformat,</if>
+			<if test="offset != null  ">offset,</if>
+			<if test="orders != null  ">orders,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="caseTypeCode != null  ">#{caseTypeCode},</if>
+			<if test="plotName != null  and plotName != ''  ">#{plotName},</if>
+			<if test="plotType != null  ">#{plotType},</if>
+			<if test="dataformat != null  and dataformat != ''  ">#{dataformat},</if>
+			<if test="offset != null  ">#{offset},</if>
+			<if test="orders != null  ">#{orders},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateCasePlot" parameterType="CasePlot">
+        update umap_case_plot
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="caseTypeCode != null  ">case_type_code = #{caseTypeCode},</if>
+            <if test="plotName != null  and plotName != ''  ">plot_name = #{plotName},</if>
+            <if test="plotType != null  ">plot_type = #{plotType},</if>
+            <if test="dataformat != null  and dataformat != ''  ">dataformat = #{dataformat},</if>
+            <if test="offset != null  ">offset = #{offset},</if>
+            <if test="orders != null  ">orders = #{orders},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteCasePlotById" parameterType="Integer">
+        delete from umap_case_plot where id = #{id}
+    </delete>
+	
+    <delete id="deleteCasePlotByIds" parameterType="String">
+        delete from umap_case_plot where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

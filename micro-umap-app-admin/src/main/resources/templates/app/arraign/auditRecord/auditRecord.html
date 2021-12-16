@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            申请id：<input type="text" name="applyId"/>
+                        </li>
+
+                        <li>
+                            状态：
+                            <select id="status" name="status" class="form-control"
+                                    th:with="type=${@dict.getType('event_audit_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <!--<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="admin:auditArraignRecord:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="admin:auditArraignRecord:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>-->
+            <!--<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="admin:auditArraignRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>-->
+            <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="admin:auditArraignRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('admin:auditArraignRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('admin:auditArraignRecord:remove')}]];
+    var prefix = ctx + "admin/auditArraignRecord";
+    var audit_record_type = [[${@dict.getType('audit_record_type')}]];
+    var event_audit_status = [[${@dict.getType('event_audit_status')}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: ctx + "admin/arraignAppointment/detail/{id}", //prefix + "/detail/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "申请审核记录",
+            search: false,
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'applyId',
+                    title: '申请id',
+                    visible: false,
+                    sortable: false
+                },
+                {
+                    field: 'applyType',
+                    title: '申请类型',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(audit_record_type, value);
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(event_audit_status, value);
+                    }
+                },
+                {
+                    field: 'reason',
+                    title: '审批理由',
+                    sortable: true
+                },
+                {
+                    field: 'createBy',
+                    title: '审批人',
+                    sortable: true
+                },
+                {
+                    field: 'createTime',
+                    title: '审批时间',
+                    sortable: true
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs " href="#" onclick="$.operate.edit(\'' + row.applyId + '\')"><i class="fa fa-edit"></i>详情</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

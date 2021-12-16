@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.AuditRecordMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.AuditRecord" id="AuditRecordResult">
+        <result property="id" column="id"/>
+        <result property="applyId" column="apply_id"/>
+        <result property="applyType" column="apply_type"/>
+        <result property="status" column="status"/>
+        <result property="reason" column="reason"/>
+        <result property="progress" column="progress"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="remark" column="remark"/>
+        <result property="auditUserNaem" column="auditUserName"/>
+    </resultMap>
+
+    <sql id="selectAuditRecordVo">
+        select id, apply_id, apply_type, status, reason, progress, create_by, create_time, update_by, update_time, del_flag, remark from umap_audit_record
+    </sql>
+
+    <select id="selectAuditRecordList" parameterType="com.mkst.umap.app.admin.domain.AuditRecord"
+            resultMap="AuditRecordResult">
+        <include refid="selectAuditRecordVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="applyId != null ">and apply_id = #{applyId}</if>
+            <if test="applyType != null  and applyType != '' ">and apply_type = #{applyType}</if>
+            <if test="status != null  and status != '' ">and status = #{status}</if>
+            <if test="progress != null  and progress != '' ">and progress = #{progress}</if>
+            <if test="reason != null  and reason != '' ">and reason = #{reason}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAuditRecordById" parameterType="Integer" resultMap="AuditRecordResult">
+        <include refid="selectAuditRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectAuditRecordByApplyId" parameterType="Integer" resultMap="AuditRecordResult">
+        <include refid="selectAuditRecordVo"/>
+        where apply_id = #{applyId} and del_flag = '0'
+    </select>
+
+    <insert id="insertAuditRecord" parameterType="com.mkst.umap.app.admin.domain.AuditRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into umap_audit_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="applyId != null  ">apply_id,</if>
+            <if test="applyType != null  and applyType != ''  ">apply_type,</if>
+            <if test="status != null  and status != ''  ">status,</if>
+            <if test="reason != null  and reason != ''  ">reason,</if>
+            <if test="progress != null  and progress != ''  ">progress,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="applyId != null  ">#{applyId},</if>
+            <if test="applyType != null  and applyType != ''  ">#{applyType},</if>
+            <if test="status != null  and status != ''  ">#{status},</if>
+            <if test="progress != null  and progress != ''  ">#{progress},</if>
+            <if test="reason != null  and reason != ''  ">#{reason},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAuditRecord" parameterType="com.mkst.umap.app.admin.domain.AuditRecord">
+        update umap_audit_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyId != null  ">apply_id = #{applyId},</if>
+            <if test="applyType != null  and applyType != ''  ">apply_type = #{applyType},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="reason != null  and reason != ''  ">reason = #{reason},</if>
+            <if test="progress != null  and progress != ''  ">progress = #{progress},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateAuditBatchByParam" parameterType="com.mkst.umap.app.admin.api.bean.param.SpecialCaseAuditParam">
+        update umap_audit_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="reason != null  and reason != ''  ">reason = #{reason},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy}</if>
+        </trim>
+        <where>
+            <if test="ids != null and ids != ''">
+                and apply_id in
+                <foreach collection="ids" item="applyId" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="applyType != null and applyType != ''">and apply_type = #{applyType}</if>
+        </where>
+
+    </update>
+
+    <delete id="deleteAuditRecordById" parameterType="Integer">
+        delete from umap_audit_record where id = #{id}
+    </delete>
+
+    <delete id="deleteAuditRecordByIds" parameterType="String">
+        delete from umap_audit_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteAuditRecordByParam" parameterType="com.mkst.umap.app.admin.api.bean.param.SpecialCaseAuditParam">
+        delete from umap_audit_record
+        <where>
+            <if test="ids != null and ids != ''">
+                and apply_id in
+                <foreach collection="ids" item="applyId" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="applyType != null and applyType != ''">and apply_type = #{applyType}</if>
+        </where>
+    </delete>
+
+
+    <resultMap id="AuditRecordResultVo" type="com.mkst.umap.app.admin.dto.AuditRecordDto">
+        <id column="id" property="id"/>
+        <result column="status" property="status"/>
+        <result column="reason" property="reason"/>
+        <result column="create_time" property="createTime"/>
+        <result column="audit_by" property="auditBy"/>
+    </resultMap>
+    <select id="selectAuditRecordVo" parameterType="com.mkst.umap.app.admin.domain.AuditRecord"
+            resultMap="AuditRecordResultVo">
+        SELECT
+        a.id id,
+        a.`status` `status`,
+        a.reason reason,
+        a.create_time create_time,
+        u.user_name audit_by
+        FROM
+        umap_audit_record a
+        LEFT JOIN sys_user u ON a.create_by = u.login_name
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="applyId != null ">and apply_id = #{applyId}</if>
+            <if test="applyType != null  and applyType != '' ">and apply_type = #{applyType}</if>
+            <if test="status != null  and status != '' ">and status = #{status}</if>
+            <if test="reason != null  and reason != '' ">and reason = #{reason}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+
+</mapper>

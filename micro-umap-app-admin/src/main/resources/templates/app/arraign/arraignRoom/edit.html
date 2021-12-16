@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-arraignRoom-edit" th:object="${arraignRoom}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>房间名：</label>
+            <div class="col-sm-8">
+                <input id="name" name="name" th:field="*{name}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>房间类型：</label>
+            <div class="col-sm-8">
+                <select id="type" name="type" class="form-control"
+                        th:with="type=${@dict.getType('room_type')}" onchange="roomTypeOperate()">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:field="*{type}"
+                            th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group" id="screenIdlDiv">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>选择屏幕：</label>
+            <div class="col-sm-8">
+                <select id="screenId" name="screenId" class="form-control"
+                        th:with="equipments=${@roomEquipmentServiceImpl.selectRemoteEquipmentListByType('9')}">
+                    <option value="">无</option>
+                    <option th:each="equipment : ${equipments}" th:text="${equipment.devName}"
+                            th:value="${equipment.id}" th:field="*{screenId}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>房间地址：</label>
+            <div class="col-sm-8">
+                <input id="address" name="address" th:field="*{address}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group" id="galleryfulDiv">
+            <label class="col-sm-3 control-label">可容纳人数：</label>
+            <div class="col-sm-8">
+                <input oninput="value=value.replace(/[^\d]/g,'')" placeholder="输入数字" id="galleryful" name="galleryful" th:field="*{galleryful}"
+                       class="form-control" type="text"></input>
+            </div>
+        </div>
+        <div class="form-group" id="workStartTimeDiv">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>工作开始时间：</label>
+            <div class="col-sm-3">
+                <input id="workStartTime" name="workStartTime" required="required"
+                       th:value="${#dates.format(arraignRoom.workStartTime, 'HH:mm:ss')}"
+                       class="form-control just-time-input" data-type="time" type="text">
+            </div>
+        </div>
+        <div class="form-group" id="workEndTimeDiv">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>工作结束时间：</label>
+            <div class="col-sm-3">
+                <input id="workEndTime" name="workEndTime" required="required"
+                       th:value="${#dates.format(arraignRoom.workEndTime, 'HH:mm:ss')}"
+                       class="form-control just-time-input"
+                       data-type="time" type="text">
+            </div>
+        </div>
+        <div class="form-group" id="restStartTimeDiv">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>休息开始时间：</label>
+            <div class="col-sm-3">
+                <input id="restStartTime" name="restStartTime" required="required"
+                       th:value="${#dates.format(arraignRoom.restStartTime, 'HH:mm:ss')}"
+                       class="form-control just-time-input" data-type="time" type="text">
+            </div>
+        </div>
+        <div class="form-group" id="restEndTimeDiv">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>休息结束时间：</label>
+            <div class="col-sm-3">
+                <input id="restEndTime" name="restEndTime" required="required"
+                       th:value="${#dates.format(arraignRoom.restEndTime, 'HH:mm:ss')}"
+                       class="form-control just-time-input"
+                       data-type="time" type="text">
+            </div>
+        </div>
+        <div class="form-group" id="durationDiv">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>班次时长：</label>
+            <div class="col-sm-8">
+                <select id="duration" name="duration" class="form-control" required="required"
+                        th:with="type=${@dict.getType('arraign_room_per_duration')}">
+                    <option value="0">请选择</option>
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:field="*{duration}"
+                            th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <!--留用功能-->
+        <!--<div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>提审室状态：</label>
+            <div class="col-sm-8">
+                <input id="status" name="status" th:field="*{status}" class="form-control" type="text">
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-sm-3 control-label">备注：</label>
+            <div class="col-sm-8">
+                <input id="reamrk" name="reamrk" th:field="*{reamrk}" class="form-control" type="texta">
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+    var prefix = ctx + "admin/arraignRoom"
+    $("#form-arraignRoom-edit").validate({
+        rules: {
+            name: {required: true},
+            address: {required: true},
+            type: {required: true}
+            /*            managerId: {required: true},
+                        workStartTime: {required: true},
+                        workEndTime: {required: true},
+                        restStartTime: {required: true},
+                        restEndTime: {required: true},
+                        status: {required: true}*/
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-arraignRoom-edit').serialize());
+        }
+    }
+
+    function selectUserTree() {
+        var options = {
+            title: '选择用户',
+            width: "380",
+            url: ctx + "system/user/selectUserTree?userIds=",
+            callBack: doSubmitUserTree
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmitUserTree(index, layero) {
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        if ($.tree.notAllowParents(tree)) {
+            var body = layer.getChildFrame('body', index);
+            $("#managerId").val(body.find('#treeId').val());
+            $("#managerName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    }
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //时间选择器
+        //同时绑定多个
+        lay('.just-time-input').each(function () {
+            laydate.render({
+                elem: this
+                , type: 'time'
+            });
+        });
+    });
+
+
+    function roomTypeOperate() {
+        var roomType = document.getElementById("type");
+        var type = roomType.options[roomType.selectedIndex].value;
+        if (type === "0") {
+            document.getElementById("workStartTimeDiv").style.display = "block";
+            document.getElementById("workEndTimeDiv").style.display = "block";
+            document.getElementById("restStartTimeDiv").style.display = "block";
+            document.getElementById("restEndTimeDiv").style.display = "block";
+            document.getElementById("durationDiv").style.display = "block";
+            document.getElementById("galleryfulDiv").style.display = "none";
+            document.getElementById("screenIdlDiv").style.display = "none";
+        } else if (type === "1") {
+            document.getElementById("workStartTimeDiv").style.display = "none";
+            document.getElementById("workEndTimeDiv").style.display = "none";
+            document.getElementById("restStartTimeDiv").style.display = "none";
+            document.getElementById("restEndTimeDiv").style.display = "none";
+            document.getElementById("durationDiv").style.display = "none";
+            document.getElementById("galleryfulDiv").style.display = "none";
+            document.getElementById("screenIdlDiv").style.display = "none";
+        } else if (type === "2") {
+            document.getElementById("workStartTimeDiv").style.display = "none";
+            document.getElementById("workEndTimeDiv").style.display = "none";
+            document.getElementById("restStartTimeDiv").style.display = "none";
+            document.getElementById("restEndTimeDiv").style.display = "none";
+            document.getElementById("durationDiv").style.display = "none";
+            document.getElementById("screenIdlDiv").style.display = "none";
+        } else if (type === "5") {
+            document.getElementById("workStartTimeDiv").style.display = "none";
+            document.getElementById("workEndTimeDiv").style.display = "none";
+            document.getElementById("restStartTimeDiv").style.display = "none";
+            document.getElementById("restEndTimeDiv").style.display = "none";
+            document.getElementById("durationDiv").style.display = "none";
+            document.getElementById("galleryfulDiv").style.display = "block";
+            document.getElementById("screenIdlDiv").style.display = "block";
+        }
+    }
+
+    // 进入页面立即触发
+    (() => {
+        roomTypeOperate();
+    })();
+
+</script>
+</body>
+</html>

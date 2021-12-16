@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ApproveApplyMapper">
+    
+    <resultMap type="ApproveApply" id="ApproveApplyResult">
+        <result property="approveId"    column="approve_id"    />
+        <result property="useId"    column="use_id"    />
+        <result property="applyId"    column="apply_id"    />
+        <result property="approveStatus"    column="approve_status"    />
+        <result property="approveType"    column="approve_type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectApproveApplyVo">
+        select approve_id, use_id, apply_id, approve_status, approve_type, create_by, create_time, update_by, update_time, del_flag, remark from umap_approve_apply
+    </sql>
+	
+    <select id="selectApproveApplyList" parameterType="ApproveApply" resultMap="ApproveApplyResult">
+        <include refid="selectApproveApplyVo"/>
+        <where>  
+            <if test="approveId != null "> and approve_id = #{approveId}</if>
+             <if test="useId != null "> and use_id = #{useId}</if>
+             <if test="applyId != null "> and apply_id = #{applyId}</if>
+             <if test="approveStatus != null "> and approve_status = #{approveStatus}</if>
+             <if test="approveType != null  and approveType != '' "> and approve_type = #{approveType}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+    </select>
+    
+    <select id="selectApproveApplyById" parameterType="Long" resultMap="ApproveApplyResult">
+        <include refid="selectApproveApplyVo"/>
+        where approve_id = #{approveId}
+    </select>
+
+    <select id="selectApplyIds" parameterType="ApproveApply" resultType="java.util.Set">
+        select apply_id from umap_approve_apply
+        <where>
+            <if test="approveId != null "> and approve_id = #{approveId}</if>
+            <if test="useId != null "> and use_id = #{useId}</if>
+            <if test="applyId != null "> and apply_id = #{applyId}</if>
+            <if test="approveStatus != null "> and approve_status = #{approveStatus}</if>
+            <if test="approveType != null  and approveType != '' "> and approve_type = #{approveType}</if>
+            <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+            <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+        </where>
+    </select>
+
+    <select id="selectApproveApplyByApplyId" parameterType="Long" resultMap="ApproveApplyResult">
+        <include refid="selectApproveApplyVo"/>
+        where apply_id = #{applyId}
+    </select>
+        
+    <insert id="insertApproveApply" parameterType="ApproveApply" useGeneratedKeys="true" keyProperty="approveId">
+        insert into umap_approve_apply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="approveId != null  ">approve_id,</if>
+			<if test="useId != null  ">use_id,</if>
+			<if test="applyId != null  ">apply_id,</if>
+			<if test="approveStatus != null">approve_status,</if>
+			<if test="approveType != null  and approveType != ''  ">approve_type,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="approveId != null  ">#{approveId},</if>
+			<if test="useId != null  ">#{useId},</if>
+			<if test="applyId != null  ">#{applyId},</if>
+			<if test="approveStatus != null ">#{approveStatus},</if>
+			<if test="approveType != null  and approveType != ''  ">#{approveType},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateApproveApply" parameterType="ApproveApply">
+        update umap_approve_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="useId != null  ">use_id = #{useId},</if>
+            <if test="applyId != null  ">apply_id = #{applyId},</if>
+            <if test="approveStatus != null ">approve_status = #{approveStatus},</if>
+            <if test="approveType != null  and approveType != ''  ">approve_type = #{approveType},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where approve_id = #{approveId}
+    </update>
+
+	<delete id="deleteApproveApplyById" parameterType="Long">
+        delete from umap_approve_apply where approve_id = #{approveId}
+    </delete>
+	
+    <delete id="deleteApproveApplyByIds" parameterType="String">
+        delete from umap_approve_apply where approve_id in 
+        <foreach item="approveId" collection="array" open="(" separator="," close=")">
+            #{approveId}
+        </foreach>
+    </delete>
+    
+</mapper>

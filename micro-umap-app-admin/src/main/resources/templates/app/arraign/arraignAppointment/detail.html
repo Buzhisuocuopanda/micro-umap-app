@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<link rel="stylesheet" th:href="@{/ajax/libs/layui-v2.6.7/layui/css/layui.css}" media="all">
+<head th:include="include :: header">
+
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+
+    <table class="layui-table">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>详细信息</legend>
+        </fieldset>
+        <!--/*@thymesVar id="arraignAppointment" type="com.mkst.umap.app.admin.dto.arraign.AppointmentDetailDto"*/-->
+        <tbody th:object="${arraignAppointment}">
+        <tr>
+            <td th:align="right">房间名：</td>
+            <td th:align="left" th:text="*{roomName}"></td>
+            <td th:align="right">犯罪类型：</td>
+            <td th:align="left"
+                th:text="${@dict.getLabel('criminal_type',arraignAppointment.criminalType)}"></td>
+        </tr>
+        <tr>
+            <td th:align="right">开始时间：</td>
+            <td th:align="left" th:text="*{startTime}"></td>
+            <td th:align="right">结束时间：</td>
+            <td th:align="left" th:text="*{endTime}"></td>
+        </tr>
+        <tr>
+            <td th:align="right">经办人：</td>
+            <td th:align="left" th:text="*{undertaker}"></td>
+            <td th:align="right">创建时间：</td>
+            <td th:align="left" th:text="*{createTime}"></td>
+        </tr>
+        <tr>
+            <td th:align="right">罪犯姓名：</td>
+            <td th:align="left" th:text="*{criminalName}"></td>
+            <td th:align="right">罪犯生日：</td>
+            <td th:align="left" th:text="*{criminalBirth}"></td>
+        </tr>
+        <tr>
+            <td th:align="right">罪犯认罪认罚：</td>
+            <td th:align="left"
+                th:text="${@dict.getLabel('sys_yes_no',arraignAppointment.criminalAdmit)}"></td>
+            <td th:align="right">罪犯需要法律援助：</td>
+            <td th:align="left"
+                th:text="${@dict.getLabel('sys_yes_no',arraignAppointment.needLegalAid)}"></td>
+        </tr>
+        <tr>
+            <td th:align="right">是否加号：</td>
+            <td th:align="left" th:if="${arraignAppointment.remark eq 'plus'}">是</td>
+            <td th:align="left" th:if="${arraignAppointment.remark ne 'plus'}">否</td>
+            <td th:align="right">&nbsp;</td>
+            <td th:align="left">&nbsp;</td>
+        </tr>
+        <tr>
+            <td th:align="right">案件阶段：</td>
+            <td th:align="left"
+                th:text="${@dict.getLabel('case_stage',arraignAppointment.stage)}"></td>
+
+            <td th:align="right">审核状态：</td>
+            <td th:align="left"
+                th:text="${@dict.getLabel('event_audit_status',arraignAppointment.status)}"></td>
+
+        </tr>
+        <tr>
+            <td th:align="right">检查官证件号：</td>
+            <td th:align="left" th:text="*{prosecutorId}"></td>
+            <td th:align="right">检察官姓名：</td>
+            <td th:align="left" th:text="*{prosecutorName}"></td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <!-- 待审核时的操作 -->
+    <!--/*@thymesVar id="arraignAppointment" type="com.mkst.umap.app.admin.dto.arraign.AppointmentDetailDto"*/-->
+    <th:block th:if="(${arraignAppointment.status} eq '0' ) or (${arraignAppointment.status} eq '5' ) ">
+        <div class="wrapper wrapper-content animated fadeInRight ibox-content" align="right">
+            <a class="btn btn-success btn-sm ' + auditFlag + '" href="#" onclick="audit(1)">
+                <i class="fa fa-edit"></i>通过申请</a>
+            <a class="btn btn-danger btn-sm ' + auditFlag + '" href="#" onclick="audit(2)">
+                <i class="fa fa-edit"></i>驳回申请</a>
+        </div>
+    </th:block>
+
+    <!-- 已审核的审核记录 -->
+    <th:block th:if="(${arraignAppointment.status} ne '0' ) and ${arraignAppointment.status} ne '5' ">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>审核记录</legend>
+        </fieldset>
+
+        <div class="layui-form">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>审核人</th>
+                    <th>审核结果</th>
+                    <th>审核时间</th>
+                    <th>审核理由</th>
+                </tr>
+                </thead>
+                <tbody>
+               <!-- &lt;!&ndash;/*@thymesVar id="auditRecords" type="com.mkst.umap.app.admin.domain.AuditRecord"*/&ndash;&gt;-->
+                <tr th:each="audit:${auditRecords}">
+                    <td th:text="${@sysUserServiceImpl.selectUserByLoginName(audit.createBy).getUserName()}"/>
+                    <td th:text="${@dict.getLabel('event_audit_status',audit.status)}"/>
+                    <td th:text="${#dates.format(audit.createTime, 'yyyy-MM-dd HH:mm:ss')}"/>
+                    <td th:text="${audit.reason}"/>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+</div>
+
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+
+    const prefix = ctx + "admin/arraignAppointment";
+    const auditUrl = prefix + "/doAudit/{id}/{status}/{reason}";
+
+    // 审核
+    audit = function (status) {
+
+        const id = [[${arraignAppointment.id}]];
+
+        const statusMsg = status == "1" ? "通过" : "驳回";
+
+        prompt(status, "填写" + statusMsg + "该条提审预约的原因", function (reason) {
+            const urlReason = $.common.isEmpty(reason) ? 'NoReasonFlag' : reason;
+            const url = $.common.isEmpty(id) ? auditUrl : auditUrl.replace("{id}", id).replace("{status}", status).replace("{reason}", urlReason);
+            $.operate.submit(url, "post", "json");
+        });
+    }
+
+    function submitHandler(){
+        $.modal.close();
+        window.parent.$.table.refresh();
+    }
+
+    // 确认窗体
+    function prompt(status, content, callBack) {
+        const necessary = status === 2 ? "（必填）" : "（非必填）";
+        layer.prompt({
+            formType: 2,
+            placeholder: "请输入原因",
+            title: content + necessary,
+            btn: ['确认', '取消'],
+            btnclass: ['btn btn-primary', 'btn btn-danger'],
+            area: ['400px','200px'],
+            yes: function (index, value) {
+                const reason = value.find(".layui-layer-input").val();
+                if (status === 2 && (typeof reason === "undefined" || reason === "")){
+                    $.modal.alertWarning("请填写理由！");
+                    return;
+                }
+                layer.close(index);
+                callBack(value.find(".layui-layer-input").val());
+                $.modal.close();
+                window.parent.$.table.refresh();
+            }
+        });
+    }
+
+
+</script>
+<script th:src="@{/ajax/libs/layui-v2.6.7/layui/layui.js}" charset="utf-8"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.UserSpendMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.UserSpend" id="UserSpendResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="type"    column="type"    />
+        <result property="subType"    column="sub_type"    />
+        <result property="amount"    column="amount"    />
+        <result property="balance"    column="balance"    />
+        <result property="payTime"    column="pay_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+	
+	<sql id="selectUserSpendVo">
+        select id, user_id, type, sub_type, amount, balance, pay_time, create_time from umap_user_spend
+    </sql>
+	
+    <select id="selectUserSpendList" parameterType="com.mkst.umap.app.admin.domain.UserSpend" resultMap="UserSpendResult">
+        <include refid="selectUserSpendVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="userId != null "> and user_id = #{userId}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="subType != null  and subType != '' "> and sub_type = #{subType}</if>
+             <if test="amount != null "> and amount = #{amount}</if>
+             <if test="balance != null "> and balance = #{balance}</if>
+             <if test="payTime != null "> and pay_time = #{payTime}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="checkStartTime != null"> and pay_time &gt;= #{checkStartTime}</if>
+             <if test="checkStartTime != null"> and pay_time &lt;= #{checkEndTime}</if>
+         </where>
+         order by pay_time  desc
+    </select>
+    
+    <select id="selectUserSpendById" parameterType="Long" resultMap="UserSpendResult">
+        <include refid="selectUserSpendVo"/>
+        where id = #{id}
+    </select>
+    <select id="getUserLastBalance" resultType="java.math.BigDecimal">
+        SELECT
+            s.balance
+        FROM
+            umap_user_spend s
+        WHERE
+            s.user_id = #{userId}
+        ORDER BY
+            s.pay_time DESC
+        LIMIT 1
+    </select>
+    <!-- 有坑，但是我没有时间改了——————不能直接按月分组，因为那样会导致查出来的数据是全部的数据，
+    需要在这个基础上添加数据开始计算的时间，
+    这段代码在一年内不会出问题，超过一年后获取的数据就是错误的，预计明年六月份开始出问题-->
+    <select id="selectStatistics" resultType="com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult">
+        SELECT
+        <if test="way != null  and way != ''">
+            <if test="way == 'year'.toString()">DATE_FORMAT(s.pay_time, '%Y')</if>
+            <if test="way == 'month'.toString()">DATE_FORMAT(s.pay_time, '%m')</if>
+            `key`,
+        </if>
+        SUM(s.amount) `value`
+        FROM
+        umap_user_spend s
+        <where>
+            <if test="userId != null "> and s.user_id = #{userId}</if>
+<!--            <if test="way != null  and way != ''">-->
+<!--                <if test="way == 'year'.toString()">and DATE_FORMAT(s.pay_time, '%Y') = #{key}</if>-->
+<!--                <if test="way == 'month'.toString()">and DATE_FORMAT(s.pay_time, '%Y%m')= #{key}</if>-->
+<!--            </if>-->
+        </where>
+        <if test="way != null  and way != ''">
+            GROUP BY
+            <if test="way == 'year'.toString()">DATE_FORMAT(s.pay_time, '%Y')</if>
+            <if test="way == 'month'.toString()">DATE_FORMAT(s.pay_time, '%m')</if>
+        </if>
+    </select>
+
+    <insert id="insertUserSpend" parameterType="com.mkst.umap.app.admin.domain.UserSpend">
+        insert into umap_user_spend
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="userId != null  ">user_id,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="subType != null  and subType != ''  ">sub_type,</if>
+			<if test="amount != null  ">amount,</if>
+			<if test="balance != null  ">balance,</if>
+			<if test="payTime != null  ">pay_time,</if>
+			<if test="createTime != null  ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="userId != null  ">#{userId},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="subType != null  and subType != ''  ">#{subType},</if>
+			<if test="amount != null  ">#{amount},</if>
+			<if test="balance != null  ">#{balance},</if>
+			<if test="payTime != null  ">#{payTime},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateUserSpend" parameterType="com.mkst.umap.app.admin.domain.UserSpend">
+        update umap_user_spend
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="subType != null  and subType != ''  ">sub_type = #{subType},</if>
+            <if test="amount != null  ">amount = #{amount},</if>
+            <if test="balance != null  ">balance = #{balance},</if>
+            <if test="payTime != null  ">pay_time = #{payTime},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteUserSpendById" parameterType="Long">
+        delete from umap_user_spend where id = #{id}
+    </delete>
+	
+    <delete id="deleteUserSpendByIds" parameterType="String">
+        delete from umap_user_spend where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    
+</mapper>

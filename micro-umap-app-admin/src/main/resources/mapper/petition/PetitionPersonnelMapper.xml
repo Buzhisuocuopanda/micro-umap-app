@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.PetitionPersonnelMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.PetitionPersonnel" id="PetitionPersonnelResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="relationToCase"    column="relation_to_case"    />
+        <result property="credentialsType"    column="credentials_type"    />
+        <result property="credentialsNum"    column="credentials_num"    />
+        <result property="country"    column="country"    />
+        <result property="nation"    column="nation"    />
+        <result property="phoneNum"    column="phone_num"    />
+        <result property="email"    column="email"    />
+        <result property="employer"    column="employer"    />
+        <result property="employerAddress"    column="employer_address"    />
+        <result property="residentialAddress"    column="residential_address"    />
+        <result property="identity"    column="identity"    />
+        <result property="post"    column="post"    />
+        <result property="legalRepresentativeName"    column="legal_representative_name"    />
+        <result property="legalRepresentativePost"    column="legal_representative_post"    />
+        <result property="deliveryAddress"    column="delivery_address"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+	
+	<sql id="selectPetitionPersonnelVo">
+        select id, type, name, sex, relation_to_case, credentials_type, credentials_num, country, nation, phone_num, email, employer, employer_address, residential_address, identity, post, legal_representative_name, legal_representative_post, delivery_address, create_by, create_time, update_by, update_time, remark, del_flag from umap_petition_personnel
+    </sql>
+	
+    <select id="selectPetitionPersonnelList" parameterType="com.mkst.umap.app.admin.domain.PetitionPersonnel" resultMap="PetitionPersonnelResult">
+        <include refid="selectPetitionPersonnelVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="name != null  and name != '' "> and name = #{name}</if>
+             <if test="sex != null  and sex != '' "> and sex = #{sex}</if>
+             <if test="relationToCase != null  and relationToCase != '' "> and relation_to_case = #{relationToCase}</if>
+             <if test="credentialsType != null  and credentialsType != '' "> and credentials_type = #{credentialsType}</if>
+             <if test="credentialsNum != null  and credentialsNum != '' "> and credentials_num = #{credentialsNum}</if>
+             <if test="country != null  and country != '' "> and country = #{country}</if>
+             <if test="nation != null  and nation != '' "> and nation = #{nation}</if>
+             <if test="phoneNum != null  and phoneNum != '' "> and phone_num = #{phoneNum}</if>
+             <if test="email != null  and email != '' "> and email = #{email}</if>
+             <if test="employer != null  and employer != '' "> and employer = #{employer}</if>
+             <if test="employerAddress != null  and employerAddress != '' "> and employer_address = #{employerAddress}</if>
+             <if test="residentialAddress != null  and residentialAddress != '' "> and residential_address = #{residentialAddress}</if>
+             <if test="identity != null  and identity != '' "> and identity = #{identity}</if>
+             <if test="post != null  and post != '' "> and post = #{post}</if>
+             <if test="legalRepresentativeName != null  and legalRepresentativeName != '' "> and legal_representative_name = #{legalRepresentativeName}</if>
+             <if test="legalRepresentativePost != null  and legalRepresentativePost != '' "> and legal_representative_post = #{legalRepresentativePost}</if>
+             <if test="deliveryAddress != null  and deliveryAddress != '' "> and delivery_address = #{deliveryAddress}</if>
+             <if test="createBy != null "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+         </where>
+    </select>
+    
+    <select id="selectPetitionPersonnelById" parameterType="Long" resultMap="PetitionPersonnelResult">
+        <include refid="selectPetitionPersonnelVo"/>
+        where id = #{id}
+    </select>
+    <select id="getPetitionPersonnelBingList" resultType="com.mkst.umap.app.admin.domain.PetitionPersonnel">
+        SELECT
+        p.id,
+        p.`name`,
+        p.type,
+        p.sex,
+        p.relation_to_case,
+        p.credentials_type,
+        p.credentials_num,
+        p.country,
+        p.nation,
+        p.phone_num,
+        p.email,
+        p.employer,
+        p.employer_address,
+        p.residential_address,
+        p.identity,
+        p.post,
+        p.legal_representative_name,
+        p.legal_representative_post,
+        p.delivery_address,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time,
+        p.remark,
+        p.del_flag
+        FROM
+        umap_petition_personnel_bind AS b
+        LEFT JOIN umap_petition_personnel AS p ON b.personnel_id = p.id
+        <where>
+            p.del_flag = 0
+            <if test="petitionId != null and petitionId != ''">and b.petition_id = #{petitionId}</if>
+            <if test="personnelType != null and personnelType != ''">and p.type = #{personnelType}</if>
+        </where>
+    </select>
+
+    <insert id="insertPetitionPersonnel" parameterType="com.mkst.umap.app.admin.domain.PetitionPersonnel"
+            keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        insert into umap_petition_personnel
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="sex != null  and sex != ''  ">sex,</if>
+			<if test="relationToCase != null  and relationToCase != ''  ">relation_to_case,</if>
+			<if test="credentialsType != null  and credentialsType != ''  ">credentials_type,</if>
+			<if test="credentialsNum != null  and credentialsNum != ''  ">credentials_num,</if>
+			<if test="country != null  and country != ''  ">country,</if>
+			<if test="nation != null  and nation != ''  ">nation,</if>
+			<if test="phoneNum != null  and phoneNum != ''  ">phone_num,</if>
+			<if test="email != null  and email != ''  ">email,</if>
+			<if test="employer != null  and employer != ''  ">employer,</if>
+			<if test="employerAddress != null  and employerAddress != ''  ">employer_address,</if>
+			<if test="residentialAddress != null  and residentialAddress != ''  ">residential_address,</if>
+			<if test="identity != null  and identity != ''  ">identity,</if>
+			<if test="post != null  and post != ''  ">post,</if>
+			<if test="legalRepresentativeName != null  and legalRepresentativeName != ''  ">legal_representative_name,</if>
+			<if test="legalRepresentativePost != null  and legalRepresentativePost != ''  ">legal_representative_post,</if>
+			<if test="deliveryAddress != null  and deliveryAddress != ''  ">delivery_address,</if>
+			<if test="createBy != null  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="sex != null  and sex != ''  ">#{sex},</if>
+			<if test="relationToCase != null  and relationToCase != ''  ">#{relationToCase},</if>
+			<if test="credentialsType != null  and credentialsType != ''  ">#{credentialsType},</if>
+			<if test="credentialsNum != null  and credentialsNum != ''  ">#{credentialsNum},</if>
+			<if test="country != null  and country != ''  ">#{country},</if>
+			<if test="nation != null  and nation != ''  ">#{nation},</if>
+			<if test="phoneNum != null  and phoneNum != ''  ">#{phoneNum},</if>
+			<if test="email != null  and email != ''  ">#{email},</if>
+			<if test="employer != null  and employer != ''  ">#{employer},</if>
+			<if test="employerAddress != null  and employerAddress != ''  ">#{employerAddress},</if>
+			<if test="residentialAddress != null  and residentialAddress != ''  ">#{residentialAddress},</if>
+			<if test="identity != null  and identity != ''  ">#{identity},</if>
+			<if test="post != null  and post != ''  ">#{post},</if>
+			<if test="legalRepresentativeName != null  and legalRepresentativeName != ''  ">#{legalRepresentativeName},</if>
+			<if test="legalRepresentativePost != null  and legalRepresentativePost != ''  ">#{legalRepresentativePost},</if>
+			<if test="deliveryAddress != null  and deliveryAddress != ''  ">#{deliveryAddress},</if>
+			<if test="createBy != null  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updatePetitionPersonnel" parameterType="com.mkst.umap.app.admin.domain.PetitionPersonnel">
+        update umap_petition_personnel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="sex != null  and sex != ''  ">sex = #{sex},</if>
+            <if test="relationToCase != null  and relationToCase != ''  ">relation_to_case = #{relationToCase},</if>
+            <if test="credentialsType != null  and credentialsType != ''  ">credentials_type = #{credentialsType},</if>
+            <if test="credentialsNum != null  and credentialsNum != ''  ">credentials_num = #{credentialsNum},</if>
+            <if test="country != null  and country != ''  ">country = #{country},</if>
+            <if test="nation != null  and nation != ''  ">nation = #{nation},</if>
+            <if test="phoneNum != null  and phoneNum != ''  ">phone_num = #{phoneNum},</if>
+            <if test="email != null  and email != ''  ">email = #{email},</if>
+            <if test="employer != null  and employer != ''  ">employer = #{employer},</if>
+            <if test="employerAddress != null  and employerAddress != ''  ">employer_address = #{employerAddress},</if>
+            <if test="residentialAddress != null  and residentialAddress != ''  ">residential_address = #{residentialAddress},</if>
+            <if test="identity != null  and identity != ''  ">identity = #{identity},</if>
+            <if test="post != null  and post != ''  ">post = #{post},</if>
+            <if test="legalRepresentativeName != null  and legalRepresentativeName != ''  ">legal_representative_name = #{legalRepresentativeName},</if>
+            <if test="legalRepresentativePost != null  and legalRepresentativePost != ''  ">legal_representative_post = #{legalRepresentativePost},</if>
+            <if test="deliveryAddress != null  and deliveryAddress != ''  ">delivery_address = #{deliveryAddress},</if>
+            <if test="createBy != null  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deletePetitionPersonnelById" parameterType="Long">
+        delete from umap_petition_personnel where id = #{id}
+    </delete>
+	
+    <delete id="deletePetitionPersonnelByIds" parameterType="String">
+        delete from umap_petition_personnel where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

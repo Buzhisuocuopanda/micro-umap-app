@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignRoomEquipmentMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.ArraignRoomEquipment" id="ArraignRoomEquipmentResult">
+        <result property="id" column="id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectArraignRoomEquipmentVo">
+        select id, room_id, equipment_id, status from umap_arraign_room_equipment
+    </sql>
+
+    <select id="selectArraignRoomEquipmentList" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomEquipment"
+            resultMap="ArraignRoomEquipmentResult">
+        <include refid="selectArraignRoomEquipmentVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="roomId != null ">and room_id = #{roomId}</if>
+            <if test="equipmentId != null ">and equipment_id = #{equipmentId}</if>
+            <if test="status != null  and status != '' ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectArraignRoomEquipmentById" parameterType="Long" resultMap="ArraignRoomEquipmentResult">
+        <include refid="selectArraignRoomEquipmentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertArraignRoomEquipment" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomEquipment">
+        insert into umap_arraign_room_equipment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="roomId != null  ">room_id,</if>
+            <if test="equipmentId != null  ">equipment_id,</if>
+            <if test="status != null  and status != ''  ">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="roomId != null  ">#{roomId},</if>
+            <if test="equipmentId != null  ">#{equipmentId},</if>
+            <if test="status != null  and status != ''  ">#{status},</if>
+        </trim>
+    </insert>
+
+    <update id="updateArraignRoomEquipment" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomEquipment">
+        update umap_arraign_room_equipment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomId != null  ">room_id = #{roomId},</if>
+            <if test="equipmentId != null  ">equipment_id = #{equipmentId},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArraignRoomEquipmentById" parameterType="Integer">
+        delete from umap_arraign_room_equipment where id = #{id}
+    </delete>
+
+    <delete id="deleteArraignRoomEquipmentByIds" parameterType="String">
+        delete from umap_arraign_room_equipment where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

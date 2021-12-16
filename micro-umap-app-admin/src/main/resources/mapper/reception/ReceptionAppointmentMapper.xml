@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ReceptionAppointmentMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.ReceptionAppointment" id="ReceptionAppointmentResult">
+        <result property="id" column="id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="type" column="type"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="useBy" column="use_by"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectReceptionAppointmentVo">
+        select id, room_id, start_time, end_time, type, dept_id, use_by, status, create_by, create_time, update_by, update_time, remark, del_flag from umap_reception_appointment
+    </sql>
+
+    <select id="selectReceptionAppointmentList" parameterType="com.mkst.umap.app.admin.domain.ReceptionAppointment"
+            resultMap="ReceptionAppointmentResult">
+        <include refid="selectReceptionAppointmentVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="roomId != null  and roomId != '' ">and room_id = #{roomId}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="type != null  and type != '' ">and type = #{type}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="useBy != null ">and use_by = #{useBy}</if>
+            <if test="status != null  and status != '' ">and status = #{status}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+    <select id="selectReceptionAppointmentById" parameterType="Integer" resultMap="ReceptionAppointmentResult">
+        <include refid="selectReceptionAppointmentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertReceptionAppointment" parameterType="com.mkst.umap.app.admin.domain.ReceptionAppointment">
+        insert into umap_reception_appointment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="roomId != null  and roomId != ''  ">room_id,</if>
+            <if test="startTime != null  ">start_time,</if>
+            <if test="endTime != null  ">end_time,</if>
+            <if test="type != null  and type != ''  ">type,</if>
+            <if test="deptId != null  ">dept_id,</if>
+            <if test="useBy != null  ">use_by,</if>
+            <if test="status != null  and status != ''  ">status,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="roomId != null  and roomId != ''  ">#{roomId},</if>
+            <if test="startTime != null  ">#{startTime},</if>
+            <if test="endTime != null  ">#{endTime},</if>
+            <if test="type != null  and type != ''  ">#{type},</if>
+            <if test="deptId != null  ">#{deptId},</if>
+            <if test="useBy != null  ">#{useBy},</if>
+            <if test="status != null  and status != ''  ">#{status},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReceptionAppointment" parameterType="com.mkst.umap.app.admin.domain.ReceptionAppointment">
+        update umap_reception_appointment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomId != null  and roomId != ''  ">room_id = #{roomId},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="deptId != null  ">dept_id = #{deptId},</if>
+            <if test="useBy != null  ">use_by = #{useBy},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteReceptionAppointmentById" parameterType="Long">
+        delete from umap_reception_appointment where id = #{id}
+    </delete>
+
+    <delete id="deleteReceptionAppointmentByIds" parameterType="String">
+        delete from umap_reception_appointment where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <sql id="getReceptionInfoResult">
+        SELECT
+            ra.id id,
+            ra.start_time start_time,
+            ra.end_time end_time,
+            ra.type type,
+            ra.`status` `status`,
+            r.`name` room_name,
+            u.user_name user_name,
+            d.dept_name dept_name
+        FROM
+            umap_reception_appointment AS ra
+        LEFT JOIN sys_dept AS d ON ra.dept_id = d.dept_id
+        LEFT JOIN sys_user AS u ON ra.use_by = u.user_id
+        LEFT JOIN umap_arraign_room AS r ON ra.room_id = r.id
+    </sql>
+    <resultMap id="receptionInfoResult" type="com.mkst.umap.app.admin.api.bean.result.reception.ReceptionInfoResult">
+        <id property="id" column="id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="type" column="type"/>
+        <result property="dept" column="dept_name"/>
+        <result property="roomName" column="room_name"/>
+        <result property="auditStatus" column="status"/>
+        <result property="useByName" column="user_name"/>
+    </resultMap>
+    <select id="getReceptionInfoResultList"
+            resultMap="receptionInfoResult"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.reception.ReceptionParam">
+        <include refid="getReceptionInfoResult"/>
+        <where>
+            <if test="roomId != null and roomId != ''">and ra.room_id = #{roomId}</if>
+            <if test="roomName != null and roomName != ''">and r.name like concat('%',#{roomName},'%')</if>
+            <if test="useBy != null and useBy != ''">
+                <if test="createBy != null and createBy != ''">
+                    and (ra.create_by = #{createBy} or ra.use_by = #{useBy})
+                </if>
+            </if>
+            <if test="createBy != null and createBy != '' and useBy == null">
+                and ra.create_by = #{createBy}
+            </if>
+            <if test="useBy != null and useBy != '' and createBy == null">
+                and ra.use_by = #{useBy}
+            </if>
+            <if test="status != null and status != ''">and ra.status = #{status}</if>
+            <if test="checkDate != null">and TO_DAYS(ra.start_time) = TO_DAYS(#{checkDate})</if>
+            and u.del_flag = '0'
+        </where>
+        order by ra.start_time
+    </select>
+
+
+    <resultMap id="ReceptionDetailResult"
+               type="com.mkst.umap.app.admin.api.bean.result.reception.ReceptionDetailResult">
+        <id property="id" column="id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="type" column="type"/>
+        <result property="dept" column="dept_name"/>
+        <result property="status" column="status"/>
+        <result property="userName" column="user_name"/>
+        <result property="roomName" column="room_name"/>
+    </resultMap>
+
+    <select id="getReceptionDetailById"
+            resultMap="ReceptionDetailResult" parameterType="long">
+        <include refid="getReceptionInfoResult"/>
+        where ra.id = #{id} and u.del_flag = '0'
+    </select>
+    <select id="getNextTime" resultType="java.util.Date"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.reception.ReceptionParam">
+        SELECT
+        ra.start_time
+        FROM
+        umap_reception_appointment ra
+        <where>
+            <if test="roomId != null and roomId != ''">and ra.room_id = #{roomId}</if>
+            <if test="chooseStartTime != null">and ra.start_time &gt; #{chooseStartTime}</if>
+            <if test="chooseStartTime != null">and TO_DAYS(ra.start_time) = TO_DAYS(#{chooseStartTime})</if>
+        </where>
+        ORDER BY
+        ra.start_time
+        LIMIT 1
+    </select>
+    <select id="selectIsOccupied" resultType="java.lang.Integer">
+        select count(1) from umap_reception_appointment
+        where room_id = #{roomId}
+        and
+        (
+        (start_time &lt;= #{startTime} and end_time &gt; #{startTime})
+        or ( end_time &gt;= #{endTime} and start_time &lt; #{endTime})
+        or (start_time &gt;= #{startTime} and end_time &lt;= #{startTime})
+        )
+        and status != '1'
+        and del_flag = '0'
+    </select>
+
+    <resultMap id="timeApplyResult" type="com.mkst.umap.app.admin.api.bean.result.arraign.TimeApplyResult">
+        <result property="id" column="id"/>
+        <result property="timeCon" column="time_con"/>
+        <result property="nowStatus" column="now_status"/>
+        <result property="roomName" column="room_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="status" column="status"/>
+        <result property="useByName" column="use_by_name"/>
+    </resultMap>
+    <select id="selectTimeApplyList" resultMap="timeApplyResult">
+        SELECT
+            CONCAT(
+                DATE_FORMAT(ra.start_time, '%H:%i'),
+                '-',
+                DATE_FORMAT(ra.end_time, '%H:%i')
+            ) AS time_con,
+            ra.id id,
+            ra.`status` `status`,
+            '1' audit_status,
+            /*这里要求参数必须传递当前时间状态*/
+            #{nowStatus} now_status,
+            u.user_name use_by_name,
+            d.dept_name dept_name,
+            r.`name` room_name
+        FROM
+            umap_reception_appointment AS ra
+        LEFT JOIN umap_arraign_room r ON ra.room_id = r.id
+        LEFT JOIN sys_user u ON ra.use_by = u.user_id
+        LEFT JOIN sys_dept d ON ra.dept_id = d.dept_id
+        <where>
+            <if test="checkDate != null">AND TO_DAYS(ra.start_time) = TO_DAYS(#{checkDate})</if>
+            <if test="nowStatus != null and nowStatus != ''">
+                <if test="nowStatus == '0'.toString()">AND NOW() &lt; ra.start_time</if>
+                <if test="nowStatus == '1'.toString()">AND (NOW() &gt;= ra.start_time and NOW() &lt; ra.end_time)</if>
+                <if test="nowStatus == '2'.toString()">AND NOW() &gt; ra.end_time</if>
+            </if>
+            <if test="status != null and status != ''">AND ra.status = #{status}</if>
+            <if test="nowUserLoginName != null and nowUserLoginName != '' and nowUserId != null">and (ra.create_by = #{nowUserLoginName} or ra.use_by = #{nowUserId})</if>
+        </where>
+        order by ra.start_time
+    </select>
+
+    <resultMap id="dayCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
+        <result column="dayName" property="name"/>
+        <result column="dayCount" property="count"/>
+        <result column="info" property="info"/>
+    </resultMap>
+    <select id="selectDayCount" resultMap="dayCountResultMap">
+        SELECT
+            date_format(ra.start_time, '%Y-%m-%d') dayName,
+            COUNT(1) dayCount,
+            '已预约' info
+        FROM
+            umap_reception_appointment ra
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="year != null and year != ''">and YEAR (ra.start_time) = #{year}</if>
+            <if test="month != null and month != ''">and MONTH (ra.start_time) = #{month}</if>
+            <if test="status != null and status != ''">and ra.status = #{status}</if>
+        </trim>
+        GROUP BY
+            TO_DAYS(ra.start_time)
+        ORDER BY
+            dayName
+    </select>
+
+</mapper>

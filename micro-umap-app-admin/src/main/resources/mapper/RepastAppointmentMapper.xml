@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.RepastAppointmentMapper">
+    
+    <resultMap type="RepastAppointment" id="RepastAppointmentResult">
+        <result property="id"    column="id"    />
+        <result property="repastDate"    column="repast_date"    />
+        <result property="type"    column="type"    />
+        <result property="outsider"    column="outsider"    />
+        <result property="outsiderNum"    column="outsider_num"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="userName"    column="user_name"    />
+        <result property="countUser"    column="count_user"    />
+
+    </resultMap>
+	
+	<sql id="selectRepastAppointmentVo">
+        select a.id, a.repast_date, a.type, a.outsider, a.outsider_num, a.user_id, a.create_by,
+        a.create_time, a.update_by, a.update_time, a.remark, a.del_flag ,u.user_name
+        from umap_repast_appointment a
+        left join  sys_user u on a.user_id =u.user_id
+    </sql>
+	
+    <select id="selectRepastAppointmentList" parameterType="RepastAppointment" resultMap="RepastAppointmentResult">
+        <include refid="selectRepastAppointmentVo"/>
+        <where>  
+            <if test="id != null "> and a.id = #{id}</if>
+             <if test="repastDate != null "> and a.repast_date = #{repastDate}</if>
+             <if test="type != null  and type != '' "> and a.type = #{type}</if>
+             <if test="outsider != null  and outsider != '' "> and a.outsider = #{outsider}</if>
+             <if test="outsiderNum != null "> and a.outsider_num = #{outsiderNum}</if>
+             <if test="userId != null "> and a.user_id = #{userId}</if>
+             <if test="createBy != null  and createBy != '' "> and a.create_by = #{createBy}</if>
+             <if test="createTime != null "> and a.create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and a.update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and a.update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and a.remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and a.del_flag = #{delFlag}</if>
+         </where>
+    </select>
+    
+    <select id="selectRepastAppointmentById" parameterType="Integer" resultMap="RepastAppointmentResult">
+        <include refid="selectRepastAppointmentVo"/>
+        where a.id = #{id}
+    </select>
+
+
+    <resultMap id="dayCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
+        <result column="dayName" property="name"/>
+        <result column="dayCount" property="count"/>
+        <result column="info" property="info"/>
+    </resultMap>
+
+
+    <select id="selectDayCount" resultMap="dayCountResultMap" parameterType="com.mkst.umap.app.admin.api.bean.param.RepastAppointmentParam">
+        SELECT
+        date_format(r.repast_date, '%Y-%m-%d') dayName,
+        COUNT(1) dayCount,
+        '已预约' info
+        FROM
+        umap_repast_appointment r
+        <where>
+            <if test="userId != null "> and r.user_id = #{userId}</if>
+            <if test="year != null and year != ''">and YEAR (r.repast_date) = #{year}</if>
+            <if test="month != null and month != ''">and MONTH (r.repast_date) = #{month}</if>
+        </where>
+        GROUP BY TO_DAYS(r.repast_date)
+        ORDER BY dayName
+    </select>
+
+
+    <select id="countRepast" resultType="com.mkst.umap.app.admin.domain.RepastAppointment">
+        SELECT
+        IFNULL(SUM(outsider_num),0) + COUNT(1)  AS countUser ,
+        SUM(outsider_num) AS outsiderNum,
+        type
+        FROM
+            umap_repast_appointment r
+        <where>
+            <if test="repastDate != null "> and repast_date = #{repastDate}</if>
+        </where>
+        GROUP BY
+            type
+    </select>
+
+    <insert id="insertRepastAppointment" parameterType="RepastAppointment" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into umap_repast_appointment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="repastDate != null  ">repast_date,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="outsider != null  and outsider != ''  ">outsider,</if>
+			<if test="outsiderNum != null  ">outsider_num,</if>
+			<if test="userId != null  ">user_id,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="repastDate != null  ">#{repastDate},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="outsider != null  and outsider != ''  ">#{outsider},</if>
+			<if test="outsiderNum != null  ">#{outsiderNum},</if>
+			<if test="userId != null  ">#{userId},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateRepastAppointment" parameterType="RepastAppointment">
+        update umap_repast_appointment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="repastDate != null  ">repast_date = #{repastDate},</if>
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="outsider != null  and outsider != ''  ">outsider = #{outsider},</if>
+            <if test="outsiderNum != null  ">outsider_num = #{outsiderNum},</if>
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteRepastAppointmentById" parameterType="Integer">
+        delete from umap_repast_appointment where id = #{id}
+    </delete>
+	
+    <delete id="deleteRepastAppointmentByIds" parameterType="String">
+        delete from umap_repast_appointment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

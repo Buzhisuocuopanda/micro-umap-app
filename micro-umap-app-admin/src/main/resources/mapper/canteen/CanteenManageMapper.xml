@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.CanteenManageMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.CanteenManage" id="CanteenManageResult">
+        <result property="canteenApplyId"    column="canteen_apply_id"    />
+        <result property="boxId"    column="box_id"    />
+        <result property="boxMealId"    column="box_meal_id"    />
+        <result property="diningType"    column="dining_type"    />
+        <result property="diningNumber"    column="dining_number"    />
+        <result property="diningStatus"    column="dining_status"    />
+        <result property="applyStatus"    column="apply_status"    />
+        <result property="dateTime"    column="date_time"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="progress" column="progress"/>
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+
+        <result property="boxName"    column="box_name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="applyName"    column="apply_name"    />
+        <result property="createName"    column="create_name"    />
+        <result property="meal"    column="meal"    />
+    </resultMap>
+
+    <resultMap id="CanteenResult" type="com.mkst.umap.app.admin.api.bean.result.canteen.CanteenResult">
+        <result property="canteenApplyId"    column="canteen_apply_id"    />
+        <result property="name" column="name"/>
+        <result property="address" column="address" />
+        <result property="typeName" column="type_name" />
+        <result property="typeCode" column="type_code" />
+        <result property="deptName" column="dept_name" />
+        <result property="userName" column="user_name" />
+        <result property="diningStatus" column="dining_status" />
+        <result property="applyStatus"    column="apply_status"    />
+        <result property="diningType" column="dining_type" />
+        <result property="dateTime" column="date_time" />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <resultMap id="CanteenDetailResult" type="com.mkst.umap.app.admin.api.bean.result.canteen.CanteenDetailResult">
+        <result property="canteenApplyId"    column="canteen_apply_id"    />
+        <result property="name" column="name"/>
+        <result property="address" column="address" />
+        <result property="typeName" column="type_name" />
+        <result property="typeCode" column="type_code" />
+        <result property="deptName" column="dept_name" />
+        <result property="userName" column="user_name" />
+        <result property="diningType" column="dining_type" />
+        <result property="dateTime" column="date_time" />
+        <result property="useById" column="user_id"/>
+        <result property="progress" column="progress" />
+        <result property="diningNumber"    column="dining_number"    />
+        <result property="applyStatus"    column="apply_status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+	<sql id="selectCanteenManageVo">
+        select a.canteen_apply_id, a.box_meal_id, a.dining_type, a.progress, a.dining_number,a.apply_status,a.date_time,  a.dining_status, a.user_id, a.dept_id, a.create_by,
+         a.create_time, a.update_by, a.update_time, a.remark, a.del_flag ,
+         d.dept_name,u.user_name as apply_name, u1.user_name as create_name, uar.name as box_name,ubm.type_name as meal
+        from umap_canteen_manage a
+        LEFT JOIN umap_box_meal ubm ON a.box_meal_id = ubm.id
+	    LEFT JOIN umap_arraign_room uar ON ubm.box_id = uar.id
+        LEFT JOIN sys_dept d ON a.dept_id = d.dept_id
+	    LEFT JOIN sys_user u ON a.user_id = u.user_id
+	    LEFT JOIN sys_user u1 ON a.create_by = u1.user_id
+    </sql>
+
+
+    <sql id="selectCanteenManageAllVo">
+        SELECT
+	    ucm.canteen_apply_id,
+	    ucm.box_meal_id,
+	    ucm.dining_type,
+	    ucm.apply_status,
+	    ucm.dining_number,
+	    ucm.dining_status,
+	    ucm.date_time,
+	    ucm.user_id,
+	    ucm.progress,
+	    ucm.dept_id,
+	    ucm.create_by,
+	    ucm.create_time,
+	    ucm.remark,
+	    ubm.start_time,
+	    ubm.end_time,
+	    ubm.type_name,
+	    ubm.type_code,
+	    ubm.box_id,
+	    uar.name,
+	    uar.address,
+	    uar.status,
+	    d.dept_name,
+	    u.user_name
+        FROM
+	    umap_canteen_manage ucm
+	    LEFT JOIN umap_box_meal ubm ON ucm.box_meal_id = ubm.id
+	    LEFT JOIN umap_arraign_room uar ON ubm.box_id = uar.id
+	    LEFT JOIN sys_dept d ON ucm.dept_id = d.dept_id
+	    LEFT JOIN sys_user u ON ucm.user_id = u.user_id
+    </sql>
+
+    <select id="selectCanteenManageList" parameterType="com.mkst.umap.app.admin.domain.CanteenManage" resultMap="CanteenManageResult">
+        <include refid="selectCanteenManageVo"/>
+        <where>
+            <if test="canteenApplyId != null "> and a.canteen_apply_id = #{canteenApplyId}</if>
+             <if test="boxMealId != null  and boxMealId != '' "> and a.box_meal_id = #{boxMealId}</if>
+             <if test="diningType != null  and diningType != '' "> and a.dining_type = #{diningType}</if>
+             <if test="diningNumber != null "> and a.dining_number = #{diningNumber}</if>
+             <if test="diningStatus != null  "> and a.dining_status = #{diningStatus}</if>
+            <if test="applyStatus != null "> and a.apply_status = #{applyStatus}</if>
+            <if test="dateTime != null "> and a.date_time = #{dateTime}</if>
+             <if test="userId != null "> and a.user_id = #{userId}</if>
+             <if test="deptId != null "> and a.dept_id = #{deptId}</if>
+             <if test="createBy != null  and createBy != '' "> and a.create_by = #{createBy}</if>
+             <if test="createTime != null "> and a.create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and a.update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and a.update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and a.remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and a.del_flag = #{delFlag}</if>
+         </where>
+        order by a.apply_status asc, a.create_time desc
+    </select>
+
+    <select id="selectCanteenManageById" parameterType="Long" resultMap="CanteenManageResult">
+        <include refid="selectCanteenManageVo"/>
+        where canteen_apply_id = #{canteenApplyId}
+    </select>
+
+    <select id="selectCanteenManageAllById" parameterType="Long" resultMap="CanteenDetailResult">
+        <include refid="selectCanteenManageAllVo"/>
+        where ucm.canteen_apply_id = #{canteenApplyId}
+    </select>
+
+    <select id="selectCanteenManageCountByDateAndStatusEq01" parameterType="String" resultType="java.lang.Integer">
+        select distinct count(box_meal_id) from umap_canteen_manage where date_time = #{date}  and apply_status in ('0','1') and del_flag = '0'
+    </select>
+
+    <select id="selectCanteenListByBoxId" parameterType="Map" resultMap="CanteenManageResult">
+        <include refid="selectCanteenManageAllVo"/>
+        where ubm.box_id = #{params.boxId} and ucm.date_time = #{params.dateTime} and ucm.apply_status in ('0','1','4','5')
+    </select>
+
+    <select id="selectCanteenResultByDate" parameterType="com.mkst.umap.app.admin.domain.CanteenManage" resultMap="CanteenResult">
+        <include refid="selectCanteenManageAllVo"/>
+        <where>
+            <if test="canteenApplyId != null "> and ucm.canteen_apply_id = #{canteenApplyId}</if>
+            <if test="boxMealId != null  and boxMealId != '' "> and ucm.box_meal_id = #{boxMealId}</if>
+            <if test="boxId != null  and boxId != '' "> and ubm.box_id = #{boxId}</if>
+            <if test="diningType != null  and diningType != '' "> and ucm.dining_type = #{diningType}</if>
+            <if test="diningNumber != null "> and ucm.dining_number = #{diningNumber}</if>
+            <if test="diningStatus != null   "> and ucm.dining_status = #{diningStatus}</if>
+            <if test="applyStatus != null "> and ucm.apply_status = #{applyStatus}</if>
+            <if test="dateTime != null "> and ucm.date_time = #{dateTime}</if>
+            <if test="userId != null "> and ucm.user_id = #{userId}</if>
+            <if test="deptId != null "> and ucm.dept_id = #{deptId}</if>
+            <if test="createBy != null  and createBy != '' "> and ucm.create_by = #{createBy}</if>
+            <if test="createTime != null "> and ucm.create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' "> and ucm.update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and ucm.update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' "> and ucm.remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' "> and ucm.del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+    <select id="selectCanteenResultByStatus" parameterType="com.mkst.umap.app.admin.domain.CanteenManage" resultMap="CanteenResult">
+        <include refid="selectCanteenManageAllVo"/>
+        <where>
+            <if test="diningStatus != null  "> and ucm.dining_status = #{diningStatus}</if>
+            <if test="applyStatus != null "> and ucm.apply_status = #{applyStatus}</if>
+            <if test="dateTime != null and dateTime != ''"> and ucm.date_time = #{dateTime}</if>
+            <if test="userId != null "> and (ucm.user_id = #{userId} or ucm.create_by = #{userId})</if>
+             <if test="applyStatusList != null and applyStatusList.size() >0">
+                 and ucm.apply_status in
+                 <foreach collection='applyStatusList' item='item' open='(' separator=',' close=')'>
+                     #{item}
+                 </foreach>
+             </if>
+        </where>
+        order by apply_status asc, create_time desc
+    </select>
+
+
+    <select id="selectCanteenResultByCancel" parameterType="com.mkst.umap.app.admin.domain.CanteenManage" resultMap="CanteenResult">
+        <include refid="selectCanteenManageAllVo"/>
+        where del_flag = '0' and (ucm.dining_status = #{diningStatus} or ucm.apply_status = #{applyStatus}) and (ucm.user_id = #{userId} or ucm.create_by = #{userId})
+        order by apply_status asc, create_time desc
+    </select>
+    <resultMap id="typeCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.canteen.MealTypeCountResult">
+        <result property="typeName" column="type_name"/>
+        <result property="typeCount" column="type_count"/>
+    </resultMap>
+    <select id="countByMealType" parameterType="com.mkst.umap.app.admin.api.bean.param.canteen.CanteenManageParam"
+            resultMap="typeCountResultMap">
+        SELECT
+            bm.type_name type_name,
+            SUM(cm.dining_number) type_count
+        FROM
+            umap_canteen_manage AS cm
+        LEFT JOIN umap_box_meal AS bm ON cm.box_meal_id = bm.id
+        <where>
+            <if test="boxId != null"> and bm.box_id = #{boxId}</if>
+            <if test="dateTime != null "> and cm.date_time = #{dateTime}</if>
+            <if test="applyStatusArr != null and applyStatusArr.length !=0">
+                and apply_status in
+                <foreach collection="applyStatusArr" item="auditStatus" index="index"
+                         open="(" close=")" separator=",">
+                    #{auditStatus}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY
+            bm.id
+    </select>
+    <resultMap id="dayCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
+        <result column="dayName" property="name"/>
+        <result column="dayCount" property="count"/>
+        <result column="info" property="info"/>
+    </resultMap>
+    <select id="selectDayCount" resultMap="dayCountResultMap"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.canteen.CanteenManageParam">
+        SELECT
+        date_format(m.date_time, '%Y-%m-%d') dayName,
+        COUNT(1) dayCount,
+        '已预约' info
+        FROM
+        umap_canteen_manage m
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="year != null and year != ''">and YEAR (m.date_time) = #{year}</if>
+            <if test="month != null and month != ''">and MONTH (m.date_time) = #{month}</if>
+            <if test="nowUserId != null">and m.user_id = #{nowUserId}</if>
+            <if test="userId != null "> and (m.user_id = #{userId} or m.create_by = #{userId})</if>
+            <if test="applyStatusArr != null and applyStatusArr.length != 0">
+                and m.apply_status in
+                <foreach collection="applyStatusArr" item="auditStatus" index="index"
+                         open="(" close=")" separator=",">
+                    #{auditStatus}
+                </foreach>
+            </if>
+        </trim>
+        GROUP BY TO_DAYS(m.date_time)
+        order by dayName
+    </select>
+
+    <resultMap id="auditList" type="com.mkst.umap.app.admin.api.bean.result.canteen.CanteenResult">
+        <result property="canteenApplyId" column="id"/>
+        <result property="diningType" column="type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="dateTime" column="date_time"/>
+        <result property="applyStatus" column="audit_status"/>
+        <result property="userName" column="create_by_name"/>
+    </resultMap>
+
+    <select id="selectAuditListByParam" resultMap="auditList">
+        SELECT
+            o.canteen_apply_id id,
+            o.dining_type type,
+            o.date_time date_time,
+            o.create_time create_time,
+            r.`status` audit_status,
+            u.user_name create_by_name
+        FROM
+            wf_event_audit_record AS r
+        LEFT JOIN umap_canteen_manage AS o ON r.apply_id = o.canteen_apply_id
+        LEFT JOIN sys_user AS u ON o.create_by = u.user_id
+        <where>
+            r.apply_type = 'canteen'
+            <if test="status != null and status != ''">
+                and r.status = #{status}
+            </if>
+            <if test="date != null and date != ''">
+                and TO_DAYS(o.create_time) = TO_DAYS(#{date})
+            </if>
+            <if test="nowUserId != null and nowUserId != ''">and r.approval_user_id = #{nowUserId}</if>
+            order by r.status, o.create_time desc
+        </where>
+    </select>
+
+
+    <insert id="insertCanteenManage" parameterType="com.mkst.umap.app.admin.domain.CanteenManage" useGeneratedKeys="true" keyProperty="canteenApplyId">
+        insert into umap_canteen_manage
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="canteenApplyId != null  ">canteen_apply_id,</if>
+			<if test="boxMealId != null  and boxMealId != ''  ">box_meal_id,</if>
+			<if test="diningType != null  and diningType != ''  ">dining_type,</if>
+			<if test="diningNumber != null  ">dining_number,</if>
+			<if test="diningStatus != null   ">dining_status,</if>
+            <if test="applyStatus != null"> apply_status,</if>
+            <if test="dateTime != null "> date_time,</if>
+			<if test="userId != null  ">user_id,</if>
+			<if test="deptId != null  ">dept_id,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="canteenApplyId != null  ">#{canteenApplyId},</if>
+			<if test="boxMealId != null  and boxMealId != ''  ">#{boxMealId},</if>
+			<if test="diningType != null  and diningType != ''  ">#{diningType},</if>
+			<if test="diningNumber != null  ">#{diningNumber},</if>
+			<if test="diningStatus != null   ">#{diningStatus},</if>
+            <if test="applyStatus != null "> #{applyStatus},</if>
+            <if test="dateTime != null "> #{dateTime},</if>
+			<if test="userId != null  ">#{userId},</if>
+			<if test="deptId != null  ">#{deptId},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCanteenManage" parameterType="com.mkst.umap.app.admin.domain.CanteenManage">
+        update umap_canteen_manage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="boxMealId != null  and boxMealId != ''  ">box_meal_id = #{boxMealId},</if>
+            <if test="diningType != null  and diningType != ''  ">dining_type = #{diningType},</if>
+            <if test="diningNumber != null  ">dining_number = #{diningNumber},</if>
+            <if test="diningStatus != null   ">dining_status = #{diningStatus},</if>
+            <if test="applyStatus != null"> apply_status = #{applyStatus},</if>
+            <if test="dateTime != null "> date_time = #{dateTime},</if>
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="progress != null  ">progress = #{progress},</if>
+            <if test="deptId != null  ">dept_id = #{deptId},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where canteen_apply_id = #{canteenApplyId}
+    </update>
+
+	<delete id="deleteCanteenManageById" parameterType="Long">
+        delete from umap_canteen_manage where canteen_apply_id = #{canteenApplyId}
+    </delete>
+
+    <delete id="deleteCanteenManageByIds" parameterType="String">
+        delete from umap_canteen_manage where canteen_apply_id in
+        <foreach item="canteenApplyId" collection="array" open="(" separator="," close=")">
+            #{canteenApplyId}
+        </foreach>
+    </delete>
+
+    <select id="selectTotal" resultType="Long">
+        select count(1) from umap_canteen_manage
+        where apply_status= 1
+    </select>
+
+    <select id="selectTotalByDay" resultType="Integer">
+        select count(1) from umap_canteen_manage
+        where
+        create_time >= #{startTime} and create_time &lt;= #{endTime} and apply_status= 1
+    </select>
+
+    <select id="analysisList" resultType="com.mkst.umap.app.admin.statistics.AnalysisCountResult">
+            select d1.date `date` , IFNULL(d2.sumappointment,0) `value` from (
+                select date from
+                (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from
+                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
+                where date between #{startDay} and #{endDay}
+            ) d1 left join
+            (
+                select DATE_FORMAT(create_time,"%Y-%m-%d") date , count(1) sumappointment
+                from umap_canteen_manage
+                where create_time >= '${startDay} 00:00:00'
+                and create_time &lt;= '${endDay} 23:59:59'
+                and apply_status= 1
+                GROUP BY date
+            ) d2 on d1.date = d2.date
+            order by date asc
+    </select>
+
+</mapper>

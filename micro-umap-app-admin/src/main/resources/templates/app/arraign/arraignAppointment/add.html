@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="form-arraignAppointment-add">
+		<div class="form-group">
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>罪犯姓名：</label>
+			<div class="col-sm-8">
+				<input id="criminalName" name="criminalName" class="form-control" type="text">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>犯罪类型：</label>
+			<div class="col-sm-8">
+				<select id="criminalType" name="criminalType" class="form-control"
+						th:with="type=${@dict.getType('criminal_type')}">
+					<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>罪犯生日：</label>
+			<div class="col-sm-8">
+				<input id="criminalBirth" name="criminalBirth" class="form-control time-input" data-type="time">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>案件阶段：</label>
+			<div class="col-sm-8">
+				<select id="stage" name="stage" class="form-control"
+						th:with="type=${@dict.getType('case_stage')}">
+					<option value=""></option>
+					<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>罪犯是否认罪认罚：</label>
+			<div class="col-sm-8">
+				<select id="criminalAdmit" name="criminalAdmit" class="form-control"
+						th:with="type=${@dict.getType('sys_yes_no')}">
+					<option value=""></option>
+					<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>罪犯是否需要法律援助：</label>
+			<div class="col-sm-8">
+				<select id="needLegalAid" name="needLegalAid" class="form-control"
+						th:with="type=${@dict.getType('sys_yes_no')}">
+					<option value=""></option>
+					<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>检查官id：</label>
+			<div class="col-sm-8">
+				<input id="prosecutorId" name="prosecutorId" class="form-control" type="text">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label"><span style="color: red; ">*</span>检察官姓名：</label>
+			<div class="col-sm-8">
+				<input id="prosecutorName" name="prosecutorName" class="form-control" type="text">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">备注：</label>
+			<div class="col-sm-8">
+				 <textarea id="remark" name="remark" placeholder="输入您的备注内容" class="form-control" type="text" cols="50"
+						   rows="5" maxlength="455"></textarea>
+			</div>
+		</div>
+	</form>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+	var prefix = ctx + "admin/arraignAppointment"
+	$("#form-arraignAppointment-add").validate({
+		rules: {
+			criminalName: {
+				required: true,
+			},
+			criminalType: {
+				required: true,
+			},
+			criminalBirth: {
+				required: true,
+			},
+			stage: {
+				required: true,
+			},
+			criminalAdmit: {
+				required: true,
+			},
+			needLegalAid: {
+				required: true,
+			},
+			prosecutorId: {
+				required: true,
+			},
+			prosecutorName: {
+				required: true,
+			}
+		}
+	});
+
+	function submitHandler() {
+		if ($.validate.form()) {
+			$.operate.save(prefix + "/add", $('#form-arraignAppointment-add').serialize());
+		}
+	}
+</script>
+</body>
+</html>

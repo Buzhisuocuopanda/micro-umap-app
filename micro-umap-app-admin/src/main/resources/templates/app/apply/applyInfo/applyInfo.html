@@ -1,0 +1,216 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								申请类型：
+								<select id="applyType" name="applyType"
+										th:with="type=${@dict.getType('apply_type')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								申请状态：
+								<select id="applyStatus" name="applyStatus"
+										th:with="type=${@dict.getType('apply_status')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <!--<div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="admin:applyInfo:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="admin:applyInfo:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="admin:applyInfo:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="admin:applyInfo:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>-->
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+		var auditFlag = [[${@permission.hasPermi('admin:applyInfo:audit')}]];
+        var editFlag = [[${@permission.hasPermi('admin:applyInfo:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:applyInfo:remove')}]];
+		var apply_status = [[${@dict.getType('back_up_approve_status')}]];
+		var apply_type = [[${@dict.getType('apply_type')}]];
+        var prefix = ctx + "admin/applyInfo";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+				auditUrl: prefix + "/doAudit/{id}/{status}/{reason}",
+                updateUrl: prefix + "/edit/{id}",
+				detailUrl: prefix + "/detail/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "备勤间申请",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'applicantId', 
+					title : '申请人id',
+					sortable: true,
+					visible: false
+				},
+					{
+						field : 'applicant',
+						title : '申请人',
+						sortable: true
+					},
+				{
+					field : 'deptId',
+					title : '部门id',
+					sortable: true,
+					visible: false
+				},
+					{
+						field : 'deptName',
+						title : '部门名称',
+						sortable: true
+					},
+					{
+						field : 'roomNum',
+						title : '房间号',
+						sortable: true
+					},
+				{
+					field : 'applyType', 
+					title : '申请类型',
+					sortable: true,
+					formatter: function (value, row, index) {
+						return $.table.selectDictLabel(apply_type, value);
+					}
+				},
+				{
+					field : 'applyReason', 
+					title : '申请原因',
+					sortable: true
+				},
+				{
+					field : 'startTime', 
+					title : '入住开始时间',
+					sortable: true
+				},
+				{
+					field : 'endTime', 
+					title : '入住结束时间',
+					sortable: true
+				},
+				{
+					field : 'applyStatus', 
+					title : '申请状态',
+					sortable: true,
+					formatter: function (value, row, index) {
+						return $.table.selectDictLabel(apply_status, value);
+					}
+				},
+				{
+					field : 'createTime',
+					title : '创建时间',
+					sortable: true
+				},
+				{
+					field : 'remark', 
+					title : '备注',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	if(row.applyStatus === 0){
+							actions.push('<a class="btn btn-success btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.applyId + '\', 1)"><i class="fa fa-edit"></i>通过</a> ');
+							actions.push('<a class="btn btn-danger btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.applyId + '\', 2)"><i class="fa fa-edit"></i>驳回</a>');
+						}else {
+
+						}
+						actions.push('<a class="btn btn-default btn-xs ' + '" href="#" onclick="detail(\'' + row.applyId + '\')"><i class="fa fa-eye"></i>详情</a>  ');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+		// 修改信息
+		function audit(id, status) {
+
+			var statusMsg = status == "1" ? "通过" : "驳回";
+
+			prompt(status, "填写" + statusMsg + "该条" + $.table._option.modalName + "的原因", function (reason) {
+				var urlReason = $.common.isEmpty(reason) ? 'NoReasonFlag' : reason;
+				var url = $.common.isEmpty(id) ? $.table._option.auditUrl : $.table._option.auditUrl.replace("{id}", id).replace("{status}", status).replace("{reason}", urlReason);
+				$.operate.submit(url, "post", "json");
+			});
+		}
+
+		// 确认窗体
+		function prompt(status, content, callBack) {
+
+			layer.prompt({
+				formType: 2,
+				placeholder: "请输入原因",
+				title: content + "(非必填)",
+				btn: ['确认', '取消'],
+				btnclass: ['btn btn-primary', 'btn btn-danger'],
+				yes: function (index, value) {
+					layer.close(index);
+					callBack(value.find(".layui-layer-input").val());
+				}
+			});
+		}
+
+		function detail(id) {
+			var url = "/404.html";
+			if ($.common.isNotEmpty(id)) {
+				url = $.table._option.detailUrl.replace("{id}", id);
+			} else {
+				var id = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns($.table._option.uniqueId);
+				if (id.length == 0) {
+					$.modal.alertWarning("请至少选择一条记录");
+					return;
+				}
+				url = $.table._option.detailUrl.replace("{id}", id);
+			}
+			$.modal.open("预约详情", url);
+		}
+    </script>
+</body>
+</html>

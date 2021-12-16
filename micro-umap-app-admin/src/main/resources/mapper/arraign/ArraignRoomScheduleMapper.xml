@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignRoomScheduleMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.ArraignRoomSchedule" id="ArraignRoomScheduleResult">
+        <result property="id" column="id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="capacity" column="capacity"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <resultMap id="roomScheduleResult" type="com.mkst.umap.app.admin.api.bean.result.arraign.ScheduleResult">
+        <result property="roomId" column="room_id"/>
+        <result property="roomName" column="room_name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+    <sql id="selectArraignRoomScheduleVo">
+        select id, room_id, start_time, end_time, capacity, create_by, create_time, update_by, update_time, remark, del_flag from umap_arraign_room_schedule
+    </sql>
+
+    <sql id="selectScheduleListVo">
+        SELECT
+            r.id room_id,
+            r.`name` room_name,
+            sc.start_time start_time,
+            sc.end_time end_time
+        FROM
+            umap_arraign_room_schedule AS sc
+        LEFT JOIN umap_arraign_room AS r ON r.id = sc.room_id
+
+    </sql>
+
+
+    <select id="selectArraignRoomScheduleList" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomSchedule"
+            resultMap="ArraignRoomScheduleResult">
+        <include refid="selectArraignRoomScheduleVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="roomId != null ">and room_id = #{roomId}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="capacity != null ">and capacity = #{capacity}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+            <if test="scheduleDate != null  and scheduleDate != '' ">and start_time like concat(#{scheduleDate}, '%')
+            </if>
+            <if test="appointmentTime != null  and appointmentTime != '' ">and start_time &lt; #{appointmentTime}</if>
+            <if test="appointmentTime != null  and appointmentTime != '' ">and end_time &gt; #{appointmentTime}</if>
+            and del_flag = '0'
+        </where>
+    </select>
+
+
+    <select id="selectArraignRoomScheduleById" parameterType="Long" resultMap="ArraignRoomScheduleResult">
+        <include refid="selectArraignRoomScheduleVo"/>
+        where id = #{id}
+    </select>
+    <select id="getRoomScheduleList" resultMap="roomScheduleResult"
+            resultType="com.mkst.umap.app.admin.api.bean.result.arraign.ScheduleResult"
+            parameterType="com.mkst.umap.app.admin.api.bean.param.RoomScheduleParam">
+        <include refid="selectScheduleListVo"></include>
+        <where>
+            r.status != '2'
+            <if test="roomId != null and roomId != ''">and r.id = #{roomId}</if>
+            <if test="date != null">and TO_DAYS(sc.start_time) = TO_DAYS(#{date})</if>
+        </where>
+        ORDER BY
+        start_time
+    </select>
+
+    <insert id="insertArraignRoomSchedule" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomSchedule"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into umap_arraign_room_schedule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="roomId != null  ">room_id,</if>
+            <if test="startTime != null  ">start_time,</if>
+            <if test="endTime != null  ">end_time,</if>
+            <if test="capacity != null  ">capacity,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="roomId != null  ">#{roomId},</if>
+            <if test="startTime != null  ">#{startTime},</if>
+            <if test="endTime != null  ">#{endTime},</if>
+            <if test="capacity != null  ">#{capacity},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateArraignRoomSchedule" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomSchedule">
+        update umap_arraign_room_schedule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomId != null  ">room_id = #{roomId},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="capacity != null  ">capacity = #{capacity},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArraignRoomScheduleById" parameterType="Long">
+        delete from umap_arraign_room_schedule where id = #{id}
+    </delete>
+
+    <delete id="deleteScheduleByRoomId" parameterType="String">
+        delete from umap_arraign_room_schedule where room_id in
+        <foreach item="roomIds" collection="array" open="(" separator="," close=")">
+            #{roomIds}
+        </foreach>
+    </delete>
+
+    <delete id="deleteArraignRoomScheduleByIds" parameterType="String">
+        delete from umap_arraign_room_schedule where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteScheduleByAppointmentIds" parameterType="String">
+        delete from umap_arraign_room_schedule where appointment_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="roomUse" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomSchedule"
+            resultMap="ArraignRoomScheduleResult">
+        select a.id, a.room_id, a.start_time, b.remark
+        from umap_arraign_room_schedule a
+        inner join umap_arraign_appointment b on a.id = b.schedule_id
+        <where>
+            <if test="id != null ">and a.id = #{id}</if>
+            <if test="roomId != null ">and a.room_id = #{roomId}</if>
+            <if test="scheduleDate != null  and scheduleDate != '' ">and a.start_time like concat(#{scheduleDate}, '%')</if>
+            and a.del_flag = '0'
+        </where>
+    </select>
+
+    <select id="selectRoomPlus" resultType="com.mkst.umap.app.admin.domain.ArraignRoomPlus">
+        select id, am_start_time as amStartTime, am_end_time as amEndTime,
+               pm_start_time as pmStartTime, pm_end_time as pmEndTime, time_span as timeSpan
+        from umap_arraign_room_plus
+    </select>
+
+</mapper>

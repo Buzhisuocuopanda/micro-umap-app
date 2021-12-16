@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.AuditProgressMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.AuditProgress" id="AuditProgressResult">
+        <result property="id"    column="id"    />
+        <result property="businessType"    column="business_type"    />
+        <result property="businessId"    column="business_id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="progress"    column="progress"    />
+        <result property="targetType"    column="target_type"    />
+        <result property="target"    column="target"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+	
+	<sql id="selectAuditProgressVo">
+        select id, business_type, business_id, record_id, progress, target_type, target, create_by, create_time, update_by, update_time, remark, del_flag from umap_audit_progress
+    </sql>
+	
+    <select id="selectAuditProgressList" parameterType="com.mkst.umap.app.admin.domain.AuditProgress" resultMap="AuditProgressResult">
+        <include refid="selectAuditProgressVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="businessType != null  and businessType != '' "> and business_type = #{businessType}</if>
+             <if test="businessId != null "> and business_id = #{businessId}</if>
+             <if test="recordId != null "> and record_id = #{recordId}</if>
+             <if test="progress != null "> and progress = #{progress}</if>
+             <if test="targetType != null  and targetType != '' "> and target_type = #{targetType}</if>
+             <if test="target != null  and target != '' "> and target = #{target}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+         </where>
+    </select>
+    
+    <select id="selectAuditProgressById" parameterType="Long" resultMap="AuditProgressResult">
+        <include refid="selectAuditProgressVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertAuditProgress" parameterType="com.mkst.umap.app.admin.domain.AuditProgress">
+        insert into umap_audit_progress
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="businessType != null  and businessType != ''  ">business_type,</if>
+			<if test="businessId != null  ">business_id,</if>
+			<if test="recordId != null  ">record_id,</if>
+			<if test="progress != null  ">progress,</if>
+			<if test="targetType != null  and targetType != ''  ">target_type,</if>
+			<if test="target != null  and target != ''  ">target,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="businessType != null  and businessType != ''  ">#{businessType},</if>
+			<if test="businessId != null  ">#{businessId},</if>
+			<if test="recordId != null  ">#{recordId},</if>
+			<if test="progress != null  ">#{progress},</if>
+			<if test="targetType != null  and targetType != ''  ">#{targetType},</if>
+			<if test="target != null  and target != ''  ">#{target},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateAuditProgress" parameterType="com.mkst.umap.app.admin.domain.AuditProgress">
+        update umap_audit_progress
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="businessType != null  and businessType != ''  ">business_type = #{businessType},</if>
+            <if test="businessId != null  ">business_id = #{businessId},</if>
+            <if test="recordId != null  ">record_id = #{recordId},</if>
+            <if test="progress != null  ">progress = #{progress},</if>
+            <if test="targetType != null  and targetType != ''  ">target_type = #{targetType},</if>
+            <if test="target != null  and target != ''  ">target = #{target},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteAuditProgressById" parameterType="Long">
+        delete from umap_audit_progress where id = #{id}
+    </delete>
+	
+    <delete id="deleteAuditProgressByIds" parameterType="String">
+        delete from umap_audit_progress where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

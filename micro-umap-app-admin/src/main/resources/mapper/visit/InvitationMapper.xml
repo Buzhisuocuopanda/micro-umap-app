@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.InvitationMapper">
+    
+    <resultMap type="Invitation" id="InvitationResult">
+        <result property="id"    column="id"    />
+        <result property="invitationUser"    column="invitation_user"    />
+        <result property="code"    column="code"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+	
+	<sql id="selectInvitationVo">
+        select id, invitation_user, code, status from umap_invitation
+    </sql>
+	
+    <select id="selectInvitationList" parameterType="Invitation" resultMap="InvitationResult">
+        <include refid="selectInvitationVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="invitationUser != null "> and invitation_user = #{invitationUser}</if>
+             <if test="code != null  and code != '' "> and code = #{code}</if>
+             <if test="status != null  and status != '' "> and status = #{status}</if>
+         </where>
+    </select>
+    
+    <select id="selectInvitationById" parameterType="Integer" resultMap="InvitationResult">
+        <include refid="selectInvitationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertInvitation" parameterType="Invitation">
+        insert into umap_invitation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="invitationUser != null  ">invitation_user,</if>
+			<if test="code != null  and code != ''  ">code,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="invitationUser != null  ">#{invitationUser},</if>
+			<if test="code != null  and code != ''  ">#{code},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateInvitation" parameterType="Invitation">
+        update umap_invitation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="invitationUser != null  ">invitation_user = #{invitationUser},</if>
+            <if test="code != null  and code != ''  ">code = #{code},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteInvitationById" parameterType="Integer">
+        delete from umap_invitation where id = #{id}
+    </delete>
+	
+    <delete id="deleteInvitationByIds" parameterType="String">
+        delete from umap_invitation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

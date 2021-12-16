@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignShiftMapper">
+    
+    <resultMap type="ArraignShift" id="ArraignShiftResult">
+        <result property="id"    column="id"    />
+        <result property="applyUserId"    column="apply_user_id"    />
+        <result property="applyUserName"    column="apply_user_name"    />
+        <result property="applySourceDate"    column="apply_source_date"    />
+        <result property="applyTimePie"    column="apply_time_pie"    />
+        <result property="applyNumOrder"    column="apply_num_order"    />
+        <result property="targetUserId"    column="target_user_id"    />
+        <result property="targetUserName"    column="target_user_name"    />
+        <result property="targetDate"    column="target_date"    />
+        <result property="targetTimePie"    column="target_time_pie"    />
+        <result property="targetNumOrder"    column="target_num_order"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="applyArraignAppointmentId"    column="apply_arraign_appointment_id"    />
+        <result property="targetArraignAppointmentId"    column="target_arraign_appointment_id"    />
+    </resultMap>
+	
+    <sql id="selectArraignShiftVo">
+        select t1.id, t1.apply_user_id, t1.apply_source_date, t1.apply_time_pie, t1.apply_num_order, t1.target_user_id,
+        t1.target_date, t1.target_time_pie, t1.target_num_order, t1.status, t1.create_by, t1.create_time, t1.update_by, t1.update_time ,
+        t1.apply_arraign_appointment_id , t1.target_arraign_appointment_id ,
+        (select t2.user_name from sys_user t2 where t2.user_id=t1.apply_user_id ) as apply_user_name,
+        (select t3.user_name from sys_user t3 where t3.user_id=t1.target_user_id ) as target_user_name
+        from umap_arraign_shift t1
+        left join umap_arraign_appointment t2 on t2.id = t1.target_arraign_appointment_id
+    </sql>
+	
+    <select id="selectArraignShiftList" parameterType="ArraignShift" resultMap="ArraignShiftResult">
+        <include refid="selectArraignShiftVo"/>
+        <where>  
+            <if test="id != null "> and t1.id = #{id}</if>
+             <if test="applyUserId != null and createBy == null"> and t1.apply_user_id = #{applyUserId}</if>
+             <if test="applySourceDate != null "> and t1.apply_source_date = #{applySourceDate}</if>
+             <if test="applyTimePie != null  and applyTimePie != '' "> and t1.apply_time_pie = #{applyTimePie}</if>
+             <if test="applyNumOrder != null "> and t1.apply_num_order = #{applyNumOrder}</if>
+             <if test="targetUserId != null "> and t1.target_user_id = #{targetUserId}</if>
+             <if test="targetDate != null "> and t1.target_date = #{targetDate}</if>
+             <if test="targetTimePie != null  and targetTimePie != '' "> and t1.target_time_pie = #{targetTimePie}</if>
+             <if test="targetNumOrder != null "> and t1.target_num_order = #{targetNumOrder}</if>
+             <if test="status != null  and status != '' "> and t1.status = #{status}</if>
+             <if test="createBy != null  and createBy != '' and applyUserId != null "> and (t1.create_by = #{createBy} or t1.apply_user_id = #{applyUserId}) </if>
+             <if test="createTime != null "> and t1.create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and t1.update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and t1.update_time = #{updateTime}</if>
+             <if test="checkDate != null">and TO_DAYS(t1.apply_source_date) = TO_DAYS(#{checkDate})</if>
+            <if test="params != null and params.needDeal != null and params.needDeal == 0">and (t1.status = 0 )</if>
+            <if test="params != null and params.needDeal != null and params.needDeal != 0 ">and (t1.status != 0 )</if>
+            <if test="params != null and params.approveUserId != null">and ( t1.target_user_id = #{params.approveUserId} or t2.create_by = #{params.approveUserLoginName} )</if>
+        </where>
+        ORDER by create_time desc
+    </select>
+
+    <select id="selectArraignShiftCount" parameterType="ArraignShift" resultType="Integer">
+        select count(t1.id) from umap_arraign_shift t1
+        left join umap_arraign_appointment t2 on t2.id = t1.target_arraign_appointment_id
+        <where>
+            <if test="id != null "> and t1.id = #{id}</if>
+            <if test="applyUserId != null "> and t1.apply_user_id = #{applyUserId}</if>
+            <if test="applySourceDate != null "> and t1.apply_source_date = #{applySourceDate}</if>
+            <if test="applyTimePie != null  and applyTimePie != '' "> and t1.apply_time_pie = #{applyTimePie}</if>
+            <if test="applyNumOrder != null "> and t1.apply_num_order = #{applyNumOrder}</if>
+            <if test="targetUserId != null "> and t1.target_user_id = #{targetUserId}</if>
+            <if test="targetDate != null "> and t1.target_date = #{targetDate}</if>
+            <if test="targetTimePie != null  and targetTimePie != '' "> and t1.target_time_pie = #{targetTimePie}</if>
+            <if test="targetNumOrder != null "> and t1.target_num_order = #{targetNumOrder}</if>
+            <if test="status != null  and status != '' "> and t1.status = #{status}</if>
+            <if test="createBy != null  and createBy != '' "> and t1.create_by = #{createBy}</if>
+            <if test="createTime != null "> and t1.create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' "> and t1.update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and t1.update_time = #{updateTime}</if>
+            <if test="params != null and params.approveUserId != null">and ( t1.target_user_id = #{params.approveUserId} or t2.create_by = #{params.approveUserLoginName} )</if>
+        </where>
+    </select>
+    
+    <select id="selectArraignShiftById" parameterType="Integer" resultMap="ArraignShiftResult">
+        <include refid="selectArraignShiftVo"/>
+        where t1.id = #{id}
+    </select>
+        
+    <insert id="insertArraignShift" parameterType="ArraignShift">
+        insert into umap_arraign_shift
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="applyUserId != null  ">apply_user_id,</if>
+			<if test="applySourceDate != null  ">apply_source_date,</if>
+			<if test="applyTimePie != null  and applyTimePie != ''  ">apply_time_pie,</if>
+			<if test="applyNumOrder != null  ">apply_num_order,</if>
+			<if test="targetUserId != null  ">target_user_id,</if>
+			<if test="targetDate != null  ">target_date,</if>
+			<if test="targetTimePie != null  and targetTimePie != ''  ">target_time_pie,</if>
+			<if test="targetNumOrder != null  ">target_num_order,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+            <if test="applyArraignAppointmentId != null  ">apply_arraign_appointment_id,</if>
+            <if test="targetArraignAppointmentId != null  ">target_arraign_appointment_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="applyUserId != null  ">#{applyUserId},</if>
+			<if test="applySourceDate != null  ">#{applySourceDate},</if>
+			<if test="applyTimePie != null  and applyTimePie != ''  ">#{applyTimePie},</if>
+			<if test="applyNumOrder != null  ">#{applyNumOrder},</if>
+			<if test="targetUserId != null  ">#{targetUserId},</if>
+			<if test="targetDate != null  ">#{targetDate},</if>
+			<if test="targetTimePie != null  and targetTimePie != ''  ">#{targetTimePie},</if>
+			<if test="targetNumOrder != null  ">#{targetNumOrder},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+            <if test="applyArraignAppointmentId != null  ">#{applyArraignAppointmentId},</if>
+            <if test="targetArraignAppointmentId != null  ">#{targetArraignAppointmentId},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateArraignShift" parameterType="ArraignShift">
+        update umap_arraign_shift
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyUserId != null  ">apply_user_id = #{applyUserId},</if>
+            <if test="applySourceDate != null  ">apply_source_date = #{applySourceDate},</if>
+            <if test="applyTimePie != null  and applyTimePie != ''  ">apply_time_pie = #{applyTimePie},</if>
+            <if test="applyNumOrder != null  ">apply_num_order = #{applyNumOrder},</if>
+            <if test="targetUserId != null  ">target_user_id = #{targetUserId},</if>
+            <if test="targetDate != null  ">target_date = #{targetDate},</if>
+            <if test="targetTimePie != null  and targetTimePie != ''  ">target_time_pie = #{targetTimePie},</if>
+            <if test="targetNumOrder != null  ">target_num_order = #{targetNumOrder},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="applyArraignAppointmentId != null  ">apply_arraign_appointment_id = #{applyArraignAppointmentId},</if>
+            <if test="targetArraignAppointmentId != null  ">target_arraign_appointment_id = #{targetArraignAppointmentId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteArraignShiftById" parameterType="Integer">
+        delete from umap_arraign_shift where id = #{id}
+    </delete>
+	
+    <delete id="deleteArraignShiftByIds" parameterType="String">
+        delete from umap_arraign_shift where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectShiftRecord" resultType="com.mkst.umap.app.admin.domain.ArraignShift" parameterType="int">
+        select id, apply_arraign_appointment_id as applyArraignAppointmentId, target_arraign_appointment_id as targetArraignAppointmentId
+        from umap_arraign_shift
+        where id = #{id}
+    </select>
+    
+</mapper>

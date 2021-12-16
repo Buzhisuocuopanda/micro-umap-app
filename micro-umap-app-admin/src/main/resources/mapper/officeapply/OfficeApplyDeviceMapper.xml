@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.OfficeApplyDeviceMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.OfficeApplyDevice" id="OfficeApplyDeviceResult">
+        <result property="id"    column="id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="assetsName"    column="assets_name"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="unit"    column="unit"    />
+        <result property="model"    column="model"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectOfficeApplyDeviceVo">
+        select id, parent_id, assets_name, quantity, unit, model, create_by, create_time, update_by, update_time, del_flag, remark from umap_office_apply_device
+    </sql>
+	
+    <select id="selectOfficeApplyDeviceList" parameterType="com.mkst.umap.app.admin.domain.OfficeApplyDevice" resultMap="OfficeApplyDeviceResult">
+        <include refid="selectOfficeApplyDeviceVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="parentId != null "> and parent_id = #{parentId}</if>
+             <if test="assetsName != null  and assetsName != '' "> and assets_name = #{assetsName}</if>
+             <if test="quantity != null "> and quantity = #{quantity}</if>
+             <if test="unit != null  and unit != '' "> and unit = #{unit}</if>
+             <if test="model != null  and model != '' "> and model = #{model}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+    </select>
+    
+    <select id="selectOfficeApplyDeviceById" parameterType="Long" resultMap="OfficeApplyDeviceResult">
+        <include refid="selectOfficeApplyDeviceVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOfficeApplyDevice" parameterType="com.mkst.umap.app.admin.domain.OfficeApplyDevice">
+        insert into umap_office_apply_device
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="parentId != null  ">parent_id,</if>
+			<if test="assetsName != null  and assetsName != ''  ">assets_name,</if>
+			<if test="quantity != null  ">quantity,</if>
+			<if test="unit != null  and unit != ''  ">unit,</if>
+			<if test="model != null  and model != ''  ">model,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="parentId != null  ">#{parentId},</if>
+			<if test="assetsName != null  and assetsName != ''  ">#{assetsName},</if>
+			<if test="quantity != null  ">#{quantity},</if>
+			<if test="unit != null  and unit != ''  ">#{unit},</if>
+			<if test="model != null  and model != ''  ">#{model},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateOfficeApplyDevice" parameterType="com.mkst.umap.app.admin.domain.OfficeApplyDevice">
+        update umap_office_apply_device
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null  ">parent_id = #{parentId},</if>
+            <if test="assetsName != null  and assetsName != ''  ">assets_name = #{assetsName},</if>
+            <if test="quantity != null  ">quantity = #{quantity},</if>
+            <if test="unit != null  and unit != ''  ">unit = #{unit},</if>
+            <if test="model != null  and model != ''  ">model = #{model},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteOfficeApplyDeviceById" parameterType="Long">
+        delete from umap_office_apply_device where id = #{id}
+    </delete>
+	
+    <delete id="deleteOfficeApplyDeviceByIds" parameterType="String">
+        delete from umap_office_apply_device where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

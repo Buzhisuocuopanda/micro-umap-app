@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<style>
+    .badge.badge-success {
+        position: relative;
+        top: 5px;
+    }
+</style>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content">
+    <form class="form-horizontal" id="form-notaryInfo-edit" th:object="${petition}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="ibox float-e-margins">
+
+            <div class="ibox-title">
+                <h5>建言献策详情</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">匿名：</label>
+                            <div class="col-sm-8">
+                                <label th:with="type=${@dict.getType('is_anonymous')}">
+                                    <span th:each="dict : ${type}"
+                                          th:text="${petition.anonymous} == ${dict.dictValue} ? ${dict.dictLabel} : ''"
+                                          th:class="${'badge badge-'+dict.listClass}"
+                                          th:value="${dict.dictValue}"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">标题：</label>
+                            <div class="col-sm-8">
+                                <label id="title" th:text="*{title}" class="control-label"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">内容：</label>
+                            <div class="col-sm-10">
+                                <label id="content" th:text="*{content}" class="control-label text-left"
+                                       style="text-align: left;"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">回复：</label>
+                            <div class="col-sm-8">
+                                <label th:with="type=${@dict.getType('is_replied')}">
+                                    <span th:each="dict : ${type}"
+                                          th:text="${petition.hasReplied} == ${dict.dictValue} ? ${dict.dictLabel} : ''"
+                                          th:class="${'badge badge-'+dict.listClass}"
+                                          th:value="${dict.dictValue}"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ibox ">
+            <div class="ibox-title">
+                <h5>图片详情</h5>
+                <!--<div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>-->
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-4" th:if="${fileSize == 0}">无</div>
+
+                    <div th:if="${fileSize != 0}" class="col-sm-2" th:each="img:${fileBind}">
+                        <img onclick="showBig(this)" class='img-view img-banner' th:src="@{${img}}" height='200px'
+                             width='200px' target='self'>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ibox" th:if="${petition.hasReplied == '1'}">
+            <div class="ibox-title">
+                <h5>回复内容</h5>
+                <!-- <div class="ibox-tools">
+                     <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                 </div>-->
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-sm-12">
+                            <label id="reply" th:text="${reply.content}" class="control-label"
+                                   style="text-align: left;"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div th:include="include::footer"></div>
+<<!--script th:src="@{/ajax/libs/summernote/summernote.min.js}"></script>
+<script th:src="@{/ajax/libs/summernote/summernote-zh-CN.js}"></script>
+<script th:src="@{/viewer/js/viewer.js}"></script>
+<script th:src="@{/viewer/js/jquery-viewer.js}"></script>-->
+<script th:inline="javascript">
+
+    function showBig(obj) {
+        var src = $(obj).attr('src');
+        var target = $(obj).attr('target');
+        if ($.common.equals("self", target)) {
+            var height = '800px';
+            var width = '800px';
+            // 如果是移动端，就使用自适应大小弹窗
+            if ($.common.isMobile()) {
+                width = 'auto';
+                height = 'auto';
+            }
+            layer.open({
+                title: false,
+                type: 1,
+                closeBtn: true,
+                shadeClose: true,
+                area: ['auto', 'auto'],
+                content: "<img src='" + src + "' height='" + height + "' width='" + width + "'/>"
+            });
+        } else if ($.common.equals("blank", target)) {
+            window.open(src);
+        }
+
+    }
+
+
+</script>
+</body>
+</html>

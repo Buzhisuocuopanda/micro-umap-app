@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.QrCodeManageMapper">
+    
+    <resultMap type="QrCodeManage" id="QrCodeManageResult">
+        <result property="qrCodeId"    column="qr_code_id"    />
+        <result property="businessId"    column="business_id"    />
+        <result property="businessMatter"    column="business_matter"    />
+        <result property="jumpUrl"    column="jump_url"    />
+        <result property="jumpWhether"    column="jump_whether"    />
+        <result property="encryptWhether"    column="encrypt_whether"    />
+        <result property="encryptDataArea"    column="encrypt_data_area"    />
+        <result property="qrCodeAddress"    column="qr_code_address"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectQrCodeManageVo">
+        select qr_code_id, business_id, business_matter, jump_url, jump_whether, encrypt_whether,encrypt_data_area,qr_code_address, create_by, create_time, update_by, update_time, del_flag, remark from umap_qr_code_manage
+    </sql>
+	
+    <select id="selectQrCodeManageList" parameterType="QrCodeManage" resultMap="QrCodeManageResult">
+        <include refid="selectQrCodeManageVo"/>
+        <where>  
+            <if test="qrCodeId != null "> and qr_code_id = #{qrCodeId}</if>
+             <if test="businessId != null "> and business_id = #{businessId}</if>
+             <if test="businessMatter != null  and businessMatter != '' "> and business_matter = #{businessMatter}</if>
+             <if test="jumpUrl != null  and jumpUrl != '' "> and jump_url = #{jumpUrl}</if>
+             <if test="jumpWhether != null "> and jump_whether = #{jumpWhether}</if>
+            <if test="qrCodeAddress != null  and qrCodeAddress != '' "> and qr_code_address = #{qrCodeAddress}</if>
+            <if test="encryptWhether != null "> and encrypt_whether = #{encryptWhether}</if>
+             <if test="encryptDataArea != null  and encryptDataArea != '' "> and encrypt_data_area = #{encryptDataArea}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+    </select>
+    
+    <select id="selectQrCodeManageById" parameterType="Long" resultMap="QrCodeManageResult">
+        <include refid="selectQrCodeManageVo"/>
+        where qr_code_id = #{qrCodeId}
+    </select>
+        
+    <insert id="insertQrCodeManage" parameterType="QrCodeManage" useGeneratedKeys="true" keyProperty="qrCodeId">
+        insert into umap_qr_code_manage
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="qrCodeId != null  ">qr_code_id,</if>
+			<if test="businessId != null  ">business_id,</if>
+			<if test="businessMatter != null  and businessMatter != ''  ">business_matter,</if>
+			<if test="jumpUrl != null  and jumpUrl != ''  ">jump_url,</if>
+			<if test="jumpWhether != null ">jump_whether,</if>
+            <if test="qrCodeAddress != null  and qrCodeAddress != '' "> qr_code_address,</if>
+            <if test="encryptWhether != null ">encrypt_whether,</if>
+			<if test="encryptDataArea != null  and encryptDataArea != ''  ">encrypt_data_area,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="qrCodeId != null  ">#{qrCodeId},</if>
+			<if test="businessId != null  ">#{businessId},</if>
+			<if test="businessMatter != null  and businessMatter != ''  ">#{businessMatter},</if>
+			<if test="jumpUrl != null  and jumpUrl != ''  ">#{jumpUrl},</if>
+			<if test="jumpWhether != null  ">#{jumpWhether},</if>
+            <if test="qrCodeAddress != null  and qrCodeAddress != '' "> #{qrCodeAddress},</if>
+            <if test="encryptWhether != null "> #{encryptWhether},</if>
+			<if test="encryptDataArea != null  and encryptDataArea != ''  ">#{encryptDataArea},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateQrCodeManage" parameterType="QrCodeManage">
+        update umap_qr_code_manage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="businessId != null  ">business_id = #{businessId},</if>
+            <if test="businessMatter != null  and businessMatter != ''  ">business_matter = #{businessMatter},</if>
+            <if test="jumpUrl != null  and jumpUrl != ''  ">jump_url = #{jumpUrl},</if>
+            <if test="jumpWhether != null ">jump_whether = #{jumpWhether},</if>
+            <if test="qrCodeAddress != null  and qrCodeAddress != '' ">  qr_code_address = #{qrCodeAddress},</if>
+            <if test="encryptWhether != null ">encrypt_whether = #{encryptWhether},</if>
+            <if test="encryptDataArea != null  and encryptDataArea != ''  ">encrypt_data_area = #{encryptDataArea},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where qr_code_id = #{qrCodeId}
+    </update>
+
+	<delete id="deleteQrCodeManageById" parameterType="Integer">
+        delete from umap_qr_code_manage where qr_code_id = #{qrCodeId}
+    </delete>
+	
+    <delete id="deleteQrCodeManageByIds" parameterType="String">
+        delete from umap_qr_code_manage where qr_code_id in 
+        <foreach item="qrCodeId" collection="array" open="(" separator="," close=")">
+            #{qrCodeId}
+        </foreach>
+    </delete>
+    
+</mapper>

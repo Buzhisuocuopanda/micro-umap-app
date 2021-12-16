@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ApplyInfoMapper">
+
+    <resultMap type="ApplyInfo" id="ApplyInfoResult">
+        <result property="applyId" column="apply_id"/>
+        <result property="applicantId" column="applicant_id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="applyType" column="apply_type"/>
+        <result property="applyReason" column="apply_reason"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="applyStatus" column="apply_status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="remark" column="remark"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="applicant" column="applicant"/>
+        <result property="roomNum" column="room_num"/>
+        <result property="progress" column="progress"/>
+        <result property="approvalUserId" column="approval_user_id"/>
+        <result property="approveStatus" column="approve_status"/>
+
+        <result property="femaleNum" column="female_num"/>
+        <result property="maleNum" column="male_num"/>
+        <result property="singleRoomNum" column="single_room_num"/>
+        <result property="standardRoomNum" column="standard_room_num"/>
+    </resultMap>
+
+    <resultMap type="com.mkst.umap.app.admin.domain.vo.ApplyInfoVo" id="ApplyInfoVoResult">
+        <result property="applyId" column="apply_id"/>
+        <result property="applicant" column="applicant"/>
+        <result property="applyType" column="apply_type"/>
+        <result property="applyReason" column="apply_reason"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="applyStatus" column="apply_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="applicant" column="applicant"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="roomNum" column="room_num"/>
+        <result property="approveStatus" column="approve_status"/>
+    </resultMap>
+
+    <sql id="selectApplyInfoVo">
+        select a.apply_id, a.applicant_id, a.room_id,a.dept_id, a.apply_type, a.apply_reason, a.start_time,
+        a.end_time, a.apply_status, a.create_by, a.create_time, a.update_by, a.update_time, a.del_flag,
+        a.remark,a.approval_user_id,a.approve_status, a.female_num , a.male_num , a.single_room_num ,
+        a.standard_room_num ,
+        d.dept_name,
+        r.room_num,
+        u2.user_name as applicant
+        from umap_apply_info a
+        left join sys_user u2 on a.applicant_id = u2.user_id
+        left join sys_dept d on a.dept_id = d.dept_id
+        left join umap_back_up_room r on a.room_id = r.room_id
+    </sql>
+
+
+    <sql id="selectApplyVo">
+        select a.apply_id, a.apply_type, a.apply_reason, a.start_time, a.end_time, a.apply_status, a.create_time,
+               u2.user_name as applicant,a.approve_status,
+               d.dept_name,
+               r.room_num
+        from umap_apply_info a
+        left join sys_user u2 on a.applicant_id = u2.user_id
+        left join sys_dept d on a.dept_id = d.dept_id
+        left join umap_back_up_room r on a.room_id = r.room_id
+    </sql>
+
+    <select id="selectApplyRoomByDates" parameterType="com.mkst.umap.app.admin.dto.apply.ApplyInfoDto"
+            resultType="java.lang.Long">
+        <!--SELECT room_id FROM umap_apply_info WHERE #{endTime} &lt;= start_time AND room_id IS NOT NULL GROUP BY room_id
+         UNION -->
+        SELECT room_id FROM umap_apply_info WHERE #{startTime} &lt; start_time AND #{endTime} &gt; start_time AND
+        #{endTime} &lt;= end_time AND room_id is not null AND apply_status != 6 AND del_flag = 0 GROUP BY room_id
+        UNION
+        SELECT room_id FROM umap_apply_info WHERE #{startTime} &gt;= start_time AND #{endTime} &gt;= start_time AND
+        #{endTime} &lt;= end_time AND room_id is not null AND apply_status != 6 AND del_flag = 0 GROUP BY room_id
+        UNION
+        SELECT room_id FROM umap_apply_info WHERE #{startTime} &gt;= start_time AND #{startTime} &lt; end_time AND
+        #{endTime} &gt; end_time AND room_id is not null AND apply_status != 6 AND del_flag = 0 GROUP BY room_id
+        <!--UNION
+        SELECT room_id FROM umap_apply_info WHERE #{startTime} &gt;= end_time AND room_id is not null GROUP BY room_id -->
+    </select>
+
+    <select id="selectApplyVo" parameterType="com.mkst.umap.app.admin.dto.apply.ApplyInfoDto"
+            resultMap="ApplyInfoVoResult">
+        <include refid="selectApplyVo"/>
+        <where>
+            a.del_flag = '0'
+            <if test="applyId != null ">and a.apply_id = #{applyId}</if>
+            <if test="applicantId != null ">and a.applicant_id = #{applicantId}</if>
+            <if test="startTime != null ">and a.start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and a.end_time &lt;= #{endTime}</if>
+            <if test="applyStatusList != null and applyStatusList.size() > 0 ">
+                and a.apply_status in
+                <foreach collection='applyStatusList' item='applyStatus' open='(' separator=',' close=')'>
+                    #{applyStatus}
+                </foreach>
+            </if>
+        </where>
+        order by a.apply_status asc, a.create_time desc
+    </select>
+
+    <select id="selectApplyInfoList" parameterType="ApplyInfo" resultMap="ApplyInfoResult">
+        <include refid="selectApplyInfoVo"/>
+        <where>
+            a.del_flag = '0'
+            <if test="applyId != null ">and a.apply_id = #{applyId}</if>
+            <if test="applicantId != null ">and a.applicant_id = #{applicantId}</if>
+            <if test="roomId != null ">and a.room_id = #{roomId}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="applyType != null ">and a.apply_type = #{applyType}</if>
+            <if test="applyReason != null  and applyReason != '' ">and a.apply_reason = #{applyReason}</if>
+            <if test="startTime != null ">and a.start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and a.end_time &lt;= #{endTime}</if>
+            <if test="applyStatus != null ">and a.apply_status = #{applyStatus}</if>
+            <if test="createBy != null  and createBy != '' ">and a.create_by = #{createBy}</if>
+            <if test="createTime != null ">and a.create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and a.update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and a.update_time = #{updateTime}</if>
+            <if test="delFlag != null  and delFlag != '' ">and a.del_flag = #{delFlag}</if>
+            <if test="remark != null  and remark != '' ">and a.remark = #{remark}</if>
+        </where>
+        order by a.apply_status,a.create_time desc
+    </select>
+
+
+    <select id="selectApplyInfoListTask" parameterType="ApplyInfo" resultMap="ApplyInfoResult">
+        <include refid="selectApplyInfoVo"/>
+        <where>
+            a.del_flag = '0'
+            <if test="startTime != null ">and a.start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and a.end_time &lt;= #{endTime}</if>
+        </where>
+        order by a.apply_status,a.create_time desc
+    </select>
+
+    <select id="selectApplyInfoById" parameterType="Long" resultMap="ApplyInfoResult">
+        <include refid="selectApplyInfoVo"/>
+        where a.apply_id = #{applyId} and a.del_flag = '0'
+    </select>
+
+
+    <select id="selectApplyVoById" parameterType="Long" resultMap="ApplyInfoVoResult">
+        <include refid="selectApplyVo"/>
+        where a.apply_id = #{applyId} and a.del_flag = '0'
+    </select>
+
+    <insert id="insertApplyInfo" parameterType="ApplyInfo" useGeneratedKeys="true" keyProperty="applyId">
+        insert into umap_apply_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyId != null  ">apply_id,</if>
+            <if test="applicantId != null  ">applicant_id,</if>
+            <if test="roomId != null  ">room_id,</if>
+            <if test="deptId != null ">dept_id,</if>
+            <if test="applyType != null  ">apply_type,</if>
+            <if test="applyReason != null  and applyReason != ''  ">apply_reason,</if>
+            <if test="startTime != null  ">start_time,</if>
+            <if test="endTime != null  ">end_time,</if>
+            <if test="applyStatus != null  ">apply_status,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="approvalUserId != null  and approvalUserId != ''  ">approval_user_id,</if>
+            <if test="approveStatus != null  and approveStatus != ''  ">approve_status,</if>
+
+            <if test="femaleNum != null">female_num,</if>
+            <if test="maleNum != null">male_num,</if>
+            <if test="singleRoomNum != null">single_room_num,</if>
+            <if test="standardRoomNum != null">standard_room_num,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyId != null  ">#{applyId},</if>
+            <if test="applicantId != null  ">#{applicantId},</if>
+            <if test="roomId != null  ">#{roomId},</if>
+            <if test="deptId != null ">#{deptId},</if>
+            <if test="applyType != null  ">#{applyType},</if>
+            <if test="applyReason != null  and applyReason != ''  ">#{applyReason},</if>
+            <if test="startTime != null  ">#{startTime},</if>
+            <if test="endTime != null  ">#{endTime},</if>
+            <if test="applyStatus != null  ">#{applyStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="approvalUserId != null  and approvalUserId != ''  ">#{approvalUserId},</if>
+            <if test="approveStatus != null  and approveStatus != ''  ">#{approveStatus},</if>
+
+            <if test="femaleNum != null">#{femaleNum},</if>
+            <if test="maleNum != null">#{maleNum},</if>
+            <if test="singleRoomNum != null">#{singleRoomNum},</if>
+            <if test="standardRoomNum != null">#{standardRoomNum},</if>
+        </trim>
+    </insert>
+
+    <update id="updateApplyInfo" parameterType="ApplyInfo">
+        update umap_apply_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applicantId != null  ">applicant_id = #{applicantId},</if>
+            <if test="roomId != null  ">room_id = #{roomId},</if>
+            <if test="deptId != null ">dept_id = #{deptId},</if>
+            <if test="applyType != null  ">apply_type = #{applyType},</if>
+            <if test="applyReason != null  and applyReason != ''  ">apply_reason = #{applyReason},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="applyStatus != null  ">apply_status = #{applyStatus},</if>
+            <if test="approveStatus != null  ">approve_status = #{approveStatus},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where apply_id = #{applyId}
+    </update>
+
+    <delete id="deleteApplyInfoById" parameterType="Integer">
+        delete from umap_apply_info where apply_id = #{applyId}
+    </delete>
+
+    <delete id="deleteApplyInfoByIds" parameterType="String">
+        delete from umap_apply_info where apply_id in
+        <foreach item="applyId" collection="array" open="(" separator="," close=")">
+            #{applyId}
+        </foreach>
+    </delete>
+
+    <select id="selectApplyInfoByStatus" parameterType="ApplyInfo" resultMap="ApplyInfoResult">
+        <include refid="selectApplyInfoVo"></include>
+        <where>
+            <if test="approveStatus != null and  approveStatus != ''">and approve_status = #{approveStatus}</if>
+            <if test="userId != null and userId !=''">and (user_id = #{userId} or create_by = #{userId})</if>
+            <if test="startTime != null ">and start_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and end_time &lt;= #{endTime}</if>
+        </where>
+        order by approve_status asc, create_time desc
+    </select>
+    
+    <select id="selectDayCount" parameterType="com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam"
+            resultType="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
+        SELECT
+        date_format(m.start_time, '%Y-%m-%d') name,
+        COUNT(1) count,
+        '已预约' info
+        FROM
+        umap_apply_info m
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="year != null and year != ''">and YEAR (m.start_time) = #{year}</if>
+            <if test="month != null and month != ''">and MONTH (m.start_time) = #{month}</if>
+            <if test="applyStatus != null and applyStatus != ''">and m.apply_status = #{applyStatus}</if>
+            <if test="applicantId != null">and m.applicant_id = #{applicantId} </if>
+        </trim>
+        GROUP BY TO_DAYS(m.start_time)
+        order by name
+    </select>
+    
+    <select id="selectApplyInfoListByMap" resultMap="ApplyInfoResult">
+        <include refid="selectApplyInfoVo"/>
+        <where>
+            <if test="checkDate != null ">and DATE_FORMAT(start_time,"%Y-%m-%d") = #{checkDate} </if>
+            <if test="applyId != null">and a.apply_id = #{applyId} </if>
+            <if test="approveStatus != null">and a.approve_status = #{approveStatus} </if>
+            <if test="applyStatus != null">and a.apply_status = #{applyStatus} </if>
+            <if test="applicantId != null">and a.applicant_id = #{applicantId} </if>
+            and a.del_flag = '0'
+        </where>
+        order by a.apply_status,a.create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<link rel="stylesheet" th:href="@{/ajax/libs/layui-v2.6.7/layui/css/layui.css}" media="all">
+<head th:include="include :: header">
+
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content form-horizontal m">
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>审核记录</legend>
+    </fieldset>
+
+    <div class="layui-form">
+
+        <table class="layui-table">
+            <colgroup>
+                <col width="150">
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>审核人</th>
+                <th>审核结果</th>
+                <th>审核时间</th>
+                <th>审核理由</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--/*@thymesVar id="auditRecords" type="com.mkst.umap.app.admin.domain.AuditRecord"*/-->
+            <tr th:each="audit:${auditRecords}">
+                <!--<td th:text="${@sysUserServiceImpl.selectUserByLoginName(audit.createBy).getUserName()}"/>-->
+                <td th:text="${audit.approvalUserName}"/>
+                <td th:text="${@dict.getLabel('event_audit_status',audit.status)}"/>
+                <td th:text="${#dates.format(audit.updateTime, 'yyyy-MM-dd HH:mm:ss')}"/>
+                <td th:text="${audit.reason}"/>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+</script>
+
+<script th:src="@{/ajax/libs/layui-v2.6.7/layui/layui.js}" charset="utf-8"></script>
+</body>
+</html>

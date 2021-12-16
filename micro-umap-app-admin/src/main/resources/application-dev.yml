@@ -1,0 +1,74 @@
+# 开发环境配置
+server:
+  # 服务端口
+  port: 18083
+  servlet:
+    # 项目contextPath
+    context-path: /umap
+
+# 数据源配置
+spring:
+    main:
+      allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        druid:
+            # 主库数据源
+            master:
+                url: jdbc:mysql://192.168.1.11:3306/micro-umap?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                username: platform
+                password: platform@123456
+            # 从库数据源
+            slave:
+                # 从数据源开关/默认关闭
+                enabled: false
+                url: 
+                username: 
+                password: 
+            # 初始连接数
+            initial-size: 10
+            # 最大连接池数量
+            max-active: 100
+            # 最小连接池数量
+            min-idle: 10
+            # 配置获取连接等待超时的时间
+            max-wait: 60000
+            # 打开PSCache，并且指定每个连接上PSCache的大小
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+            timeBetweenEvictionRunsMillis: 60000
+            # 配置一个连接在池中最小生存的时间，单位是毫秒
+            min-evictable-idle-time-millis: 300000
+            validation-query: SELECT 1 FROM DUAL
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            stat-view-servlet:
+                enabled: true
+                url-pattern: /monitor/druid/*
+            filter:
+                stat:
+                    log-slow-sql: true
+                    slow-sql-millis: 1000
+                    merge-sql: false
+                wall:
+                    config:
+                        multi-statement-allow: true
+    redis:
+        host: 127.0.0.1
+        #host: 127.0.0.1
+        port: 6379
+        database: 0
+        password: 123456
+        lettuce:
+            shutdown-timeout: 200ms
+            pool:
+                max-active: 7
+                max-idle: 7
+                min-idle: 2
+                max-wait: -1ms
+        expireTime: 900     #缓存有效时间15分钟
+        expireTimeShiro: 1800     #缓存有效时间30分钟
+        keyPrefix: systemplus

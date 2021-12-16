@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.IdentityMapper">
+    
+    <resultMap type="Identity" id="IdentityResult">
+        <result property="id"    column="id"    />
+        <result property="userType"    column="user_type"    />
+        <result property="name"    column="name"    />
+        <result property="userId"    column="user_id"    />
+        <result property="certNo"    column="cert_no"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="aduitTime"    column="aduit_time"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="postName"    column="post_name"    />
+        <result property="aduitCause"    column="aduit_cause"    />
+    </resultMap>
+	
+	<sql id="selectIdentityVo">
+        select i.id, i.user_type, i.name, i.user_id, i.cert_no, i.company_name, i.apply_time, i.aduit_time, i.status,
+        i.aduit_cause, i.create_by, i.create_time, i.update_by, i.update_time, i.remark , p.post_name
+        from umap_identity i
+        LEFT JOIN sys_post p on i.user_type = p.post_id
+    </sql>
+	
+    <select id="selectIdentityList" parameterType="Identity" resultMap="IdentityResult">
+        <include refid="selectIdentityVo"/>
+        <where>  
+            <if test="id != null "> and i.id = #{id}</if>
+             <if test="userType != null "> and i.user_type = #{userType}</if>
+             <if test="name != null  and name != '' "> and i.name like concat('%',  #{name}, '%')</if>
+             <if test="userId != null "> and i.user_id = #{userId}</if>
+             <if test="certNo != null  and certNo != '' "> and i.cert_no = #{certNo}</if>
+             <if test="companyName != null  and companyName != '' "> and i.company_name like concat('%', #{companyName}, '%') </if>
+             <if test="applyTime != null "> and i.apply_time = #{applyTime}</if>
+             <if test="aduitTime != null "> and i.aduit_time = #{aduitTime}</if>
+             <if test="status != null  and status != '' "> and i.status = #{status}</if>
+             <if test="aduitCause != null  and aduitCause != '' "> and i.aduit_cause = #{aduitCause}</if>
+             <if test="createBy != null  and createBy != '' "> and i.create_by = #{createBy}</if>
+             <if test="createTime != null "> and i.create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and i.update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and i.update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and i.remark = #{remark}</if>
+             <if test="noPostCode != null  and noPostCode != '' "> and  p.post_code != #{noPostCode} </if>
+         </where>
+         order by i.create_time desc,i.status desc
+    </select>
+    
+    <select id="selectIdentityById" parameterType="Integer" resultMap="IdentityResult">
+        <include refid="selectIdentityVo"/>
+        where i.id = #{id}
+    </select>
+        
+    <insert id="insertIdentity" parameterType="Identity"  useGeneratedKeys="true" keyProperty="id">
+        insert into umap_identity
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="userType != null  ">user_type,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="userId != null  ">user_id,</if>
+			<if test="certNo != null  and certNo != ''  ">cert_no,</if>
+			<if test="companyName != null  and companyName != ''  ">company_name,</if>
+			<if test="applyTime != null  ">apply_time,</if>
+			<if test="aduitTime != null  ">aduit_time,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+            <if test="aduitCause != null  and aduitCause != ''  ">aduit_cause,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="userType != null  ">#{userType},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="userId != null  ">#{userId},</if>
+			<if test="certNo != null  and certNo != ''  ">#{certNo},</if>
+			<if test="companyName != null  and companyName != ''  ">#{companyName},</if>
+			<if test="applyTime != null  ">#{applyTime},</if>
+			<if test="aduitTime != null  ">#{aduitTime},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+            <if test="aduitCause != null  and aduitCause != ''  ">#{aduitCause},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateIdentity" parameterType="Identity">
+        update umap_identity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userType != null  ">user_type = #{userType},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="certNo != null  and certNo != ''  ">cert_no = #{certNo},</if>
+            <if test="companyName != null  and companyName != ''  ">company_name = #{companyName},</if>
+            <if test="applyTime != null  ">apply_time = #{applyTime},</if>
+            <if test="aduitTime != null  ">aduit_time = #{aduitTime},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="aduitCause != null  and aduitCause != ''  ">aduit_cause = #{aduitCause},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteIdentityById" parameterType="Integer">
+        delete from umap_identity where id = #{id}
+    </delete>
+	
+    <delete id="deleteIdentityByIds" parameterType="String">
+        delete from umap_identity where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    
+</mapper>

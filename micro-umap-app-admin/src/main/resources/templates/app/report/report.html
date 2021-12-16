@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								举报类型：
+								<select id="type" name="type" style="width:120px"
+										th:with="type=${@dict.getType('umap_report_type')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+							<li>
+								是否被回复：
+								<select id="hasReplied" name="hasReplied" style="width:120px"
+										th:with="type=${@dict.getType('yes_no')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								是否实名：
+								<select id="realName" name="realName" style="width:120px"
+										th:with="type=${@dict.getType('yes_no')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+											th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<li>
+								创建时间：<input id="checkDate" name="checkDate" placeholder="选择日期" type="text">
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('admin:report:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('admin:report:remove')}]];
+        var prefix = ctx + "admin/report";
+		var yes_no = [[${@dict.getType('yes_no')}]];
+		var umap_report_type = [[${@dict.getType('umap_report_type')}]];
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                modalName: "随手拍/公益举报",
+				removeUrl: prefix + "/remove",
+				search: false,
+		        showExport: true,
+                columns: [
+				{
+					field : 'id', 
+					title : 'id',
+					visible: false
+				},
+				{
+					field : 'type', 
+					title : '举报类型',
+					sortable: true,
+					formatter:function (value,row,index) {
+						return $.table.selectDictLabel(umap_report_type, value);
+					}
+				},
+				{
+					field : 'address', 
+					title : '举报地址',
+					sortable: false,
+					cellStyle: formatTableUnit,
+					formatter: paramsMatter
+				},
+					{
+						field : 'hasReplied',
+						title : '已被回复',
+						sortable: true,
+						formatter:function (value,row,index) {
+							return $.table.selectDictLabel(yes_no, value);
+						}
+					},
+				{
+					field : 'realName', 
+					title : '是否实名（默认匿名）',
+					sortable: true,
+					formatter:function (value,row,index) {
+						return $.table.selectDictLabel(yes_no, value);
+					}
+				},
+				{
+					field : 'content', 
+					title : '详细内容',
+					sortable: false,
+					cellStyle: formatTableUnit,
+					formatter: paramsMatter
+				},
+				{
+					field : 'createTime', 
+					title : '创建时间',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+						actions.push('<a class="btn btn-default btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="detail(\'' + row.id + '\')"><i class="fa fa-eye"></i>详情</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+			$(".columns.columns-right.btn-group.pull-right").hide();
+        });
+
+		//表格超出宽度鼠标悬停显示td内容
+		paramsMatter = function (value, row, index, field) {
+			var span = document.createElement('span');
+			span.setAttribute('title', value);
+			span.innerHTML = value;
+			return span.outerHTML;
+		}
+		//td宽度以及内容超过宽度隐藏
+		formatTableUnit = function (value, row, index) {
+			return {
+				css: {
+					"white-space": 'nowrap',
+					"text-overflow": 'ellipsis',
+					"overflow": 'hidden',
+					"max-width": "150px"
+				}
+			}
+		}
+
+		layui.use('laydate', function () {
+			var laydate = layui.laydate;
+			laydate.render({
+				elem: '#checkDate'
+			});
+		})
+
+		/* 会议详细查看页面 */
+		function detail(meetingId) {
+			var url = prefix + '/detail/' + meetingId;
+			$.modal.openTab("查看举报详情", url);
+		}
+    </script>
+</body>
+</html>

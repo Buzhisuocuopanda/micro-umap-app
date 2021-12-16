@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ReplyMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.Reply" id="ReplyResult">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="businessType" column="business_type"/>
+        <result property="objectId" column="object_id"/>
+        <result property="content" column="content"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectReplyVo">
+        select id, parent_id, business_type, object_id, content, create_by, create_time, update_by, update_time, remark, del_flag from umap_reply
+    </sql>
+
+    <select id="selectReplyList" parameterType="com.mkst.umap.app.admin.domain.Reply" resultMap="ReplyResult">
+        <include refid="selectReplyVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="businessType != null  and businessType != '' ">and business_type = #{businessType}</if>
+            <if test="objectId != null  and objectId != '' ">and object_id = #{objectId}</if>
+            <if test="content != null  and content != '' ">and content = #{content}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectReplyById" parameterType="Long" resultMap="ReplyResult">
+        <include refid="selectReplyVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertReply" parameterType="com.mkst.umap.app.admin.domain.Reply">
+        insert into umap_reply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="parentId != null  ">parent_id,</if>
+            <if test="businessType != null  and businessType != ''  ">business_type,</if>
+            <if test="objectId != null  and objectId != ''  ">object_id,</if>
+            <if test="content != null  and content != ''  ">content,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="parentId != null  ">#{parentId},</if>
+            <if test="businessType != null  and businessType != ''  ">#{businessType},</if>
+            <if test="objectId != null  and objectId != ''  ">#{objectId},</if>
+            <if test="content != null  and content != ''  ">#{content},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReply" parameterType="com.mkst.umap.app.admin.domain.Reply">
+        update umap_reply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null  ">parent_id = #{parentId},</if>
+            <if test="businessType != null  and businessType != ''  ">business_type = #{businessType},</if>
+            <if test="objectId != null  and objectId != ''  ">object_id = #{objectId},</if>
+            <if test="content != null  and content != ''  ">content = #{content},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteReplyById" parameterType="Long">
+        delete from umap_reply where id = #{id}
+    </delete>
+
+    <delete id="deleteReplyByIds" parameterType="String">
+        delete from umap_reply where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

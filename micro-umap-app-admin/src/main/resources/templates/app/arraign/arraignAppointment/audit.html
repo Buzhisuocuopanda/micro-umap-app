@@ -1,0 +1,231 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header">
+</head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            犯罪类型：
+                            <select id="criminalType" name="criminalType"
+                                    th:with="type=${@dict.getType('criminal_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li style="display: none;margin-left: 7px; margin-right: 55px">
+                            认罪状态：<select id="criminalAdmit" name="criminalAdmit"
+                                         th:with="type=${@dict.getType('sys_yes_no')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li style="display: none;margin-left: 5px; margin-right: 55px">
+                            援助状态：<select id="needLegalAid" name="needLegalAid"
+                                         th:with="type=${@dict.getType('sys_yes_no')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="false"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var auditFlag = [[${@permission.hasPermi('admin:arraignAppointment:audit')}]];
+    var prefix = ctx + "admin/arraignAppointment";
+    var event_audit_status = [[${@dict.getType('event_audit_status')}]];
+    var sys_yes_no = [[${@dict.getType('sys_yes_no')}]];
+    var criminal_type = [[${@dict.getType('criminal_type')}]];
+    var case_stage = [[${@dict.getType('case_stage')}]];
+
+
+    $(function () {
+        var options = {
+            url: prefix + "/auditList",
+            auditUrl: prefix + "/doAudit/{id}/{status}",
+            modalName: "提审审核",
+            search: true,
+            columns: [
+                {
+                    field: 'id',
+                    title: 'ID',
+                    visible: false
+                },
+                {
+                    field: 'roomName',
+                    title: '房间',
+                    visible: true
+                },
+                {
+                    field: 'startTime',
+                    title: '开始时间',
+                    sortable: true
+                },
+                {
+                    field: 'endTime',
+                    title: '结束时间',
+                    sortable: true
+                },
+                {
+                    field: 'criminalName',
+                    title: '罪犯姓名',
+                    sortable: true
+                },
+                {
+                    field: 'criminalType',
+                    title: '类型',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(criminal_type, value);
+                    }
+                },
+                {
+                    field: 'criminalBirth',
+                    title: '罪犯生日',
+                    sortable: true,
+                    formatter: function (value) {
+                        if (value == null) return null;
+                        //年月日yyyy-MM-dd
+                        return value.substring(0, 10);
+                    }
+                },
+                {
+                    field: 'stage',
+                    title: '阶段',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(case_stage, value);
+                    }
+                },
+                {
+                    field: 'criminalAdmit',
+                    title: '认罪认罚',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(sys_yes_no, value);
+                    }
+                },
+                {
+                    field: 'needLegalAid',
+                    title: '法律援助',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(sys_yes_no, value);
+                    }
+                },
+                {
+                    field: 'prosecutorName',
+                    title: '检察官',
+                    sortable: true
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    sortable: true
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    sortable: true
+                },
+                {
+                    title: '审核',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.id + '\', 1)"><i class="fa fa-edit"></i>通过</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + auditFlag + '" href="#" onclick="audit(\'' + row.id + '\', 2)"><i class="fa fa-edit"></i>驳回</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //时间选择器
+        //同时绑定多个
+        lay('.just-time-input').each(function () {
+            laydate.render({
+                elem: this
+                , type: 'datetime'
+            });
+        });
+    });
+
+    // 修改信息
+    function audit(id, status) {
+
+        console.log(id + "," + status);
+        var statusMsg = "";
+        if (status == "1") {
+            statusMsg = "通过";
+        } else {
+            statusMsg = "驳回";
+        }
+        console.log($.table._option.modalName);
+
+        $.modal.confirm("确定" + statusMsg + "该条" + $.table._option.modalName + "信息吗？", function () {
+            var url = $.common.isEmpty(id) ? $.table._option.auditUrl : $.table._option.auditUrl.replace("{id}", id).replace("{status}", status);
+            console.log(url);
+            $.operate.submit(url, "post", "json");
+        });
+    }
+
+
+    function unfoldHide(self) {
+        $('.sub-hidden').show();
+        $(self).hide();
+    }
+
+    function packUp(self) {
+        $('.sub-unfold').show();
+        $('.sub-hidden').hide();
+        $(self).hide();
+    }
+
+    function selectUserTree() {
+        var options = {
+            title: '选择用户',
+            width: "380",
+            url: ctx + "system/user/selectUserTree?userIds=",
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        if ($.tree.notAllowParents(tree)) {
+            var body = layer.getChildFrame('body', index);
+            //$("#promoter").val(body.find('#treeId').val());
+            $("#prosecutorName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    }
+</script>
+</body>
+</html>

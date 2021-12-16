@@ -1,0 +1,433 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header">
+</head>
+<body class="gray-bg">
+<div class="container-div" style="height: 20%">
+    <form id="formId">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+
+                <div class="select-list">
+                    <ul>
+                        <li style="margin-left: 5px;margin-right: 55px" class="input-group">
+                            部门：
+                            <input   type="text" name="deptNames" onclick="selectDeptTree()" readonly="true" id="deptNames">
+                            <input   type="hidden" name="deptIds"  id="deptIds">
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            检查官证件号：<input type="text" name="prosecutorId" id="prosecutorId" />
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            检察官：<input type="text" name="prosecutorName" id="prosecutorName" onclick="selectUserTree()"/>
+                            <input   type="hidden" name="prosecutorUserId"  id="prosecutorUserId">
+                        </li>
+                        <li style="margin-left: 5px;margin-right: 55px">
+                            犯罪类型：
+                            <select id="criminalType" name="criminalType"
+                                    th:with="type=${@dict.getType('criminal_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li style="margin-left: 1px;margin-right: 55px">
+                            审核状态：<select id="status" name="status"
+                                         th:with="type=${@dict.getType('event_audit_status')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        <li style="margin-left: 5px; margin-right: 55px">
+                            案件阶段：<select id="stage" name="stage"
+                                         th:with="type=${@dict.getType('case_stage')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        </li>
+                        <li class="sub-hidden" style="display: none;margin-left: 4px; margin-right: 55px">
+                            认罪状态：<select id="criminalAdmit" name="criminalAdmit"
+                                         th:with="type=${@dict.getType('sys_yes_no')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li class="sub-hidden" style="display: none;margin-left: 5px; margin-right: 55px">
+                            援助状态：<select id="needLegalAid" name="needLegalAid"
+                                         th:with="type=${@dict.getType('sys_yes_no')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                    th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="searchTotal()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="reportReset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                            <a class="btn btn-primary btn-rounded btn-sm sub-unfold" onclick="unfoldHide(this)"><i
+                                    class="fa fa-search"></i>&nbsp;展开</a>
+                            <a class="btn btn-primary btn-rounded btn-sm sub-hidden" onclick="packUp(this)" style="display: none"><i
+                                    class="fa fa-search"></i>&nbsp;收起</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="exportByCondition()"
+                               shiro:hasPermission="admin:arraignAppointment:export">
+                                <i class="fa fa-download"></i> 导出
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="wrapper-conten"  >
+                <div class="row" style="margin-left: 0px;">
+                    <div class="col-sm-6" style="padding: 0px; margin-top: 15px; width: 99%">
+                        <div class="ibox float-e-margins" style="margin-bottom: 5px">
+                            <div class="ibox-title">
+                                <h5>折线图</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="echarts" id="echarts-line-chart" style="height: 350px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </form >
+</div>
+
+
+<div th:include="include::footer"></div>
+<div th:include="include::echarts-js"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('admin:arraignAppointment:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('admin:arraignAppointment:remove')}]];
+    var prefix = ctx + "admin/arraignAppointment";
+    var event_audit_status = [[${@dict.getType('event_audit_status')}]];
+    var sys_yes_no = [[${@dict.getType('sys_yes_no')}]];
+    var criminal_type = [[${@dict.getType('criminal_type')}]];
+    var case_stage = [[${@dict.getType('case_stage')}]];
+
+    function exportByCondition(){
+        var deptIds = $("#deptIds").val();
+        var totalType = "season";
+        var prosecutorId = $("#prosecutorId").val();
+        var prosecutorUserId = $("#prosecutorUserId").val();
+        var prosecutorName = $("#prosecutorName").val();
+        var criminalType = $("#criminalType").val();
+        var status = $("#status").val();
+        var stage = $("#stage").val();
+        var criminalAdmit = $("#criminalAdmit").val();
+        var needLegalAid = $("#needLegalAid").val();
+        url = prefix + "/statisticalReports?totalType="+totalType+"&prosecutorId="+prosecutorId+"&prosecutorName="
+            + prosecutorName+"&criminalType="+criminalType+"&status="+status+"&stage="
+            +stage+"&criminalAdmit="+criminalAdmit+"&needLegalAid="+needLegalAid+"&deptIds="+deptIds+"&prosecutorUserId="+prosecutorUserId;
+        window.location.href =url;
+    }
+
+    function reportReset(formId) {
+        var currentId = $.common.isEmpty(formId) ? $('form').attr('id') : formId;
+        $("#deptIds").val(null);
+        $("#prosecutorUserId").val(null),
+        $("#" + currentId)[0].reset();
+    }
+
+    function check() {
+        if($("#prosecutorId").val() != null & $("#prosecutorId").val() != "")
+            $.table.showColumn("prosecutorId");
+        else
+            $.table.hideColumn("prosecutorId");
+
+        if($("#prosecutorName").val() != null & $("#prosecutorName").val() != "")
+            $.table.showColumn("prosecutorName");
+        else
+            $.table.hideColumn("prosecutorName");
+
+        if($("#status").val() != null & $("#status").val() != "")
+            $.table.showColumn("status");
+        else
+            $.table.hideColumn("status");
+
+        if($("#stage").val() != null & $("#stage").val() != "")
+            $.table.showColumn("stage");
+        else
+            $.table.hideColumn("stage");
+
+        if($("#criminalAdmit").val() != null & $("#criminalAdmit").val() != "")
+            $.table.showColumn("criminalAdmit");
+        else
+            $.table.hideColumn("criminalAdmit");
+
+        if($("#needLegalAid").val() != null & $("#needLegalAid").val() != "")
+            $.table.showColumn("needLegalAid");
+        else
+            $.table.hideColumn("needLegalAid");
+    }
+
+    function searchTotal() {
+        check();
+        $.table.search();
+        init();
+    }
+
+    var serLineItem = function () {
+        return {
+            name: '',
+            type: 'line',
+            data: [],
+            markPoint: {data: [{type: "max", name: "最大值"}, {type: "min", name: "最小值"}]},
+            lmarkLine: {data: [{type: "average", name: "平均值"}]},
+            llabel: {show: true}
+        }
+    }
+
+    function init() {
+        $.ajax({
+            type: "POST",
+            url: prefix+"/totalList",
+            data: {
+                deptIds : $("#deptIds").val(),
+                prosecutorId : $("#prosecutorId").val(),
+                prosecutorUserId : $("#prosecutorUserId").val(),
+                prosecutorName : $("#prosecutorName").val(),
+                criminalType : $("#criminalType").val(),
+                status : $("#status").val(),
+                stage : $("#stage").val(),
+                criminalAdmit : $("#criminalAdmit").val(),
+                needLegalAid : $("#needLegalAid").val(),
+                totalType : "season",
+            },
+            dataType:"json",
+            success: function(result){
+                if(result.code == 0){
+                    var timeIntervals = result.data.timeIntervals;
+                    var criminalTypeAndDeptData = result.data.criminalTypeAndDeptData ;
+                    var map = result.data.mapList;
+                    var myChartLine = echarts.init(document.getElementById("echarts-line-chart"));
+                    var seriesData =[];
+                    for(var i=0;i<criminalTypeAndDeptData.length;i++){
+                        var lineItem = new serLineItem();
+                        lineItem.name = criminalTypeAndDeptData[i];
+                        lineItem.data = map[lineItem.name];
+                        seriesData.push(lineItem);
+                    }
+                    var lineOption = {
+                        title: {text: "按案件类型统计"},
+                        /*tooltip: {trigger: "axis",
+                            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            }},*/
+                        tooltip: {
+                            trigger: 'axis',
+                            position: function(point, params, dom, rect, size) {
+                                //其中point为当前鼠标的位置，size中有两个属性：viewSize和contentSize，分别为外层div和tooltip提示框的大小
+                                var x = point[0];//
+                                var y = point[1];
+                                var viewWidth = size.viewSize[0];
+                                var viewHeight = size.viewSize[1];
+                                var boxWidth = size.contentSize[0];
+                                var boxHeight = size.contentSize[1];
+                                var posX = 0;//x坐标位置
+                                var posY = 0;//y坐标位置
+
+                                if (x < boxWidth) {//左边放不开
+                                    posX = 5;
+                                } else {//左边放的下
+                                    posX = x - boxWidth;
+                                }
+
+                                if (y < boxHeight) {//上边放不开
+                                    posY = 5;
+                                } else {//上边放得下
+                                    posY = y - boxHeight;
+                                }
+
+                                return [posX, posY];
+                            },
+                            axisPointer: {
+                                type: 'cross',
+                                label: {
+                                    backgroundColor: '#283b56'
+                                }
+                            }
+                        },
+                        //legend: {data: criminalTypeAndDeptData},
+                        grid: {x: 40, x2: 40, y2: 24},
+                        calculable: !0,
+                        xAxis: [{type: "category", boundaryGap: !1, data: timeIntervals}],
+                        yAxis: [{type: "value", name:"预约总量"}],
+                        /*series: [{
+                            name: "预约数量",
+                            type: "line",
+                            data: timeTotals,
+                            markPoint: {data: [{type: "max", name: "最大值"}, {type: "min", name: "最小值"}]},
+                            markLine: {data: [{type: "average", name: "平均值"}]},
+                            label: {show: true}
+                        }]*/
+                        series:seriesData
+                    }
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChartLine.setOption(lineOption);
+                }
+            }
+        });
+    }
+
+    $(function () {
+        var totalType = "season";
+        var options = {
+            url: prefix + "/reportList?totalType="+totalType,
+            modalName: "按季报表统计",
+            search: false,
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'dateFormat',
+                    title: '时间',
+                    visible: true
+                },
+                {
+                    field: 'deptName',
+                    title: '部门',
+                    visible: true
+                },
+                {
+                    field: 'criminalType',
+                    title: '犯罪类型',
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(criminal_type, value);
+                    }
+                },
+                {
+                    field: 'count',
+                    title: '总数',
+                    visible: true
+                },{
+                    field: 'stage',
+                    title: '案件阶段',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(case_stage, value);
+                    }
+                },{
+                    field: 'prosecutorId',
+                    title: '检查官证件号',
+                    visible: false,
+                },{
+                    field: 'prosecutorName',
+                    title: '检察官',
+                    visible: false,
+                },{
+                    field: 'status',
+                    title: '审核状态',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(event_audit_status, value);
+                    }
+                },{
+                    field: 'criminalAdmit',
+                    title: '认罪状态',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(sys_yes_no, value);
+                    }
+                },{
+                    field: 'needLegalAid',
+                    title: '是否需要法律支援',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(sys_yes_no, value);
+                    }
+                }]
+        };
+        $.table.init(options);
+        init();
+        $(".columns.columns-right.btn-group.pull-right").hide();
+    });
+
+
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //时间选择器
+        //同时绑定多个
+        lay('.just-time-input').each(function () {
+            laydate.render({
+                elem: this
+                , type: 'datetime'
+            });
+        });
+    });
+
+    function unfoldHide(self) {
+        $('.sub-hidden').show();
+        $(self).hide();
+    }
+
+    function packUp(self) {
+        $('.sub-unfold').show();
+        $('.sub-hidden').hide();
+        $(self).hide();
+    }
+
+    function selectUserTree() {
+        var options = {
+            title: '选择用户',
+            width: "380",
+            url: ctx + "system/user/selectUserTree?userIds=",
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero){
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        if ($.tree.notAllowParents(tree)) {
+            var body = layer.getChildFrame('body', index);
+            $("#prosecutorUserId").val(body.find('#treeId').val());
+            $("#prosecutorName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    }
+
+    function selectDeptTree() {
+        var treeId = $("#treeId").val();
+        var deptId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
+        var options = {
+            title: '选择部门',
+            url: prefix + "/selectDeptTree/" + deptId,
+            width: "380",
+            callBack: doSubmitDept
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmitDept(index, layero){
+        debugger;
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        var deptList = tree.getCheckedNodes();
+        var deptNames = [];
+        var deptIds = [];
+        for(var i=0; i<deptList.length; i++){
+            deptNames.push(deptList[i].name);
+            deptIds.push(deptList[i].id)
+        }
+        $("#deptIds").val(deptIds);
+        $("#deptNames").val(deptNames);
+        layer.close(index);
+        //$.table.search();
+    }
+</script>
+</body>
+</html>

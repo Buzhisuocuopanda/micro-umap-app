@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.BoxMealMapper">
+    
+    <resultMap type="BoxMeal" id="BoxMealResult">
+        <result property="id"    column="id"    />
+        <result property="boxId"    column="box_id"    />
+        <result property="typeCode"    column="type_code"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="name"    column="name"    />
+        <result property="address"    column="address"    />
+        <result property="userName"    column="user_name"    />
+    </resultMap>
+	
+	<sql id="selectBoxMealVo">
+        select a.id, a.box_id, a.type_code, a.type_name, a.start_time, a.end_time, a.create_by, a.create_time, a.update_by, a.update_time, a.remark, a.del_flag,
+        b.name,b.address, u.user_name
+        from umap_box_meal a
+        left join umap_arraign_room b on a.box_id = b.id
+        left join sys_user u on a.create_by = u.user_id
+    </sql>
+	
+    <select id="selectBoxMealList" parameterType="BoxMeal" resultMap="BoxMealResult">
+        <include refid="selectBoxMealVo"/>
+        <where>  
+            <if test="id != null "> and a.id = #{id}</if>
+             <if test="boxId != null  and boxId != '' "> and a.box_id = #{boxId}</if>
+             <if test="typeCode != null  and typeCode != '' "> and a.type_code = #{typeCode}</if>
+             <if test="typeName != null  and typeName != '' "> and a.type_name = #{typeName}</if>
+             <if test="name != null  and name != '' "> and b.name = #{name}</if>
+             <if test="startTime != null and startTime != ''"> and a.start_time &gt;= #{startTime}</if>
+             <if test="endTime != null and endTime !='' "> and a.end_time &lt;= #{endTime}</if>
+             <if test="createBy != null  and createBy != '' "> and a.create_by = #{createBy}</if>
+             <if test="createTime != null "> and a.create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and a.update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and a.update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and a.remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and a.del_flag = #{delFlag}</if>
+         </where>
+    </select>
+    
+    <select id="selectBoxMealById" parameterType="Long" resultMap="BoxMealResult">
+        <include refid="selectBoxMealVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertBoxMeal" parameterType="BoxMeal" useGeneratedKeys="true" keyProperty="id">
+        insert into umap_box_meal
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="boxId != null  and boxId != ''  ">box_id,</if>
+			<if test="typeCode != null  and typeCode != ''  ">type_code,</if>
+			<if test="typeName != null  and typeName != ''  ">type_name,</if>
+			<if test="startTime != null and startTime != '' ">start_time,</if>
+			<if test="endTime != null and endTime !='' ">end_time,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="boxId != null  and boxId != ''  ">#{boxId},</if>
+			<if test="typeCode != null  and typeCode != ''  ">#{typeCode},</if>
+			<if test="typeName != null  and typeName != ''  ">#{typeName},</if>
+			<if test="startTime != null and startTime != '' ">#{startTime},</if>
+			<if test="endTime != null and endTime !='' ">#{endTime},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateBoxMeal" parameterType="BoxMeal">
+        update umap_box_meal
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="boxId != null  and boxId != ''  ">box_id = #{boxId},</if>
+            <if test="typeCode != null  and typeCode != ''  ">type_code = #{typeCode},</if>
+            <if test="typeName != null  and typeName != ''  ">type_name = #{typeName},</if>
+            <if test="startTime != null and startTime != '' ">start_time = #{startTime},</if>
+            <if test="endTime != null and endTime !='' ">end_time = #{endTime},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteBoxMealById" parameterType="Long">
+        delete from umap_box_meal where id = #{id}
+    </delete>
+	
+    <delete id="deleteBoxMealByIds" parameterType="String">
+        delete from umap_box_meal where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

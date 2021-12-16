@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.PetitionPersonnelBindMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.PetitionPersonnelBind" id="PetitionPersonnelBindResult">
+        <result property="id"    column="id"    />
+        <result property="personnelId"    column="personnel_id"    />
+        <result property="petitionId"    column="petition_id"    />
+    </resultMap>
+	
+	<sql id="selectPetitionPersonnelBindVo">
+        select id, personnel_id, petition_id from umap_petition_personnel_bind
+    </sql>
+	
+    <select id="selectPetitionPersonnelBindList" parameterType="com.mkst.umap.app.admin.domain.PetitionPersonnelBind" resultMap="PetitionPersonnelBindResult">
+        <include refid="selectPetitionPersonnelBindVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="personnelId != null "> and personnel_id = #{personnelId}</if>
+             <if test="petitionId != null "> and petition_id = #{petitionId}</if>
+         </where>
+    </select>
+    
+    <select id="selectPetitionPersonnelBindById" parameterType="Long" resultMap="PetitionPersonnelBindResult">
+        <include refid="selectPetitionPersonnelBindVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPetitionPersonnelBind" parameterType="com.mkst.umap.app.admin.domain.PetitionPersonnelBind">
+        insert into umap_petition_personnel_bind
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="personnelId != null  ">personnel_id,</if>
+			<if test="petitionId != null  ">petition_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="personnelId != null  ">#{personnelId},</if>
+			<if test="petitionId != null  ">#{petitionId},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updatePetitionPersonnelBind" parameterType="com.mkst.umap.app.admin.domain.PetitionPersonnelBind">
+        update umap_petition_personnel_bind
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="personnelId != null  ">personnel_id = #{personnelId},</if>
+            <if test="petitionId != null  ">petition_id = #{petitionId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deletePetitionPersonnelBindById" parameterType="Long">
+        delete from umap_petition_personnel_bind where id = #{id}
+    </delete>
+	
+    <delete id="deletePetitionPersonnelBindByIds" parameterType="String">
+        delete from umap_petition_personnel_bind where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

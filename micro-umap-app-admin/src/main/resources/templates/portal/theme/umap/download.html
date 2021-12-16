@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<style>
+* {
+	padding: 0;
+	margin: 0;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+.only_weixin {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background: rgba(0, 0, 0, .6);
+	display: none;
+}
+
+.only_weixin img {
+	position: absolute;
+	top: 10px;
+	right: 20px;
+	width: 50%;
+}
+</style>
+<title>Document</title>
+</head>
+<body>
+	<div class="only_weixin" id="only_weixin">
+		<img th:src="@{/portal/theme/umap/img/weixin.png}">
+	</div>
+</body>
+</html>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:inline="javascript">
+    var ctx = [[@{/}]];
+    function is_weixin() {
+        var ua = navigator.userAgent.toLowerCase();
+        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function is_iPhone() {
+        var ua = navigator.userAgent.toLowerCase();
+        if(ua.match(/iphone/i) == "iphone") {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    var isWeixin = is_weixin();
+    if(isWeixin){
+        $("#only_weixin").show();
+        // alert("建议使用其他浏览器打开进行下载");
+    }
+    var isIPhone = is_iPhone();
+
+    var prefix = ctx + "systemplus";
+    if(isIPhone){
+        window.location.replace("https://apps.apple.com/cn/app/%E6%99%BA%E6%85%A7%E9%BE%99%E6%A3%80app/id1536884711");
+    }else{
+        $.ajax({
+            //url:"http://isz.lhjc.gov.cn/umap/api/appmanager/getApkUrl?appId=62vwjyr7tdeizy0dx4&&sign=e65bc947455f74efb2677fb4e75d901e",
+            url: prefix+"/getAndroidApkUrl?appId=62vwjyr7tdeizy0dx4&&sign=e65bc947455f74efb2677fb4e75d901e",
+            method:"POST",
+            data:{},
+            success:function(data){
+
+                if(data.code == 0){
+                    //window.location.href="http://isz.lhjc.gov.cn/umap"+data.data;
+                    window.location.href= ctx+data.data;
+                }
+            },
+            error:function(){
+
+            }
+        })
+    }
+
+</script>

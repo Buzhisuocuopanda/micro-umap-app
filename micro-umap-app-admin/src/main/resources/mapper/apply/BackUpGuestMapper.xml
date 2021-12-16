@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.BackUpGuestMapper">
+    
+    <resultMap type="BackUpGuest" id="BackUpGuestResult">
+        <result property="guestId"    column="guest_id"    />
+        <result property="applyId"    column="apply_id"    />
+        <result property="guestName"    column="guest_name"    />
+        <result property="guestSex"    column="guest_sex"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="com.mkst.umap.app.admin.domain.vo.BackUpGuestVo" id="BackUpGuestVoResult">
+        <result property="guestName"    column="guest_name"    />
+        <result property="guestSex"    column="guest_sex"    />
+    </resultMap>
+	
+	<sql id="selectBackUpGuestVo">
+        select guest_id, apply_id, guest_name, guest_sex, create_by, create_time, update_by, update_time, del_flag, remark from umap_back_up_guest
+    </sql>
+
+    <select id="selectGuestVoList" parameterType="BackUpGuest" resultMap="BackUpGuestVoResult">
+        select guest_name, guest_sex from umap_back_up_guest where apply_id = #{applyId} and del_flag = '0'
+    </select>
+	
+    <select id="selectBackUpGuestList" parameterType="BackUpGuest" resultMap="BackUpGuestResult">
+        <include refid="selectBackUpGuestVo"/>
+        <where>
+            del_flag = '0'
+            <if test="guestId != null "> and guest_id = #{guestId}</if>
+             <if test="applyId != null "> and apply_id = #{applyId}</if>
+             <if test="guestName != null  and guestName != '' "> and guest_name = #{guestName}</if>
+             <if test="guestSex != null  and guestSex != '' "> and guest_sex = #{guestSex}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+    </select>
+    
+    <select id="selectBackUpGuestById" parameterType="Integer" resultMap="BackUpGuestResult">
+        <include refid="selectBackUpGuestVo"/>
+        where guest_id = #{guestId} and del_flag = '0'
+    </select>
+
+    <select id="selectBackUpGuestListByApplyId" parameterType="Integer" resultMap="BackUpGuestResult">
+        <include refid="selectBackUpGuestVo"/>
+        where apply_id = #{applyId} and del_flag = '0'
+    </select>
+        
+    <insert id="insertBackUpGuest" parameterType="BackUpGuest" useGeneratedKeys="true" keyProperty="guestId">
+        insert into umap_back_up_guest
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="guestId != null  ">guest_id,</if>
+			<if test="applyId != null  ">apply_id,</if>
+			<if test="guestName != null  and guestName != ''  ">guest_name,</if>
+			<if test="guestSex != null  and guestSex != ''  ">guest_sex,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="guestId != null  ">#{guestId},</if>
+			<if test="applyId != null  ">#{applyId},</if>
+			<if test="guestName != null  and guestName != ''  ">#{guestName},</if>
+			<if test="guestSex != null  and guestSex != ''  ">#{guestSex},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+
+    <insert id="batchBackUpGuest" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="guestId">
+        insert into umap_back_up_guest (guest_id, apply_id, guest_name, guest_sex, create_by,remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.guestId},#{item.applyId},#{item.guestName},#{item.guestSex},#{item.createBy},#{item.remark})
+        </foreach>
+    </insert>
+
+    <update id="updateBackUpGuest" parameterType="BackUpGuest">
+        update umap_back_up_guest
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyId != null  ">apply_id = #{applyId},</if>
+            <if test="guestName != null  and guestName != ''  ">guest_name = #{guestName},</if>
+            <if test="guestSex != null  and guestSex != ''  ">guest_sex = #{guestSex},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where guest_id = #{guestId}
+    </update>
+
+	<delete id="deleteBackUpGuestById" parameterType="Integer">
+        delete from umap_back_up_guest where guest_id = #{guestId}
+    </delete>
+	
+    <delete id="deleteBackUpGuestByIds" parameterType="String">
+        delete from umap_back_up_guest where guest_id in
+        <foreach item="guestId" collection="array" open="(" separator="," close=")">
+            #{guestId}
+        </foreach>
+    </delete>
+    
+</mapper>

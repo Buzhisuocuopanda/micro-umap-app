@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.PetitionMatterMapper">
+    
+    <resultMap type="com.mkst.umap.app.admin.domain.PetitionMatter" id="PetitionMatterResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="court"    column="court"    />
+        <result property="referee"    column="referee"    />
+        <result property="rulingTime"    column="ruling_time"    />
+        <result property="rulingSymbol"    column="ruling_symbol"    />
+        <result property="retrialTime"    column="retrial_time"    />
+        <result property="retrialSymbol"    column="retrial_symbol"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+	
+	<sql id="selectPetitionMatterVo">
+        select id, type, court,referee, ruling_time, ruling_symbol, retrial_time, retrial_symbol, create_by, create_time, update_by, update_time, remark, del_flag from umap_petition_matter
+    </sql>
+	
+    <select id="selectPetitionMatterList" parameterType="com.mkst.umap.app.admin.domain.PetitionMatter" resultMap="PetitionMatterResult">
+        <include refid="selectPetitionMatterVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="court != null  and court != '' "> and court = #{court}</if>
+             <if test="referee != null  and referee != '' "> and referee = #{referee}</if>
+             <if test="rulingTime != null "> and ruling_time = #{rulingTime}</if>
+             <if test="rulingSymbol != null  and rulingSymbol != '' "> and ruling_symbol = #{rulingSymbol}</if>
+             <if test="retrialTime != null "> and retrial_time = #{retrialTime}</if>
+             <if test="retrialSymbol != null  and retrialSymbol != '' "> and retrial_symbol = #{retrialSymbol}</if>
+             <if test="createBy != null "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="delFlag != null  and delFlag != '' "> and del_flag = #{delFlag}</if>
+         </where>
+    </select>
+    
+    <select id="selectPetitionMatterById" parameterType="Long" resultMap="PetitionMatterResult">
+        <include refid="selectPetitionMatterVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPetitionMatter" parameterType="com.mkst.umap.app.admin.domain.PetitionMatter"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into umap_petition_matter
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="court != null  and court != ''  ">court,</if>
+            <if test="referee != null  and referee != ''  ">referee,</if>
+			<if test="rulingTime != null  ">ruling_time,</if>
+			<if test="rulingSymbol != null  and rulingSymbol != ''  ">ruling_symbol,</if>
+			<if test="retrialTime != null  ">retrial_time,</if>
+			<if test="retrialSymbol != null  and retrialSymbol != ''  ">retrial_symbol,</if>
+			<if test="createBy != null  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="court != null  and court != ''  ">#{court},</if>
+            <if test="referee != null  and referee != ''  ">#{referee},</if>
+			<if test="rulingTime != null  ">#{rulingTime},</if>
+			<if test="rulingSymbol != null  and rulingSymbol != ''  ">#{rulingSymbol},</if>
+			<if test="retrialTime != null  ">#{retrialTime},</if>
+			<if test="retrialSymbol != null  and retrialSymbol != ''  ">#{retrialSymbol},</if>
+			<if test="createBy != null  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updatePetitionMatter" parameterType="com.mkst.umap.app.admin.domain.PetitionMatter">
+        update umap_petition_matter
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="court != null  and court != ''  ">court = #{court},</if>
+            <if test="referee != null  and referee != ''  ">referee = #{referee},</if>
+            <if test="rulingTime != null  ">ruling_time = #{rulingTime},</if>
+            <if test="rulingSymbol != null  and rulingSymbol != ''  ">ruling_symbol = #{rulingSymbol},</if>
+            <if test="retrialTime != null  ">retrial_time = #{retrialTime},</if>
+            <if test="retrialSymbol != null  and retrialSymbol != ''  ">retrial_symbol = #{retrialSymbol},</if>
+            <if test="createBy != null  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deletePetitionMatterById" parameterType="Long">
+        delete from umap_petition_matter where id = #{id}
+    </delete>
+	
+    <delete id="deletePetitionMatterByIds" parameterType="String">
+        delete from umap_petition_matter where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getPetitionMatterBingList" resultType="com.mkst.umap.app.admin.domain.PetitionMatter">
+        SELECT
+            m.id,
+            m.type,
+            m.court,
+            m.referee,
+            m.ruling_time,
+            m.ruling_symbol,
+            m.retrial_time,
+            m.retrial_symbol,
+            m.create_by,
+            m.create_time,
+            m.update_by,
+            m.update_time,
+            m.remark,
+            m.del_flag
+        FROM
+            umap_petition_matter AS m
+        LEFT JOIN umap_petition_matter_bind AS b ON m.id = b.matter_id
+        <where>
+            m.del_flag = 0
+            <if test="petitionId != null and petitionId != ''">and b.petition_id = #{petitionId}</if>
+            <if test="matterType != null and matterType != ''">and m.type = #{matterType}</if>
+        </where>
+    </select>
+
+</mapper>

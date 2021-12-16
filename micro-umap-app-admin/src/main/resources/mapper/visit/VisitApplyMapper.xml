@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.VisitApplyMapper">
+    
+    <resultMap type="VisitApply" id="VisitApplyResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="phone"    column="phone"    />
+        <result property="certificateType"    column="certificate_type"    />
+        <result property="certificateCode"    column="certificate_code"    />
+        <result property="bodyStatus"    column="body_status"    />
+        <result property="temperature"    column="temperature"    />
+        <result property="entry"    column="entry"    />
+        <result property="contact"    column="contact"    />
+        <result property="userType"    column="user_type"    />
+        <result property="invitationCode"    column="invitation_code"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="invitationUser"    column="invitation_user"    />
+        <result property="status"    column="status"    />
+        <result property="reason"    column="reason"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="reamrk"    column="reamrk"    />
+        <result property="company"    column="company"    />
+        <result property="type"    column="type"    />
+    </resultMap>
+	
+	<sql id="selectVisitApplyVo">
+        select id, name, phone, certificate_type, certificate_code, company,type,
+        body_status, temperature, entry, contact, user_type, invitation_code,
+        start_time, end_time, invitation_user, status, reason, create_by, create_time,
+        update_by, update_time, reamrk from umap_visit_apply
+    </sql>
+	
+    <select id="selectVisitApplyList" parameterType="VisitApply" resultMap="VisitApplyResult">
+        <include refid="selectVisitApplyVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="name != null  and name != '' "> and name like concat('%',#{name},'%')</if>
+             <if test="phone != null  and phone != '' "> and phone = #{phone}</if>
+             <if test="certificateType != null  and certificateType != '' "> and certificate_type = #{certificateType}</if>
+             <if test="certificateCode != null  and certificateCode != '' "> and certificate_code = #{certificateCode}</if>
+             <if test="bodyStatus != null  and bodyStatus != '' "> and body_status = #{bodyStatus}</if>
+             <if test="temperature != null  and temperature != '' "> and temperature = #{temperature}</if>
+             <if test="entry != null  and entry != '' "> and entry = #{entry}</if>
+             <if test="contact != null  and contact != '' "> and contact = #{contact}</if>
+             <if test="userType != null  and userType != '' "> and user_type = #{userType}</if>
+             <if test="invitationCode != null  and invitationCode != '' "> and invitation_code = #{invitationCode}</if>
+             <if test="startTime != null "> and DATE_FORMAT(start_time, '%Y-%m-%d') =  DATE_FORMAT(#{startTime}, '%Y-%m-%d')</if>
+             <if test="endTime != null "> and end_time = #{endTime}</if>
+             <if test="invitationUser != null "> and invitation_user = #{invitationUser}</if>
+             <if test="status != null  and status != '' "> and status = #{status}</if>
+             <if test="reason != null  and reason != '' "> and reason = #{reason}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="reamrk != null  and reamrk != '' "> and reamrk = #{reamrk}</if>
+             <if test="company != null  and company != '' "> and company = #{company}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="auditStatus == '1' or auditStatus == 1 "> and status != '0'</if>
+         </where>
+         order by create_time desc
+    </select>
+    
+    <select id="selectVisitApplyById" parameterType="Integer" resultMap="VisitApplyResult">
+        <include refid="selectVisitApplyVo"/>
+        where id = #{id}
+    </select>
+    <select id="analysisData" parameterType="Map" resultType="com.mkst.umap.app.admin.statistics.AnalysisCountResult">
+        select date,IFNULL(value,0) as value from (
+        select * from
+        (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from
+        (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+        (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+        (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+        (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+        (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
+        where date between #{startDate} and  #{endDate}
+        ) d LEFT JOIN
+        (SELECT
+        COUNT(1) as value ,
+        DATE_FORMAT(start_time, '%Y-%m-%d') AS startTime
+        FROM
+        umap_visit_apply
+        where DATE_FORMAT(start_time, '%Y-%m-%d') <![CDATA[  >=  ]]> #{startDate}
+        and #{endDate} <![CDATA[  >=  ]]>  DATE_FORMAT(start_time, '%Y-%m-%d')
+        and status = '1'
+        GROUP BY
+        startTime) a on a.startTime = d.date
+        ORDER BY date
+    </select>
+
+    <insert id="insertVisitApply" parameterType="VisitApply" useGeneratedKeys="true" keyProperty="id">
+        insert into umap_visit_apply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="phone != null  and phone != ''  ">phone,</if>
+			<if test="certificateType != null  and certificateType != ''  ">certificate_type,</if>
+			<if test="certificateCode != null  and certificateCode != ''  ">certificate_code,</if>
+			<if test="bodyStatus != null  and bodyStatus != ''  ">body_status,</if>
+			<if test="temperature != null  and temperature != ''  ">temperature,</if>
+			<if test="entry != null  and entry != ''  ">entry,</if>
+			<if test="contact != null  and contact != ''  ">contact,</if>
+			<if test="userType != null  and userType != ''  ">user_type,</if>
+			<if test="invitationCode != null  and invitationCode != ''  ">invitation_code,</if>
+			<if test="startTime != null  ">start_time,</if>
+			<if test="endTime != null  ">end_time,</if>
+			<if test="invitationUser != null  ">invitation_user,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+			<if test="reason != null  and reason != ''  ">reason,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="reamrk != null  and reamrk != ''  ">reamrk,</if>
+            <if test="company != null  and company != ''  ">company,</if>
+            <if test="type != null  and type != ''  ">type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="phone != null  and phone != ''  ">#{phone},</if>
+			<if test="certificateType != null  and certificateType != ''  ">#{certificateType},</if>
+			<if test="certificateCode != null  and certificateCode != ''  ">#{certificateCode},</if>
+			<if test="bodyStatus != null  and bodyStatus != ''  ">#{bodyStatus},</if>
+			<if test="temperature != null  and temperature != ''  ">#{temperature},</if>
+			<if test="entry != null  and entry != ''  ">#{entry},</if>
+			<if test="contact != null  and contact != ''  ">#{contact},</if>
+			<if test="userType != null  and userType != ''  ">#{userType},</if>
+			<if test="invitationCode != null  and invitationCode != ''  ">#{invitationCode},</if>
+			<if test="startTime != null  ">#{startTime},</if>
+			<if test="endTime != null  ">#{endTime},</if>
+			<if test="invitationUser != null  ">#{invitationUser},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+			<if test="reason != null  and reason != ''  ">#{reason},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="reamrk != null  and reamrk != ''  ">#{reamrk},</if>
+            <if test="company != null  and company != ''  ">#{company},</if>
+            <if test="type != null  and type != ''  ">#{type},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateVisitApply" parameterType="VisitApply">
+        update umap_visit_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="phone != null  and phone != ''  ">phone = #{phone},</if>
+            <if test="certificateType != null  and certificateType != ''  ">certificate_type = #{certificateType},</if>
+            <if test="certificateCode != null  and certificateCode != ''  ">certificate_code = #{certificateCode},</if>
+            <if test="bodyStatus != null  and bodyStatus != ''  ">body_status = #{bodyStatus},</if>
+            <if test="temperature != null  and temperature != ''  ">temperature = #{temperature},</if>
+            <if test="entry != null  and entry != ''  ">entry = #{entry},</if>
+            <if test="contact != null  and contact != ''  ">contact = #{contact},</if>
+            <if test="userType != null  and userType != ''  ">user_type = #{userType},</if>
+            <if test="invitationCode != null  and invitationCode != ''  ">invitation_code = #{invitationCode},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="invitationUser != null  ">invitation_user = #{invitationUser},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="reason != null  and reason != ''  ">reason = #{reason},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="reamrk != null  and reamrk != ''  ">reamrk = #{reamrk},</if>
+            <if test="company != null  and company != ''  ">company = #{company},</if>
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteVisitApplyById" parameterType="Integer">
+        delete from umap_visit_apply where id = #{id}
+    </delete>
+	
+    <delete id="deleteVisitApplyByIds" parameterType="String">
+        delete from umap_visit_apply where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

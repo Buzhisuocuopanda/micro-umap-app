@@ -1,0 +1,261 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<style>
+</style>
+<body class="white-bg">
+<div class="wrapper wrapper-content box-main">
+    <!--/*@thymesVar id="meeting" type="com.mkst.umap.app.admin.domain.vo.meeting.MeetingWebInfoVo"*/-->
+    <form class="form-horizontal m" id="form-appManager-edit" th:object="${meeting}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="box-body container">
+            <h4 class="form-header h4">基础信息</h4>
+            <div class="row">
+                <div class="col-md-9">
+                    <div style="line-height: 30px;font-weight: bold;font-size: 20px;" th:text="*{subject}"></div>
+                </div>
+            </div>
+            <h4 class="form-header h4"></h4>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">会议室：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{roomName}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">地址：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{roomAddr}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">开始时间：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="${#dates.format(meeting.startTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">结束时间：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="${#dates.format(meeting.endTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">会议主题：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{subject}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">申请部门：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{dept}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">申请人：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{useBy}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">创建人：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{createBy}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">创建时间：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="${#dates.format(meeting.createTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">申请状态：</label>
+                <div class="col-md-9 form-control-static">
+                    <div class="badge badge-primary" th:text="${@dict.getLabel('event_cancel',meeting.status)}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">审核状态：</label>
+                <div class="col-md-9 form-control-static">
+                    <div class="badge badge-primary"
+                         th:text="${@dict.getLabel('event_audit_status',meeting.auditStatus)}"></div>
+                </div>
+            </div>
+
+            <h4 class="form-header h4">参会人员</h4>
+            <div class="col-sm-12 select-table table-striped" style="float: inherit;">
+                <table class="table table-bordered" data-mobile-responsive="true" id="bootstrap-table"></table>
+            </div>
+
+            <!-- 已审核的用户展示审核记录 -->
+            <th:block th:if="${meeting.auditStatus} ne '0'">
+                <h4 class="form-header h4">审核记录</h4>
+                <div class="col-sm-12 select-table table-striped">
+                    <div class="bootstrap-table">
+                        <div class="fixed-table-toolbar">
+                            <div class="bs-bars pull-left"></div>
+                        </div>
+                        <div class="fixed-table-container" style="padding-bottom: 0px;">
+                            <div class="fixed-table-header" style="display: none;">
+                                <table></table>
+                            </div>
+                            <div class="fixed-table-body">
+                                <table class="table table-bordered table-hover" data-mobile-responsive="true"
+                                       id="audit-table">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="userName" style="" tabindex="0">
+                                            <div class="th-inner ">审核人</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                        <th data-field="userName" style="" tabindex="0">
+                                            <div class="th-inner ">审核结果</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                        <th data-field="userName" style="" tabindex="0">
+                                            <div class="th-inner sortable both">审核时间</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                        <th data-field="phonenumber" style="" tabindex="0">
+                                            <div class="th-inner ">审核理由</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!--/*@thymesVar id="auditRecords" type="com.mkst.umap.app.admin.domain.AuditRecord"*/-->
+                                    <tr data-index="0" th:each="audit:${auditRecords}">
+                                        <td style=""
+                                            th:text="${@sysUserServiceImpl.selectUserByLoginName(audit.createBy).getUserName()}"/>
+                                        <td style="" th:text="${@dict.getLabel('event_audit_status',audit.status)}"/>
+                                        <td style=""
+                                            th:text="${#dates.format(audit.createTime, 'yyyy-MM-dd HH:mm:ss')}"/>
+                                        <td style="" th:text="${audit.reason}"/>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </th:block>
+
+            <!--未审核的展示审核按钮-->
+            <!-- && isOverdue eq '0' -->
+            <th:block th:if="${meeting.auditStatus eq '0' && meeting.status eq '0' }">
+                <div class="wrapper wrapper-content animated fadeInRight ibox-content" align="center">
+                    <a class="btn btn-success btn-sm ' + auditFlag + '" href="#" onclick="audit(1)">
+                        <i class="fa fa-edit"></i>通过申请</a>
+                    <a class="btn btn-danger btn-sm ' + auditFlag + '" href="#" onclick="audit(2)">
+                        <i class="fa fa-edit"></i>驳回申请</a>
+                </div>
+            </th:block>
+
+        </div>
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-sm-offset-5 col-sm-10">
+                    <button class="btn btn-sm btn-danger" onclick="closeItem()" type="button"><i
+                            class="fa fa-close"></i>关 闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script th:inline="javascript">
+    const prefix = ctx + "admin/meeting";
+    const auditUrl = prefix + "/audit/{id}/{auditStatus}/{reason}";
+
+    $(function () {
+        var options = {
+            url: prefix + "/listAttendee/" + $("#id").val(),
+            modalName: "与会人员",
+            search: false,
+            showExport: false,
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            columns: [
+                {
+                    title: "序号",
+                    formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'userName',
+                    title: '姓名',
+                    sortable: false
+                },
+                {
+                    field: 'dept.deptName',
+                    title: '所属部门',
+                    sortable: true
+                },
+                {
+                    field: 'phonenumber',
+                    title: '手机号码',
+                    sortable: false
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 审核
+    audit = function (status) {
+
+        const id = [[${meeting.id}]];
+
+        const statusMsg = status === "1" ? "通过" : "驳回";
+
+        prompt(status, "填写" + statusMsg + "该条提审预约的原因", function (reason) {
+            const urlReason = $.common.isEmpty(reason) ? 'NoReasonFlag' : reason;
+            const url = $.common.isEmpty(id) ? auditUrl : auditUrl.replace("{id}", id).replace("{auditStatus}", status).replace("{reason}", urlReason);
+            $.operate.submit(url, "post", "json");
+        });
+    }
+
+    // 确认窗体
+    function prompt(status, content, callBack) {
+
+        const necessary = status === '2' ? "（必填）" : "（非必填）";
+
+        layer.prompt({
+            formType: 2,
+            placeholder: "请输入原因",
+            title: content + necessary,
+            btn: ['确认', '取消'],
+            btnclass: ['btn btn-primary', 'btn btn-danger'],
+            area: ['400px','200px'],
+            yes: function (index, value) {
+                const reason = value.find(".layui-layer-input").val();
+                if (status === "2" && (typeof reason === "undefined" || reason === "")){
+                    alert("请填写理由！");
+                    return;
+                }
+                layer.close(index);
+                callBack(value.find(".layui-layer-input").val());
+                location.reload();
+            }
+        });
+    }
+
+    // 会议审核是否逾期
+    function isOverdue(startTime) {
+        let nowTime = new Date();
+        let startTimeN = new Date(startTime)
+        return nowTime > startTimeN;
+    }
+
+
+
+</script>
+</body>
+</html>

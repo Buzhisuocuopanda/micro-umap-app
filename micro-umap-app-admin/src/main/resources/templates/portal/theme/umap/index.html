@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link th:href="@{/portal/theme/umap/css/index.css}" rel="stylesheet"/>
+</head>
+<body>
+    <header class="row around">
+        <div class="logo row">
+            <img th:src="@{/portal/theme/umap/img/logo.png}" alt="">
+            <span class="logo_name">智慧龙检</span>
+        </div>
+        <div class="nav row">
+            <li class="nav-item active">
+                <a class="nav-link " href="#">首页</a>
+                <div>
+                    <span></span>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " href="#">接入文档</a>
+                <div>
+                    <span></span>
+                </div>
+              </li>
+        </div>
+    </header>
+   <div>
+       <div class="rel">
+           <img th:src="@{/portal/theme/umap/img/1.png}" alt="">
+           
+           <div class="abso">
+            <div>
+                <img class="biaozhi" th:src="@{/portal/theme/umap/img/logo1.png}" alt="">
+                <img class="biaozhi_txt" th:src="@{/portal/theme/umap/img/logo_txt.png}" alt="">
+            </div>
+            <img class="s_phone" th:src="@{/portal/theme/umap/img/s_phone.png}" alt="">
+           
+            <div class="row s_center">
+                <div class="qr_box only_x">
+                    <img class="qr" th:src="@{/portal/theme/umap/img/download.png}" alt="">
+                </div>
+                <div class="btn_group flex_col between">
+                    <a th:href="@{/portal/download}"><img th:src="@{/portal/theme/umap/img/apple.png}" class="apple" alt=""></a>
+                    <a id="andriod" th:href="@{/portal/download}"><img th:src="@{/portal/theme/umap/img/andriod.png}" alt=""></a>
+                </div>
+            </div>
+               <div class="only_x tip">点击按钮下载或者扫描二维码下载</div>
+              
+           </div>
+           <div class="only_s">
+                <img class="s_bg" th:src="@{/portal/theme/umap/img/s_bg.png}" alt="">
+                
+            </div>
+           <img class="phone" th:src="@{/portal/theme/umap/img/1_right.png}" alt="">
+       </div>
+       <div class="rel">
+           <img class="only_x" th:src="@{/portal/theme/umap/img/2_bg.png}" alt="">
+           <img class="only_s" th:src="@{/portal/theme/umap/img/2_s_bg.png}" alt="">
+           <div class="abso_2 abso_row around">
+            <div class="left_2_img">
+                <img th:src="@{/portal/theme/umap/img/2_left.png}" alt="">
+            </div>
+            <div class="right_2">
+                <p class="txt">提高办案效率</p>
+                <p class="txt2">改善检察业务微循环</p>
+                <span class="xian"></span>
+            </div>
+           </div>
+           
+       </div>
+       <div class="rel">
+           <img th:src="@{/portal/theme/umap/img/3_s_bg.png}" class="only_s" alt="">
+           <img th:src="@{/portal/theme/umap/img/3_bg.png}" class="only_x" alt="">
+           <div class="top abso_3_top abso_row around">
+                <div class="abso_3_left">
+                    <p class="txt">
+                        强化内部监督
+                    </p>
+                    <p class="txt2">
+                        促进工作流程程序化
+                    </p>
+                    <span class="xian"></span>
+                </div>
+                <div class="top_img_box">
+                    <img th:src="@{/portal/theme/umap/img/3_top.png}" alt="">
+                </div>
+                
+           </div>
+           
+           <div class="bot abso_row around">
+               <div class="left_4">
+                 <img th:src="@{/portal/theme/umap/img/3_bottom.png}" alt="">
+               </div>
+                <div class="abso_4_ri">
+                    <p class="txt">
+                        提供便民服务
+                    </p>
+                    <p class="txt2">
+                        打造阳光透明检察品牌
+                    </p>
+                    <span class="xian"></span>
+                </div>
+
+           </div>
+           
+       </div>
+       <div class="rel">
+           <img th:src="@{/portal/theme/umap/img/4_s_bg.png}" class="only_s" alt="">
+           <img th:src="@{/portal/theme/umap/img/4_bg.png}" class="only_x" alt="">
+           <div class="abso_row around abso4">
+                <div class="abso_5_left">
+                    <p class="txt">
+                        
+                        打通信息孤岛
+                            
+                    </p>
+                    <p class="txt2">
+                        
+                        实现检务数据共享
+                            
+                    </p>
+                    <span class="xian"></span>
+                </div>
+                <div class="abso4_img">
+                    <img th:src="@{/portal/theme/umap/img/4_right.png}" alt="">
+                </div>
+                
+           </div>
+       </div>
+   </div> 
+</body>
+</html>

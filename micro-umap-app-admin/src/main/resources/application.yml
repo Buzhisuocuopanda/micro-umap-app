@@ -1,0 +1,284 @@
+# 项目相关配置
+systemplus:
+  # 名称
+  name: 智慧检务管理后台
+  # 版本
+  version: 1.0
+  # 版权年份
+  copyrightYear: 2020
+  # 获取ip地址开关
+  addressEnabled: false
+  # 文件上传路径
+  #profile: D:\profile\umap\files\ #开发环境
+  profile: /data/umap/ #测试环境
+  #profile: /resources/umap/ #生产环境
+  #profile: E:\resources\umap\ #生产环境windows
+  # 开启初始化模块表和扫描api并存储到数据库
+  initialize:
+    tables: false
+    apis: false
+  #门户网站开关
+  portalEnabled: true
+  #启用isz
+  iszEnabled: false
+  #启用welink
+  welinkEnabled: false
+  #短信通道开关
+  sms:
+    ms: false #江苏美盛
+    yxt: true #龙华检察院翼讯通
+    ucpaas: false #公司云之讯
+  forceOffline: true #强制下线
+  websocket:
+    server:
+      enable: true
+# 开发环境配置
+server:
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    threads:
+      max: 800
+      min-spare: 30
+
+# 日志配置
+logging:
+  level:
+    com.mkst: DEBUG
+    org.springframework: WARN
+    org.spring.springboot.dao: DEBUG
+
+# 用户配置
+user:
+  password:
+    # 密码错误{maxRetryCount}次锁定10分钟
+    maxRetryCount: 5
+
+# Spring配置
+spring:
+  # 模板引擎
+  thymeleaf:
+    mode: HTML
+    encoding: utf-8
+    # 禁用缓存
+    cache: false
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  profiles:
+    active: test
+  # 文件上传
+  servlet:
+    multipart:
+      max-file-size:  5000MB
+      max-request-size:  5000MB
+  mvc:
+    async:
+      request-timeout: 360000
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: false
+
+jwt:
+  appid: 9xr1sdmoxkegha5z29
+  appsecrect: d457965d7fa34a5c965bfcbc2883cae2
+
+# MyBatis
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.mkst
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mapper/mybatis-config.xml
+  encrypt: true #是否启用字段加密
+  decrypt: true #是否启用字段解密
+  secretkey: 76C63180C2606ED1F47B852De5012156
+
+# PageHelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql
+
+#jasypt加密的密匙
+jasypt:
+  encryptor:
+    password: W3bHda1d2F7fLef0Ki1474ae30lU08P6
+
+# Shiro
+shiro:
+  redis: 
+    #是否开启redis
+    run: true
+  user:
+    # 登录地址
+    loginUrl: /login
+    # 权限认证失败地址
+    unauthorizedUrl: /unauth
+    # 首页地址
+    indexUrl: /portal
+    # 验证码开关
+    captchaEnabled: true
+    # 验证码类型 math 数组计算 char 字符
+    captchaType: char
+  cookie:
+    # 设置Cookie的域名 默认空，即当前访问的域名
+    domain:
+    # 设置cookie的有效访问路径
+    path: /
+    # 设置HttpOnly属性
+    httpOnly: true
+    #设置secure属性
+    secure: false
+    # 设置Cookie的过期时间，天为单位
+    maxAge: 30
+  session:
+    # Session超时时间（默认30分钟）
+    expireTime: 30
+    # 同步session到数据库的周期（默认1分钟）
+    dbSyncPeriod: 1
+    # 相隔多久检查一次session的有效性，默认就是10分钟
+    validationInterval: 10
+
+face: 
+   enable: false #启用/关闭人脸识别
+   huawei: 
+      endpoint: cn-north-4   #区域
+      projectId: 08ad7b4b108025752f75c00bb238ee0f   #IAM用户所属账号的项目ID
+      projectName: cn-north-4   #IAM用户所属账号的项目名称
+      username: hw56712986
+      password: Axingye123@
+
+feign: 
+   # 远程调用服务地址
+   server: 
+      webcase-url: http://127.0.0.1:18082/webcase
+      #webcase-url: http://127.0.0.1:18060/webcase
+
+# 防止XSS攻击
+xss:
+  # 过滤开关
+  enabled: true
+  # 排除链接（多个用逗号分隔）
+  excludes: /system/notice/*
+  # 匹配链接
+  urlPatterns: /system/*,/monitor/*,/tool/*
+
+msg:
+  # 邮件网关
+  email:
+    beanName:
+    fromAddress: szlhjcy@163.com
+    fromPassword: VCZIJSIAXXEFEXPZ
+    fromHostName: smtp.163.com
+    #smtpPort:
+    #sslOnConnect:
+    #sslSmtpPort:
+  #短信网关
+  sms:
+    beanName: umapSmsSendServiceImpl
+  app:
+    beanName: imAndAppSendService
+# 代码生成
+gen:
+  # 作者
+  author: wangyong
+  # 默认生成包路径 system 需改成自己的模块名称 如 system monitor tool
+  packageName: com.mkst.umap.app.admin
+  # 自动去除表前缀，默认是true
+  autoRemovePre: true
+  # 表前缀(类名不会包含表前缀)
+  tablePrefix: tb_
+
+#uniapp消息推送
+unipush:
+  appid: Sc0RYkk47p5JHthES7xWE2
+  appKey: jICrmvVz3s5LP09i8MNgL8
+  masterSecret: KqSku2K6Oe7z25yv7tlAm6
+  url: https://restapi.getui.com/v2/
+
+#龙华文书链接
+lh:
+  #获取文书id，传参犯罪类型名
+  searchWsIdUrl: http://36.7.159.17:8079/api/search/wsId
+  #通过文书ID获取文书内容
+  searchWsUrl: http://36.7.159.17:8079/api/search/ws
+  #通过犯罪类型和指定日期 年月日 获取增量数据
+  searchWsIdIncrementUrl: http://36.7.159.17:8079/api/search/wsIdIncrement
+
+knife4j:
+  markdowns: classpath:markdown/*
+
+# 20201013已修改为在系统参数中配置，以下内容将在下一个版本中删除----webServer
+# webServer 开始
+webServer:
+  webCard:
+    url: http://192.168.1.50:18078/card
+    appId: 5f520b44f930ac20e48e9c2d
+    secret: 0fbe4888459b441981205756f9827937
+  jinzheng:
+    url: http://121.34.236.218:8080
+    _sign: 032B926D0A399022AEBBEEBA9BBABEBB
+    appKey: kinglink_longhuaj
+# webServer 结束
+
+
+userSync:
+  #im: jdbc:mysql://127.0.0.1:3306/micro-im?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  #webcase: jdbc:mysql://127.0.0.1:3306/micro-webcase?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  #webcard: jdbc:mysql://127.0.0.1:3306/micro-webcard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  im: jdbc:mysql://192.168.1.11:3306/micro-im?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  webcase: jdbc:mysql://192.168.1.11:3306/micro-webcase?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  webcard: jdbc:mysql://192.168.1.11:3306/micro-webcard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+
+
+#密钥通过com.mkst.mini.systemplus.util.RsaCastle 生成
+rsa:
+  # 启用开关
+  enabled: true
+  #公钥指数hex
+  publics: 10001
+  #模hex
+  modulus: b45bb00e61fadc961092194c35c06826a8024efe21209ef314d5045c3ac0a9c69a7b162d860380881e918cf084c1c6f5e40cf12f4d877906cb58050f07fa23d6429078e3c5e51be04fa9acee774748d4fc1af3b2641d244fc795023717ee1ca1dd23f2b77ce775d993cba9ef4a2daf8cdc1eae13ab1985d619d1782f2cae2c57
+  #私钥指数hex
+  private: b48812725321082c2dea0fe878e55f5b5250fd40e36803b2cde76bb5e61973d7984a1ca8f4bc0cac33ecfd66c37c33eb6d9a86d11289c85b44af9660b55b6d021cf30ae57a77c1018227cb7a6dc07ee5b3568262febb2be9736f2b58feb003f1f78f2bfa50b18864fe4da523e08d3a00f04d242f1995e1c2fa8ebe67b1acbc1
+  
+# 信息安全
+security:
+  # 跨站点请求伪造
+  csrf:
+    enable: false
+    # 例外URL
+    excludes: 
+      - /ajax/*
+      - /css/*
+      - /echars/*
+      - /file/*
+      - /fonts/*
+      - /img/*
+      - /js/*
+      - /loginPage/*
+      - /systemplus/*
+  # SQL盲注、SQL注入
+  sql:
+    enable: false
+    # 例外URL
+    excludes:
+      - /ajax/*
+      - /css/*
+      - /echars/*
+      - /file/*
+      - /fonts/*
+      - /img/*
+      - /js/*
+      - /loginPage/*
+      - /systemplus/*

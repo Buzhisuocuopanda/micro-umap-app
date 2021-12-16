@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<style>
+</style>
+<body class="white-bg">
+<div class="wrapper wrapper-content box-main">
+    <!--/*@thymesVar id="report" type="com.mkst.umap.app.admin.domain.Report"*/-->
+    <form class="form-horizontal m" id="form-appManager-edit" th:object="${report}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="box-body container">
+            <!-- 展示基本信息 -->
+            <h4 class="form-header h4">基本信息</h4>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">举报类型：</label>
+                <div class="col-md-9 form-control-static">
+                    <div class="badge badge-primary" th:text="${@dict.getLabel('umap_report_type',report.type)}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">地址：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{address}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">详细内容：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="*{content}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">是否实名：</label>
+                <div class="col-md-9 form-control-static">
+                    <div class="badge badge-primary" th:text="${@dict.getLabel('yes_no',report.realName)}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">创建时间：</label>
+                <div class="col-md-9 form-control-static">
+                    <div th:text="${#dates.format(report.createTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-md-offset-1 col-md-2 form-control-static">已回复：</label>
+                <div class="col-md-9 form-control-static">
+                    <div class="badge badge-primary" th:text="${@dict.getLabel('yes_no',report.hasReplied)}"></div>
+                </div>
+            </div>
+
+            <!-- 展示举报附件信息 -->
+            <th:block th:if="${not #lists.isEmpty(fileBind)}">
+                <h4 class="form-header h4">附件信息</h4>
+                <div class="row" id="image-file">
+                    <div class="col-md-2 form-control-static" th:each="filePath:${fileBind}" >
+                        <img th:data-original="@{/} + ${filePath}" th:src="@{/} + ${filePath}" class="img-responsive" style="width: 150px;cursor: pointer">
+                    </div>
+                </div>
+            </th:block>
+
+            <!-- 使用举报展示举报人信息 -->
+            <th:block th:if="${report.realName} eq '1'">
+                <h4 class="form-header h4">举报人信息</h4>
+                <div class="row">
+                    <label class="col-md-offset-1 col-md-2 form-control-static">姓名：</label>
+                    <div class="col-md-9 form-control-static">
+                        <!--/*@thymesVar id="createByUser" type="com.mkst.mini.systemplus.system.domain.SysUser"*/-->
+                        <div th:text="${createByUser.userName}"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-offset-1 col-md-2 form-control-static">手机号：</label>
+                    <div class="col-md-9 form-control-static">
+                        <div th:text="${createByUser.phonenumber}"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-offset-1 col-md-2 form-control-static">性别：</label>
+                    <div class="col-md-9 form-control-static">
+                        <div th:text="${@dict.getLabel('sys_user_sex',createByUser.sex)}"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-offset-1 col-md-2 form-control-static">最后登录ip：</label>
+                    <div class="col-md-9 form-control-static">
+                        <div th:text="${createByUser.loginIp}"></div>
+                    </div>
+                </div>
+            </th:block>
+
+            <!-- 进行回复 -->
+            <th:block th:if="${#lists.isEmpty(replyDtos)}">
+                <h4 class="form-header h4">回复举报</h4>
+                <div class="col-sm-8" style="padding-left: 95px">
+                <textarea id="reply-content" name="remark" placeholder="输入您的回复内容" class="form-control" type="text" cols="50"
+                          rows="5" maxlength="500"></textarea>
+                </div>
+                <!--<div class="wrapper wrapper-content animated fadeInRight ibox-content" align="center">
+                    <a class="btn btn-success btn-sm ' + auditFlag + '" href="#" onclick="reply()">
+                        <i class="fa fa-edit"></i>回复</a>
+                </div>-->
+
+            </th:block>
+
+            <!-- 展示回复记录 -->
+            <th:block th:if="${not #lists.isEmpty(replyDtos)}">
+                <h4 class="form-header h4">回复记录</h4>
+                <div class="col-sm-12 select-table table-striped">
+                    <div class="bootstrap-table">
+                        <div class="fixed-table-toolbar">
+                            <div class="bs-bars pull-left"></div>
+                        </div>
+                        <div class="fixed-table-container" style="padding-bottom: 0px;">
+                            <div class="fixed-table-header" style="display: none;">
+                                <table></table>
+                            </div>
+                            <div class="fixed-table-body">
+                                <table class="table table-bordered table-hover" data-mobile-responsive="true"
+                                       id="audit-table">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="userName" style="" tabindex="0">
+                                            <div class="th-inner ">回复人</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                        <th data-field="userName" style="" tabindex="0">
+                                            <div class="th-inner ">回复内容</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                        <th data-field="phonenumber" style="" tabindex="0">
+                                            <div class="th-inner ">回复时间</div>
+                                            <div class="fht-cell"></div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!--/*@thymesVar id="reply" type="com.mkst.umap.app.admin.dto.ReplyDto"*/-->
+                                    <tr data-index="0" th:each="dto:${replyDtos}">
+                                        <td style="" th:text="${dto.responder}"/>
+                                        <td style="white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width: 150px;">
+                                            <span th:title="${dto.content}">[[${dto.content}]]</span></td>
+                                        <td style=""
+                                            th:text="${#dates.format(dto.createTime, 'yyyy-MM-dd HH:mm:ss')}"/>
+
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </th:block>
+
+        </div>
+
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-sm-offset-5 col-sm-10">
+                    <button class="btn btn-sm btn-danger" onclick="closeItem()" type="button"><i
+                            class="fa fa-close"></i>关 闭
+                    </button>
+                    <th:block th:if="${#lists.isEmpty(replyDtos)}">
+                        <button class="btn btn-sm btn-success" onclick="reply()" type="button"><i
+                                class="fa fa-close"></i>回复
+                        </button>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<link  th:href="@{/viewer/css/viewer.css}" rel="stylesheet">
+<script th:src="@{/viewer/js/viewer.js}"></script>
+<script th:inline="javascript">
+    const prefix = ctx + "admin/report";
+    const replyUrl = prefix + "/reply/{id}/{content}";
+
+    const viewer = new Viewer(document.getElementById('image-file'), {
+        title: false
+    });
+
+    // 回复
+    reply = function () {
+        const id = [[${report.id}]];
+        const content = document.getElementById("reply-content").value;
+        if (typeof content === "undefined" || content === ""){
+            alert("回复内容不可为空！！！")
+            return;
+        }
+        const url = replyUrl.replace("{id}",id).replace("{content}",content);
+        const r = confirm("确认回复？")
+        if (r == true){
+            $.operate.submit(url, "get", "json");
+            setTimeout(function () {
+                location.reload();
+            },1000)
+
+        }else {}
+    }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mkst.umap.app.admin.mapper.ArraignRoomMapper">
+
+    <resultMap type="com.mkst.umap.app.admin.domain.ArraignRoom" id="ArraignRoomResult">
+        <result property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="managerId" column="manager_id"/>
+        <result property="workStartTime" column="work_start_time"/>
+        <result property="workEndTime" column="work_end_time"/>
+        <result property="restStartTime" column="rest_start_time"/>
+        <result property="restEndTime" column="rest_end_time"/>
+        <result property="duration" column="duration"/>
+        <result property="capacity" column="capacity"/>
+        <result property="galleryful" column="galleryful"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="reamrk" column="reamrk"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <resultMap type="com.mkst.umap.app.admin.dto.arraign.ArraignRoomListDto" id="ArraignRoomVo">
+        <result property="id" column="id"/>
+        <result property="name" column="room_name"/>
+        <association property="ongoingAppointmentResult"
+                     javaType="com.mkst.umap.app.admin.api.bean.result.arraign.OngoingAppointmentResult"
+                     resultMap="ongoingAppointmentResult"/>
+    </resultMap>
+
+    <resultMap id="ongoingAppointmentResult"
+               type="com.mkst.umap.app.admin.api.bean.result.arraign.OngoingAppointmentResult">
+        <id property="id" column="appointment_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="useBy" column="use_by"/>
+        <result property="dept" column="dept_name"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <resultMap id="ArraignRoomCountVo"
+               type="com.mkst.umap.app.admin.dto.arraign.CountDto">
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <result property="total" column="total"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+
+    <sql id="selectArraignRoomVo">
+        select id,`type`, `name`, address, dept_id, manager_id, work_start_time, work_end_time, rest_start_time, rest_end_time, duration, capacity,galleryful, status, create_by, create_time, update_by, update_time, reamrk, del_flag
+        from umap_arraign_room
+    </sql>
+
+    <!-- 获取提审室当前的占用情况 -->
+    <!-- 有两个预约表需要考虑-->
+    <sql id="selectRoomNowVo">
+        SELECT
+			r.id id,
+			aa.id appointment_id,
+			r.`name` room_name,
+			s.start_time start_time,
+			s.end_time end_time,
+			u.user_name use_by,
+			d.dept_name dept_name,
+			'1' AS 'type'
+		FROM
+			umap_arraign_room AS r
+		LEFT JOIN umap_arraign_room_schedule s ON r.id = s.room_id
+		LEFT JOIN umap_arraign_appointment aa ON s.id = aa.schedule_id
+		LEFT JOIN sys_user u ON u.user_id = aa.prosecutor_user_id
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE
+			aa.id IS NOT NULL
+		AND r.type = '0'
+		AND u.del_flag = '0'
+		UNION
+			SELECT
+				r.id id,
+				sa.id appointment_id,
+				r.`name` roomName,
+				sa.start_time start_time,
+				sa.end_time end_time,
+				u.user_name use_by,
+				d.dept_name dept_name,
+				'2' AS 'type'
+			FROM
+				umap_arraign_room AS r
+			LEFT JOIN umap_special_case_appointment sa ON sa.room_id = r.id
+			LEFT JOIN sys_user u ON u.login_name = sa.use_by
+			LEFT JOIN sys_dept d ON sa.dept_id = d.dept_id
+			WHERE
+				sa.id IS NOT NULL
+			AND r.type = '0'
+			AND u.del_flag = '0'
+    </sql>
+
+    <select id="selectRoomScheduleResult"
+            parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignRoomListDto"
+            resultMap="ArraignRoomVo">
+        select * from
+        (<include refid="selectRoomNowVo"/>)
+        as sv
+        <where>
+            <if test="id != null and id != ''">and sv.id = #{id}</if>
+            <if test="checkDatetime != null">
+                and sv.start_time &lt;= #{checkDatetime}
+            </if>
+            <if test="checkDatetime != null">
+                and sv.end_time &gt; #{checkDatetime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectRoomType0And30Day" resultMap="ArraignRoomCountVo">
+        SELECT
+        r.`name` as `name`,
+        r.address as address,
+        count( aa.room_id ) as total
+        FROM
+        umap_arraign_room r
+        LEFT JOIN umap_arraign_appointment aa ON r.id = aa.room_id
+        WHERE
+        r.type = '0'
+        AND aa.del_flag = '0'
+        And DATE_SUB( CURDATE(), INTERVAL 30 DAY ) &lt;= aa.start_time
+        GROUP BY
+        r.id
+    </select>
+
+    <select id="selectArraignRoomList" parameterType="com.mkst.umap.app.admin.domain.ArraignRoom"
+            resultMap="ArraignRoomResult">
+        <include refid="selectArraignRoomVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="type != null and type != '' ">and `type` = #{type}</if>
+            <if test="name != null  and name != '' ">and `name` = #{name}</if>
+            <if test="address != null  and address != '' ">and address = #{address}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="managerId != null  and managerId != '' ">and manager_id = #{managerId}</if>
+            <if test="workStartTime != null ">and work_start_time = #{workStartTime}</if>
+            <if test="workEndTime != null ">and work_end_time = #{workEndTime}</if>
+            <if test="restStartTime != null ">and rest_start_time = #{restStartTime}</if>
+            <if test="restEndTime != null ">and rest_end_time = #{restEndTime}</if>
+            <if test="duration != null ">and duration = #{duration}</if>
+            <if test="capacity != null ">and capacity = #{capacity}</if>
+            <if test="galleryful != null ">and galleryful = #{galleryful}</if>
+            <if test="status != null  and status != '' ">and status = #{status}</if>
+            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="reamrk != null  and reamrk != '' ">and reamrk = #{reamrk}</if>
+            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectArraignRoomById" parameterType="java.lang.String" resultMap="ArraignRoomResult">
+        <include refid="selectArraignRoomVo"/>
+        where id = #{id}
+    </select>
+    <select id="getNextStartTime" resultType="java.util.Date">
+        SELECT
+        sc.start_time
+        FROM
+        umap_arraign_room_schedule sc
+        <where>
+            <if test="roomId != null and roomId != ''">and sc.room_id = #{roomId}</if>
+            <if test="chooseStartTime != null">and sc.start_time &gt; #{chooseStartTime}</if>
+            <if test="chooseStartTime != null">and TO_DAYS(sc.start_time) = TO_DAYS(#{chooseStartTime})</if>
+        </where>
+        ORDER BY
+        sc.start_time
+        LIMIT 1
+    </select>
+
+    <insert id="insertArraignRoom" parameterType="com.mkst.umap.app.admin.domain.ArraignRoom">
+        <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+            select replace(uuid(),'-','') from dual
+        </selectKey>
+        insert into umap_arraign_room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="name != null  and name != ''  ">name,</if>
+            <if test="address != null  and address != ''  ">address,</if>
+            <if test="deptId != null  ">dept_id,</if>
+            <if test="managerId != null  and managerId != ''  ">manager_id,</if>
+            <if test="workStartTime != null  ">work_start_time,</if>
+            <if test="workEndTime != null  ">work_end_time,</if>
+            <if test="restStartTime != null  ">rest_start_time,</if>
+            <if test="restEndTime != null  ">rest_end_time,</if>
+            <if test="duration != null  ">duration,</if>
+            <if test="capacity != null  ">capacity,</if>
+            <if test="galleryful != null ">galleryful,</if>
+            <if test="status != null  and status != ''  ">status,</if>
+            <if test="createBy != null  and createBy != ''  ">create_by,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="reamrk != null  and reamrk != ''  ">reamrk,</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="name != null  and name != ''  ">#{name},</if>
+            <if test="address != null  and address != ''  ">#{address},</if>
+            <if test="deptId != null  ">#{deptId},</if>
+            <if test="managerId != null  and managerId != ''  ">#{managerId},</if>
+            <if test="workStartTime != null  ">#{workStartTime},</if>
+            <if test="workEndTime != null  ">#{workEndTime},</if>
+            <if test="restStartTime != null  ">#{restStartTime},</if>
+            <if test="restEndTime != null  ">#{restEndTime},</if>
+            <if test="duration != null  and duration != ''  ">#{duration},</if>
+            <if test="capacity != null  ">#{capacity},</if>
+            <if test="galleryful != null ">#{galleryful},</if>
+            <if test="status != null  and status != ''  ">#{status},</if>
+            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="reamrk != null  and reamrk != ''  ">#{reamrk},</if>
+            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateArraignRoom" parameterType="com.mkst.umap.app.admin.domain.ArraignRoom">
+        update umap_arraign_room
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="address != null  and address != ''  ">address = #{address},</if>
+            <if test="deptId != null  ">dept_id = #{deptId},</if>
+            <if test="managerId != null  and managerId != ''  ">manager_id = #{managerId},</if>
+            <if test="workStartTime != null  ">work_start_time = #{workStartTime},</if>
+            <if test="workEndTime != null  ">work_end_time = #{workEndTime},</if>
+            <if test="restStartTime != null  ">rest_start_time = #{restStartTime},</if>
+            <if test="restEndTime != null  ">rest_end_time = #{restEndTime},</if>
+            <if test="duration != null  and duration != ''  ">duration = #{duration},</if>
+            <if test="capacity != null  ">capacity = #{capacity},</if>
+            <if test="galleryful != null ">galleryful = #{galleryful},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="reamrk != null  and reamrk != ''  ">reamrk = #{reamrk},</if>
+            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArraignRoomById" parameterType="java.lang.String">
+        delete from umap_arraign_room where id = #{id}
+    </delete>
+
+    <delete id="deleteArraignRoomByIds" parameterType="String">
+        delete from umap_arraign_room where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

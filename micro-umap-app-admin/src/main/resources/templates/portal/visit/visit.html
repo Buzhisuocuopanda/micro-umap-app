@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>深圳市龙华检查院</title>
+
+    <link rel="stylesheet" th:href="@{/portal/visit/css/index.css}" />
+    <link  rel="stylesheet" th:href="@{/portal/visit/js/bootstrap/css/bootstrap.min.css}"/>
+    <script th:src="@{/portal/visit/js/jQuery.js}"></script>
+    <script th:src="@{/portal/visit/js/bootstrap/js/bootstrap.js}"></script>
+    <script th:src="@{/portal/visit/js/moment.js}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+    <script>
+        let time;
+        $(document).ready(() => {
+            time = moment().format("YYYY-MM-DD HH:mm:ss");
+            $('#cur_time').text(time);
+        });
+    </script>
+    <div class="box">
+        <div class="top-img"></div>
+
+        <div class="pass-code-box">
+            <div class="code-title">
+                <div class="name">您好，[[${visitApply.name}]]</div>
+                <div class="node">欢迎来访龙华区检察院</div>
+            </div>
+            <div class="code-box">
+                <div class="top-times">
+                    <div class="time">
+                        <span id="cur_time">{{currentTime}}</span>
+                        <span onclick="update()">更新</span>
+                    </div>
+                </div>
+                <div class="mid-code">
+                    <img class="img-fluid code" th:src="@{/profile/}+${qrcodeUrl}"/>
+                </div>
+
+
+                <div class="bottom-info">
+                    <div class="note">
+                        将此码出示给保安
+                    </div>
+                    <!--<div class="flush" @tap="update">
+                        <span class="iconfontA iconshuaxin"></span>
+                        刷新
+
+                        <span class="glyphicon glyphicon-repeat" ></span>
+                    </div>-->
+                </div>
+            </div>
+
+            <div class="code-info">
+                <div class="info-title">
+                    位置
+                </div>
+                <div class="info-box">
+                    <div class="box-item">
+                        <span class="glyphicon glyphicon-map-marker"></span>
+                        <span>龙华区大浪街道浪宁路1号梦诗工业园B栋</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-info" >
+                <div class="info-title">
+                    来访信息
+                </div>
+                <div class="info-box">
+                    <div class="box-item box-between">
+                        <span class="left">来访人手机号</span>
+                        <span class="right">[[${visitApply.phone}]]</span>
+                    </div>
+                    <div class="box-item box-between">
+                        <span class="left">来访人姓名</span>
+                        <span class="right">[[${visitApply.name}]]</span>
+                    </div>
+                    <div class="box-item box-between">
+                        <span class="left">来访人身份证号</span>
+                        <span class="right">[[${visitApply.certificateCode}]]</span>
+                    </div>
+                    <div class="box-item box-between">
+                        <span class="left">来访事由</span>
+                        <span class="right">[[${visitApply.reason}]]</span>
+                    </div>
+                    <div class="box-item box-wrap" style="line-height: 50upx;">
+                        <span class="left">备注</span>
+                        <span class="right" style="line-height: 2.5rem;">[[${visitApply.reamrk}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function update() {
+            time = moment().format("YYYY-MM-DD HH:mm:ss");
+            $('#cur_time').text(time);
+        }
+
+    </script>
+</body>
+</html>

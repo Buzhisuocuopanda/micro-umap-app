@@ -1,0 +1,61 @@
+
+<div class="card" th:fragment="tishenReport(title,url)" >
+	<div class="card-header border-0">
+		<h3 class="card-title">近30天部门提审情况 TOP5</h3>
+	</div>
+	<div class="card-body table-responsive p-0" style="height: 265px">
+		<table class="table   ">
+			<thead>
+			<tr>
+				<th>部门名</th>
+				<th>总数</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="dept:${list}">
+				<td th:text="${dept.name}" style="padding: 0.55rem;" ></td>
+				<td th:text="${dept.total}" style="padding: 0.55rem;" ></td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+<div class="card" th:fragment="tishenReport2(title,url)" >
+	<div class="card-header border-0">
+		<div class="d-flex justify-content-between">
+			<h3 class="card-title">近30天提审情况</h3>
+		</div>
+	</div>
+	<div class="card-body">
+		<div class="position-relative mb-4">
+			<div class="ibox float-e-margins">
+				<div class="ibox-content">
+					<div class="echarts" id="arraignAppointment" style="width: 100%;height: 200px"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card" th:fragment="activeUsers(title,url)">
+	<div class="card-header border-0">
+		<div class="d-flex justify-content-between">
+			<h3 class="card-title">活跃用户数走势图</h3>
+		</div>
+		<div class="layui-btn-group">
+			<button type="button" class="btn btn-xs btn-info" onclick="submitType(1)">7天</button>
+			<button type="button" class="btn btn-xs btn-info" onclick="submitType(2)">30天</button>
+		</div>
+	</div>
+	<div class="card-body">
+		<div class="position-relative mb-4">
+			<div class="ibox float-e-margins">
+				<div class="ibox-content">
+					<div class="echarts" id="activeUsers" style="width: 100%;height: 350px"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

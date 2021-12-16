@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>统计</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<link th:href="@{/ajax/libs/fontawesome-free/css/all.min.css}" rel="stylesheet"/>
+	<link th:href="@{/ajax/libs/AdminLTE3/dist/css/adminlte.min.css}" rel="stylesheet"/>
+	<!--<link th:href="@{/ajax/libs/layui/css/modules/layui.css}" rel="stylesheet">-->
+</head>
+
+<body class="hold-transition">
+<div class="content p-2">
+	<div class="container-fluid">
+		<div class="row">
+			<div th:class="${portlet.portletClass}" shiro:hasPermission="${portlet.permission}"  th:each="portlet : ${portlets}">
+				<div th:replace="${portlet.pageName} :: ${portlet.portletCode}(${portlet.portletTitle},${portlet.linkUrl})"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<div th:include="include::echarts-js"></div>
+<div th:include="include::footer"></div>
+<th:block th:include="include :: sparkline-js" />
+<script th:inline="javascript">
+	var prefix = ctx + "admin/arraignAppointment";
+
+	$(function () {
+		initLine();
+		// 1.渲染表格
+		//initTable();
+		initActiveUsersLine(1);
+	});
+
+	function initLine() {
+		$.ajax({
+			type: "POST",
+			async : true,
+			url: prefix+"/arraignAppointment30Day",
+			data: {
+				totalType : "30",
+			},
+			dataType:"json",
+			success: function(result){
+				if(result.code == 0){
+					var timeIntervals = result.data.timeIntervals;
+					var criminalTypeAndDeptData = result.data.criminalTypeAndDeptData ;
+					var map = result.data.mapList;
+					var myChartLine = echarts.init(document.getElementById("arraignAppointment"));
+					var seriesData =[];
+					for(var i=0;i<criminalTypeAndDeptData.length;i++){
+						var lineItem = new serLineItem();
+						lineItem.name = criminalTypeAndDeptData[i];
+						lineItem.data = map[lineItem.name];
+						seriesData.push(lineItem);
+					}
+					var lineOption = {
+						/*title: {text: "按案件类型统计"},*/
+						/*tooltip: {trigger: "axis",
+                            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            }},*/
+						tooltip: {
+							trigger: 'axis',
+							position: function(point, params, dom, rect, size) {
+								//其中point为当前鼠标的位置，size中有两个属性：viewSize和contentSize，分别为外层div和tooltip提示框的大小
+								var x = point[0];//
+								var y = point[1];
+								var viewWidth = size.viewSize[0];
+								var viewHeight = size.viewSize[1];
+								var boxWidth = size.contentSize[0];
+								var boxHeight = size.contentSize[1];
+								var posX = 0;//x坐标位置
+								var posY = 0;//y坐标位置
+
+								if (x < boxWidth) {//左边放不开
+									posX = 5;
+								} else {//左边放的下
+									posX = x - boxWidth;
+								}
+
+								if (y < boxHeight) {//上边放不开
+									posY = 5;
+								} else {//上边放得下
+									posY = y - boxHeight;
+								}
+
+								return [posX, posY];
+							},
+							axisPointer: {
+								type: 'cross',
+								label: {
+									backgroundColor: '#283b56'
+								}
+							}
+						},
+						//legend: {data: criminalTypeAndDeptData},
+						grid: {
+							x: 40, y: 10, x2: 40, y2: 30
+						},
+						calculable: !0,
+						xAxis: [{type: "category", boundaryGap: !1, data: timeIntervals}],
+						yAxis: [{type: "value", name:"预约总量"}],
+						series:seriesData
+					}
+					// 使用刚指定的配置项和数据显示图表。
+					myChartLine.setOption(lineOption);
+				}
+			}
+		});
+	}
+
+	var serLineItem = function () {
+		return {
+			name: '',
+			type: 'line',
+			data: [],
+			smooth:true,  //这个是把线变成曲线
+			/*markPoint: {data: [{type: "max", name: "最大值"}, {type: "min", name: "最小值"}]},*/
+			lmarkLine: {data: [{type: "average", name: "平均值"}]},
+			/*llabel: {show: true}*/
+		}
+	}
+
+	function initTable() {
+		var options = {
+			url: prefix+"/selectDeptFive30Day",
+			modalName: "近30天前五部门预约数量",
+			height:250,
+			search: false,
+			showSearch:false,
+			showExport: false,
+			showRefresh: false,
+			showColumns: false,
+			showToggle: false,
+			pagination: false,
+			columns: [
+				{
+					field : 'name',
+					title : '部门名',
+					sortable: true
+				},
+				{
+					field : 'total',
+					title : '预约数量',
+					sortable: true
+				}]
+		};
+		$.table.init(options);
+	}
+
+
+	function initActiveUsersLine(dateType) {
+		$.ajax({
+			type: "POST",
+			async : true,
+			url: prefix+"/selectActiveUsers",
+			data: {
+				dateType: dateType
+			},
+			dataType:"json",
+			success: function(result){
+				if(result.code == 0){
+					var myChartLine = echarts.init(document.getElementById("activeUsers"));
+					var title=new Array();
+					var list = new Array();
+					for(var i = 0;i<result.data.length;i++){
+						title[i] = result.data[i].date;
+						list[i] = result.data[i].total;
+					}
+					var option = {
+						tooltip: {
+							trigger: 'axis'
+						},
+						color:['#FF5722','#23C6C8'],
+						grid: {
+							left: '3%',
+							right: '4%',
+							bottom: '3%',
+							containLabel: true
+						},
+						xAxis:  {
+							type: 'category',
+							boundaryGap: false,
+							data: title
+						},
+						yAxis: {
+							type: 'value',
+							minInterval: 1
+						},
+						series: [
+							{
+								name:'活跃用户数',
+								type:'line',
+								smooth: true,
+								itemStyle : {
+									normal : {
+										lineStyle:{
+											color:'#FF5722'
+										}
+									}
+								},
+								data:list,
+								markPoint: {
+									data: [
+										{type: 'max', name: '最大值'},
+										{type: 'min', name: '最小值'}
+									]
+								}
+
+							}
+						]
+					};
+					// 使用刚指定的配置项和数据显示图表。
+					myChartLine.setOption(option);
+				}
+			}
+		});
+	}
+
+	function submitType(type){
+		initActiveUsersLine(type);
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+package com.mkst.umap.app.admin.service;
+
+import com.mkst.umap.app.admin.domain.PetitionPersonnel;
+
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * 信访相关人员 服务层
+ * 
+ * @author wangyong
+ * @date 2020-08-25
+ */
+public interface IPetitionPersonnelService 
+{
+	/**
+     * 查询信访相关人员信息
+     * 
+     * @param id 信访相关人员ID
+     * @return 信访相关人员信息
+     */
+	public PetitionPersonnel selectPetitionPersonnelById(Long id);
+	
+	/**
+     * 查询信访相关人员列表
+     * 
+     * @param petitionPersonnel 信访相关人员信息
+     * @return 信访相关人员集合
+     */
+	public List<PetitionPersonnel> selectPetitionPersonnelList(PetitionPersonnel petitionPersonnel);
+	
+	/**
+     * 新增信访相关人员
+     * 
+     * @param petitionPersonnel 信访相关人员信息
+     * @return 结果
+     */
+	public int insertPetitionPersonnel(PetitionPersonnel petitionPersonnel);
+	
+	/**
+     * 修改信访相关人员
+     * 
+     * @param petitionPersonnel 信访相关人员信息
+     * @return 结果
+     */
+	public int updatePetitionPersonnel(PetitionPersonnel petitionPersonnel);
+		
+	/**
+     * 删除信访相关人员信息
+     * 
+     * @param ids 需要删除的数据ID
+     * @return 结果
+     */
+	public int deletePetitionPersonnelByIds(String ids);
+
+    HashMap<Long,String> getPetitionPersonnelBingList(Long petitionId, String personnelType);
+}
