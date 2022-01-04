@@ -1071,7 +1071,7 @@
 
     <select id="isArraign" resultType="int" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
         select count(1) from umap_arraign_appointment
-        where start_time = #{startTime} and del_flag = '0' and status != '4'
+        where start_time = #{startTime} and del_flag = '0' and status != '4' and status != '2'
     </select>
 
 </mapper>
