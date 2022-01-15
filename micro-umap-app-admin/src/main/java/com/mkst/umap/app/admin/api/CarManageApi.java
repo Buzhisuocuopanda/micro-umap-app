@@ -31,6 +31,7 @@ import com.mkst.umap.app.admin.service.IAuditRecordService;
 import com.mkst.umap.app.admin.service.ICarApplyService;
 import com.mkst.umap.app.admin.service.ICarInfoService;
 import com.mkst.umap.app.admin.service.IMapLocationService;
+import com.mkst.umap.app.admin.service.impl.CarApplyServiceImpl;
 import com.mkst.umap.app.common.constant.KeyConstant;
 import com.mkst.umap.app.common.enums.*;
 import io.swagger.annotations.Api;
@@ -130,7 +131,7 @@ public class CarManageApi extends BaseApi {
 		eventAuditRecord.setUpdateBy(sysUser.getLoginName());
 		eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
 
-		sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批" );
+		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批" );
 		return row > 0 ? ResultGenerator.genSuccessResult("新增车辆申请成功") : ResultGenerator.genFailResult("新增车辆申请失败，请联系管理员或稍后重试！");
 	}
 
@@ -392,7 +393,7 @@ public class CarManageApi extends BaseApi {
 			if (row > 0) {
 				List<SysUser> users = sysUserService.selectUserLitByRoleKey("clgly");
 				users.forEach(u -> {
-					sendAppMsg(u.getLoginName(), carApply.getCarApplyId(), "公车预约", "车辆 " + carInfoService.selectCarInfoById(carApply.getCarId()).getLicensePlateNumber() + " 已归库");
+					CarApplyServiceImpl.sendAppMsg(u.getLoginName(), carApply.getCarApplyId(), "公车预约", "车辆 " + carInfoService.selectCarInfoById(carApply.getCarId()).getLicensePlateNumber() + " 已归库");
 				});
 				return ResultGenerator.genSuccessResult("完单成功");
 			} else {
@@ -570,82 +571,82 @@ public class CarManageApi extends BaseApi {
 			return ResultGenerator.genFailResult("查询失败，请联系管理员或稍后重试！");
 		}
 	}
+	/*已废弃的接口和方法*/
+	/*
+	 *	@PostMapping("/audit")
+	 *	@ApiOperation("预约申请审核 支持批量")
+	 *	@Login
+	 *	public Result audit(HttpServletRequest request,
+	 *	                    @RequestBody @ApiParam(name = "param", value = "预约申请信息") ApproveParam param) {
+	 *		try {
+	 *			if (CollUtil.isEmpty(param.getApplyIds()) || StrUtil.isBlank(param.getApproveType())) {
+	 *				return ResultGenerator.genFailResult("传入参数存在空值，请检查参数！");
+	 *			}
+	 *			List<Long> applyIds = param.getApplyIds();
+	 *			int row = 0;
+	 *			for (Long applyId : applyIds) {
+	 *				SysUser user = sysUserService.selectUserById(carApplyService.selectCarApplyById(applyId).getUserId());
+	 *				switch (param.getApproveType()) {
+	 *					//通过
+	 *					case "1":
+	 *						row = auditUpdateStatus(request, applyId, ApproveStatusEnum.SUCCESS.getValue().toString());
+	 *						break;
+	 *					//拒绝
+	 *					case "2":
+	 *						row = auditUpdateStatus(request, applyId, ApproveStatusEnum.FAIL.getValue().toString());
+	 *						sendAppMsg(user.getLoginName(), applyId, "车辆申请", "您的公务车预约申请被拒绝，进入APP查看拒绝原因");
+	 *						break;
+	 *					//取消
+	 *					case "3":
+	 *						CarApply carApply = carApplyService.selectCarApplyById(applyId);
+	 *						if (carApply == null) {
+	 *							return ResultGenerator.genFailResult("审核失败，该车辆申请不存在，请联系管理员！");
+	 *						}
+	 *						carApply.setApproveStatus(ApproveStatusEnum.CANCEL.getValue().toString());
+	 *						row = carApplyService.updateCarApply(carApply);
+	 *				}
+	 *			}
+	 *			return row > 0 ? ResultGenerator.genSuccessResult("审核成功") : ResultGenerator.genFailResult("审核失败，请联系管理员或稍后重试！");
+	 *		} catch (Exception e) {
+	 *			e.printStackTrace();
+	 *			return ResultGenerator.genFailResult("审核失败，请联系管理员或稍后重试！");
+	 *		}
+	 *	}
+	 *
+	 *	private Integer auditUpdateStatus(HttpServletRequest request, Long applyId, String approveStatus) {
+	 *		int row;
+	 *		CarApply carApply = carApplyService.selectCarApplyById(applyId);
+	 *		if (carApply == null) {
+	 *			return 0;
+	 *		}
+	 *		carApply.setApproveStatus(approveStatus);
+	 *		row = carApplyService.updateCarApply(carApply);
+	 *		if (row <= 0) {
+	 *			return row;
+	 *		}
+	 *		AuditRecord auditRecord = new AuditRecord();
+	 *		auditRecord.setApplyId(applyId);
+	 *		auditRecord.setApplyType(AuditRecordTypeEnum.CarAudit.getValue());
+	 *		auditRecord.setStatus(approveStatus + "");
+	 *		auditRecord.setCreateBy(getLoginName(request));
+	 *		auditRecord.setCreateTime(new Date());
+	 *		auditRecord.setUpdateBy(getLoginName(request));
+	 *		auditRecordService.insertAuditRecord(auditRecord);
+	 *		return row;
+	 *	}
 
-	private void sendAppMsg(String target, Long cId, String title, String content) {
-		AppMsgContent msgContent = new AppMsgContent();
-		msgContent.setTitle(title);
-		msgContent.setContent(content);
-
-		Map<String, String> params = new HashMap<>();
-		params.put("bizKey", cId.toString());
-		params.put("bizType", BusinessTypeEnum.UMAP_CAR_MANAGE.getValue());
-		msgContent.setParams(params);
-		MsgPushUtils.push(msgContent, cId.toString(), BusinessTypeEnum.UMAP_CAR_MANAGE.getValue(), target);
-		MsgPushUtils.getMsgPushTask().execute();
-	}
-
-	@PostMapping("/audit")
-	@ApiOperation("预约申请审核 支持批量")
-	@Login
-	public Result audit(HttpServletRequest request,
-	                    @RequestBody @ApiParam(name = "param", value = "预约申请信息") ApproveParam param) {
-		try {
-			if (CollUtil.isEmpty(param.getApplyIds()) || StrUtil.isBlank(param.getApproveType())) {
-				return ResultGenerator.genFailResult("传入参数存在空值，请检查参数！");
-			}
-			List<Long> applyIds = param.getApplyIds();
-			int row = 0;
-			for (Long applyId : applyIds) {
-				switch (param.getApproveType()) {
-					//通过
-					case "1":
-						row = auditUpdateStatus(request, applyId, ApproveStatusEnum.SUCCESS.getValue().toString());
-						break;
-					//拒绝
-					case "2": {
-						row = auditUpdateStatus(request, applyId, ApproveStatusEnum.FAIL.getValue().toString());
-						SysUser approvalUser = sysUserService.selectUserById(Long.valueOf(carApplyService.selectCarApplyById(applyId).getApprovalUserId()));
-						sendAppMsg(approvalUser.getLoginName(), applyId, "车辆申请", "您的公务车预约申请被拒绝，进入APP查看拒绝原因");
-						break;
-					}
-					//取消
-					case "3":
-						CarApply carApply = carApplyService.selectCarApplyById(applyId);
-						if (carApply == null) {
-							return ResultGenerator.genFailResult("审核失败，该车辆申请不存在，请联系管理员！");
-						}
-						carApply.setApproveStatus(ApproveStatusEnum.CANCEL.getValue().toString());
-						row = carApplyService.updateCarApply(carApply);
-				}
-			}
-			return row > 0 ? ResultGenerator.genSuccessResult("审核成功") : ResultGenerator.genFailResult("审核失败，请联系管理员或稍后重试！");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResultGenerator.genFailResult("审核失败，请联系管理员或稍后重试！");
-		}
-	}
-
-	private Integer auditUpdateStatus(HttpServletRequest request, Long applyId, String approveStatus) {
-		int row;
-		CarApply carApply = carApplyService.selectCarApplyById(applyId);
-		if (carApply == null) {
-			return 0;
-		}
-		carApply.setApproveStatus(approveStatus);
-		row = carApplyService.updateCarApply(carApply);
-		if (row <= 0) {
-			return row;
-		}
-		AuditRecord auditRecord = new AuditRecord();
-		auditRecord.setApplyId(applyId);
-		auditRecord.setApplyType(AuditRecordTypeEnum.CarAudit.getValue());
-		auditRecord.setStatus(approveStatus + "");
-		auditRecord.setCreateBy(getLoginName(request));
-		auditRecord.setCreateTime(new Date());
-		auditRecord.setUpdateBy(getLoginName(request));
-		auditRecordService.insertAuditRecord(auditRecord);
-		return row;
-	}
-
+	 *	private void sendAppMsg(String target, Long cId, String title, String content) {
+	 *		AppMsgContent msgContent = new AppMsgContent();
+	 *		msgContent.setTitle(title);
+	 *		msgContent.setContent(content);
+	 *
+	 *		Map<String, String> params = new HashMap<>();
+	 *		params.put("bizKey", cId.toString());
+	 *		params.put("bizType", BusinessTypeEnum.UMAP_CAR_MANAGE.getValue());
+	 *		msgContent.setParams(params);
+	 *		MsgPushUtils.push(msgContent, cId.toString(), BusinessTypeEnum.UMAP_CAR_MANAGE.getValue(), target);
+	 *		MsgPushUtils.getMsgPushTask().execute();
+	 *	}
+	 */
 
 }
