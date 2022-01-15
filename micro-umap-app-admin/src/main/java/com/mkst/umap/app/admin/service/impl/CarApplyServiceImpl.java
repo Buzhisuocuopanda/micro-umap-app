@@ -5,6 +5,7 @@ import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.shiro.utils.ShiroUtils;
 import com.mkst.mini.systemplus.common.support.Convert;
+import com.mkst.mini.systemplus.framework.web.domain.server.Sys;
 import com.mkst.mini.systemplus.sms.yixunt.config.YxtSmsConfig;
 import com.mkst.mini.systemplus.sms.yixunt.exception.YxtSmsErrorException;
 import com.mkst.mini.systemplus.system.domain.SysUser;
@@ -187,9 +188,6 @@ public class CarApplyServiceImpl implements ICarApplyService {
 		carApply.setEndLocationId(endPoint.getLocationId());
 		//先插入申请表数据
 		row = insertCarApply(carApply);
-		if (row <= 0) {
-			return row;
-		}
 		return row;
 	}
 
@@ -339,12 +337,20 @@ public class CarApplyServiceImpl implements ICarApplyService {
 			carApply.setDriverId(param.getDriverId());
 
 			carApply.setApproveStatus(param.getAuditStatus().toString());
-			if (KeyConstant.EVENT_AUDIT_STATUS_PASS.toString().equals(param.getAuditStatus().toString())) {
-				List<SysUser> users = userService.selectUserLitByRoleKey("clgly");
-				users.forEach(u -> {
-					sendAppMsg(u.getLoginName(), carApply.getCarApplyId());
-				});
-				//发送短信
+			if (KeyConstant.EVENT_AUDIT_STATUS_PASS.equals(param.getAuditStatus().toString())) {
+//				List<SysUser> users = userService.selectUserLitByRoleKey("clgly");
+//				users.forEach(u -> {
+//					sendAppMsg(u.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批！");
+//				});
+				//通知申请人车辆申请已通过
+				sendAppMsg(
+						sysUserService.selectUserById(carApply.getUserId()).getLoginName(),
+						carApply.getCarApplyId(),
+						"车辆申请",
+						"您的公务车预约已通过，进入APP查看车辆信息。"
+					);
+
+				//通知司机有新的出车任务
 				SysUser driver = sysUserService.selectUserById(param.getDriverId());
 				if (driver != null) {
 					try {
@@ -387,10 +393,10 @@ public class CarApplyServiceImpl implements ICarApplyService {
 	}
 
 
-	private void sendAppMsg(String target, Long cId) {
+	private void sendAppMsg(String target, Long cId, String title, String content) {
 		AppMsgContent msgContent = new AppMsgContent();
-		msgContent.setTitle("车辆申请");
-		msgContent.setContent("一个车辆申请待审核，请及时处理！");
+		msgContent.setTitle(title);
+		msgContent.setContent(content);
 
 		Map<String, String> params = new HashMap<>();
 		params.put("bizKey", cId.toString());

@@ -130,6 +130,7 @@ public class CarManageApi extends BaseApi {
 		eventAuditRecord.setUpdateBy(sysUser.getLoginName());
 		eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
 
+		sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批" );
 		return row > 0 ? ResultGenerator.genSuccessResult("新增车辆申请成功") : ResultGenerator.genFailResult("新增车辆申请失败，请联系管理员或稍后重试！");
 	}
 
@@ -388,7 +389,15 @@ public class CarManageApi extends BaseApi {
 			CarApply carApply = carApplyService.selectCarApplyById(applyId);
 			carApply.setDriverStatus(DriverStatusEnum.DRIVER_COMPLETE.getValue());
 			int row = carApplyService.updateCarApply(carApply);
-			return row > 0 ? ResultGenerator.genSuccessResult("完单成功") : ResultGenerator.genFailResult("完单失败，请联系管理员或稍后重试！");
+			if (row > 0) {
+				List<SysUser> users = sysUserService.selectUserLitByRoleKey("clgly");
+				users.forEach(u -> {
+					sendAppMsg(u.getLoginName(), carApply.getCarApplyId(), "公车预约", "车辆 " + carInfoService.selectCarInfoById(carApply.getCarId()).getLicensePlateNumber() + " 已归库");
+				});
+				return ResultGenerator.genSuccessResult("完单成功");
+			} else {
+				return ResultGenerator.genFailResult("完单失败，请联系管理员或稍后重试！");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResultGenerator.genFailResult("查询失败，请联系管理员或稍后重试！");
@@ -562,10 +571,10 @@ public class CarManageApi extends BaseApi {
 		}
 	}
 
-	private void sendAppMsg(String target, Long cId) {
+	private void sendAppMsg(String target, Long cId, String title, String content) {
 		AppMsgContent msgContent = new AppMsgContent();
-		msgContent.setTitle("车辆申请");
-		msgContent.setContent("一个车辆申请待审核，请及时处理！");
+		msgContent.setTitle(title);
+		msgContent.setContent(content);
 
 		Map<String, String> params = new HashMap<>();
 		params.put("bizKey", cId.toString());
@@ -593,9 +602,12 @@ public class CarManageApi extends BaseApi {
 						row = auditUpdateStatus(request, applyId, ApproveStatusEnum.SUCCESS.getValue().toString());
 						break;
 					//拒绝
-					case "2":
+					case "2": {
 						row = auditUpdateStatus(request, applyId, ApproveStatusEnum.FAIL.getValue().toString());
+						SysUser approvalUser = sysUserService.selectUserById(Long.valueOf(carApplyService.selectCarApplyById(applyId).getApprovalUserId()));
+						sendAppMsg(approvalUser.getLoginName(), applyId, "车辆申请", "您的公务车预约申请被拒绝，进入APP查看拒绝原因");
 						break;
+					}
 					//取消
 					case "3":
 						CarApply carApply = carApplyService.selectCarApplyById(applyId);
