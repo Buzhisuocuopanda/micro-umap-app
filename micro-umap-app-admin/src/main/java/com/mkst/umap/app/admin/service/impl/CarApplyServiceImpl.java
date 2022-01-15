@@ -267,6 +267,9 @@ public class CarApplyServiceImpl implements ICarApplyService {
 		//审核人
 		Long approvalUserId = param.getApprovalUserId();
 
+		//申请人
+		SysUser user = sysUserService.selectUserById(carApply.getUserId());
+
 		//修改审核记录
 		eventAuditRecordService.updateEventAuditRecordStatus(
 				StringUtil.toString(carApply.getProgress()), //进程
@@ -277,36 +280,38 @@ public class CarApplyServiceImpl implements ICarApplyService {
 				param.getReason()
 		);
 
+		if (StringUtils.equals(KeyConstant.EVENT_AUDIT_STATUS_FAIL, param.getAuditStatus().toString())) {
+			//审核结果是驳回
+			carApply.setApproveStatus(param.getAuditStatus().toString());
+			sendAppMsg(user.getLoginName(), carApply.getCarApplyId(), "车辆申请", "您的公务车预约申请被拒绝，进入APP查看拒绝原因");
+			return carApplyMapper.updateCarApply(carApply);
+		}
+
 		//查询下一个流程
 		WfEventDetail nextEvent = eventDetailService.selectNextEventDetail(approvalType, carApply.getProgress());
-
-		WfEventDetail lastWfEventDetail = eventDetailService.selectFirstEventDetail(approvalType);
 		if (BeanUtil.isNotEmpty(nextEvent)) {
 			//存在下一个流程
 
-			if (StringUtils.equals(KeyConstant.EVENT_AUDIT_STATUS_FAIL, param.getAuditStatus().toString())) {
-				//审核结果是驳回
-				carApply.setApproveStatus(param.getAuditStatus().toString());
-			} else {
-				//判断下一级审核人是否存在
-				SysUser sysUser = userService.selectUserById(approvalUserId);
-				if (BeanUtil.isEmpty(sysUser)) {
-					throw new NullPointerException("当前系统中不存在该审核员（用户ID：" + approvalUserId + "），请选择其他人或联系管理员！！");
-				}
-
-				carApply.setProgress(Integer.valueOf(nextEvent.getApprovalOrder()));
-				carApply.setApprovalUserId(param.getApprovalUserId().intValue());
-
-				EventAuditRecord eventAuditRecord = new EventAuditRecord();
-				eventAuditRecord.setApplyId(Math.toIntExact(carApply.getCarApplyId()));
-				eventAuditRecord.setApplyType(approvalType);
-				eventAuditRecord.setStatus(KeyConstant.EVENT_AUDIT_STATUS_WAIT);
-				eventAuditRecord.setApprovalOrder(nextEvent.getApprovalOrder());
-				eventAuditRecord.setApprovalUserId(param.getApprovalUserId().intValue());
-				eventAuditRecord.setCreateBy(sysUser.getLoginName());
-				eventAuditRecord.setUpdateBy(sysUser.getLoginName());
-				eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
+			//判断下一级审核人是否存在
+			SysUser sysUser = userService.selectUserById(approvalUserId);
+			if (BeanUtil.isEmpty(sysUser)) {
+				throw new NullPointerException("当前系统中不存在该审核员（用户ID：" + approvalUserId + "），请选择其他人或联系管理员！！");
 			}
+			carApply.setProgress(Integer.valueOf(nextEvent.getApprovalOrder()));
+			carApply.setApprovalUserId(param.getApprovalUserId().intValue());
+
+			EventAuditRecord eventAuditRecord = new EventAuditRecord();
+			eventAuditRecord.setApplyId(Math.toIntExact(carApply.getCarApplyId()));
+			eventAuditRecord.setApplyType(approvalType);
+			eventAuditRecord.setStatus(KeyConstant.EVENT_AUDIT_STATUS_WAIT);
+			eventAuditRecord.setApprovalOrder(nextEvent.getApprovalOrder());
+			eventAuditRecord.setApprovalUserId(param.getApprovalUserId().intValue());
+			eventAuditRecord.setCreateBy(sysUser.getLoginName());
+			eventAuditRecord.setUpdateBy(sysUser.getLoginName());
+			eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
+
+			//给下一级审批人发送APP消息提醒审批
+			sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "车辆申请", "您有新的公务车预约申请待审批!");
 		} else {
 			// 最后一步
 			CarApply select = new CarApply();
@@ -338,24 +343,22 @@ public class CarApplyServiceImpl implements ICarApplyService {
 
 			carApply.setApproveStatus(param.getAuditStatus().toString());
 			if (KeyConstant.EVENT_AUDIT_STATUS_PASS.equals(param.getAuditStatus().toString())) {
-//				List<SysUser> users = userService.selectUserLitByRoleKey("clgly");
-//				users.forEach(u -> {
-//					sendAppMsg(u.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批！");
-//				});
+				/*
+		         *	List<SysUser> users = userService.selectUserLitByRoleKey("clgly");
+		         *	users.forEach(u -> {
+		         *		sendAppMsg(u.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批！");
+		         *	});
+		         */
+
 				//通知申请人车辆申请已通过
-				sendAppMsg(
-						sysUserService.selectUserById(carApply.getUserId()).getLoginName(),
-						carApply.getCarApplyId(),
-						"车辆申请",
-						"您的公务车预约已通过，进入APP查看车辆信息。"
-					);
+				sendAppMsg(sysUserService.selectUserById(carApply.getUserId()).getLoginName(),carApply.getCarApplyId(),"车辆申请","您的公务车预约已通过，进入APP查看车辆信息。");
 
 				//通知司机有新的出车任务
 				SysUser driver = sysUserService.selectUserById(param.getDriverId());
 				if (driver != null) {
 					try {
 						String startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(carApply.getStartTime());
-						SysUser user = sysUserService.selectUserById(carApply.getUserId());
+						user = sysUserService.selectUserById(carApply.getUserId());
 						CarInfo car = carInfoService.selectCarInfoById(param.getCarId());
 						MapLocation endPoint = mapLocationService.selectMapLocationById(carApply.getEndLocationId());
 						MapLocation startPoint = mapLocationService.selectMapLocationById(carApply.getStartLocationId());
@@ -393,7 +396,7 @@ public class CarApplyServiceImpl implements ICarApplyService {
 	}
 
 
-	private void sendAppMsg(String target, Long cId, String title, String content) {
+	public static void sendAppMsg(String target, Long cId, String title, String content) {
 		AppMsgContent msgContent = new AppMsgContent();
 		msgContent.setTitle(title);
 		msgContent.setContent(content);
