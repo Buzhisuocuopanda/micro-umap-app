@@ -2,41 +2,35 @@ package com.mkst.umap.app.admin.api;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
-import com.mkst.mini.systemplus.basic.domain.MsgPush;
-import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
-import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
-import com.mkst.mini.systemplus.framework.web.domain.server.Sys;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
 import com.mkst.mini.systemplus.workflow.domain.EventAuditRecord;
 import com.mkst.mini.systemplus.workflow.domain.WfEventDetail;
 import com.mkst.mini.systemplus.workflow.service.IEventAuditRecordService;
 import com.mkst.mini.systemplus.workflow.service.IWfEventDetailService;
-import com.mkst.umap.app.admin.api.bean.param.ApproveParam;
 import com.mkst.umap.app.admin.api.bean.param.CarApproveParam;
 import com.mkst.umap.app.admin.api.bean.param.car.CarApplyParam;
 import com.mkst.umap.app.admin.api.bean.result.car.AuditParam;
 import com.mkst.umap.app.admin.api.bean.result.car.CarApplyResult;
 import com.mkst.umap.app.admin.api.bean.result.car.CarDetailResult;
-import com.mkst.umap.app.admin.domain.AuditRecord;
 import com.mkst.umap.app.admin.domain.CarApply;
 import com.mkst.umap.app.admin.domain.CarInfo;
 import com.mkst.umap.app.admin.domain.MapLocation;
 import com.mkst.umap.app.admin.dto.carApply.CarDetailDto;
-import com.mkst.umap.app.admin.imclient.ImAndAppSendService;
 import com.mkst.umap.app.admin.service.IAuditRecordService;
 import com.mkst.umap.app.admin.service.ICarApplyService;
 import com.mkst.umap.app.admin.service.ICarInfoService;
 import com.mkst.umap.app.admin.service.IMapLocationService;
 import com.mkst.umap.app.admin.service.impl.CarApplyServiceImpl;
 import com.mkst.umap.app.common.constant.KeyConstant;
-import com.mkst.umap.app.common.enums.*;
+import com.mkst.umap.app.common.enums.ApproveStatusEnum;
+import com.mkst.umap.app.common.enums.ApproveTypeEnum;
+import com.mkst.umap.app.common.enums.DriverStatusEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -44,7 +38,6 @@ import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +68,7 @@ public class CarManageApi extends BaseApi {
 
 	@PostMapping("/addSave")
 	@ApiOperation("添加车辆管理申请")
-//	@Login
+	@Login
 	public Result addSave(HttpServletRequest request, @RequestBody @ApiParam(name = "carApplyParam", value = "车辆管理信息", required = true) CarApplyParam carApplyParam) {
 
 		CarApply carApply = new CarApply();
@@ -131,11 +124,11 @@ public class CarManageApi extends BaseApi {
 		eventAuditRecord.setStatus(KeyConstant.EVENT_AUDIT_STATUS_WAIT);//状态（0待审核 1已审核 2未通过）
 		eventAuditRecord.setApprovalUserId(Math.toIntExact(sysUser.getUserId()));
 		eventAuditRecord.setApprovalOrder(wfEventDetail.getApprovalOrder()); //审批顺序1
-		eventAuditRecord.setCreateBy(sysUser.getLoginName());
+		eventAuditRecord.setCreateBy(String.valueOf(sysUser.getUserId()));
 		eventAuditRecord.setUpdateBy(sysUser.getLoginName());
 		eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
 
-		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(),"车辆申请" ,"您有新的公务车预约申请待审批" );
+		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "车辆申请", "您有新的公务车预约申请待审批");
 		return row > 0 ? ResultGenerator.genSuccessResult("新增车辆申请成功") : ResultGenerator.genFailResult("新增车辆申请失败，请联系管理员或稍后重试！");
 	}
 
@@ -556,7 +549,6 @@ public class CarManageApi extends BaseApi {
 			return ResultGenerator.genFailResult("查询失败，请联系管理员或稍后重试！");
 		}
 	}
-
 
 	@GetMapping("/driverCancel")
 	@ApiOperation("司机取消接单接口")
