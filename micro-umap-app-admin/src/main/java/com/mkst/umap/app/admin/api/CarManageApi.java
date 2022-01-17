@@ -6,10 +6,12 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
+import com.mkst.mini.systemplus.basic.domain.MsgPush;
 import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
+import com.mkst.mini.systemplus.framework.web.domain.server.Sys;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
 import com.mkst.mini.systemplus.workflow.domain.EventAuditRecord;
@@ -27,6 +29,7 @@ import com.mkst.umap.app.admin.domain.CarApply;
 import com.mkst.umap.app.admin.domain.CarInfo;
 import com.mkst.umap.app.admin.domain.MapLocation;
 import com.mkst.umap.app.admin.dto.carApply.CarDetailDto;
+import com.mkst.umap.app.admin.imclient.ImAndAppSendService;
 import com.mkst.umap.app.admin.service.IAuditRecordService;
 import com.mkst.umap.app.admin.service.ICarApplyService;
 import com.mkst.umap.app.admin.service.ICarInfoService;
@@ -41,6 +44,7 @@ import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +75,7 @@ public class CarManageApi extends BaseApi {
 
 	@PostMapping("/addSave")
 	@ApiOperation("添加车辆管理申请")
-	@Login
+//	@Login
 	public Result addSave(HttpServletRequest request, @RequestBody @ApiParam(name = "carApplyParam", value = "车辆管理信息", required = true) CarApplyParam carApplyParam) {
 
 		CarApply carApply = new CarApply();
