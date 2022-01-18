@@ -128,7 +128,7 @@ public class CarManageApi extends BaseApi {
 		eventAuditRecord.setUpdateBy(sysUser.getLoginName());
 		eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
 
-		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "车辆申请", "您有新的公务车预约申请待审批");
+		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "公车预约", "您有新的公务车预约申请待审批");
 		return row > 0 ? ResultGenerator.genSuccessResult("新增车辆申请成功") : ResultGenerator.genFailResult("新增车辆申请失败，请联系管理员或稍后重试！");
 	}
 
