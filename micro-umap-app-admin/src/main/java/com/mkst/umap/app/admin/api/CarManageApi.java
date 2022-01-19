@@ -7,6 +7,8 @@ import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
+import com.mkst.mini.systemplus.framework.web.page.PageDomain;
+import com.mkst.mini.systemplus.framework.web.page.TableSupport;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
 import com.mkst.mini.systemplus.workflow.domain.EventAuditRecord;
@@ -250,16 +252,35 @@ public class CarManageApi extends BaseApi {
 			if (StrUtil.isNotBlank(date)) {
 				carApply.setStartTime(simpleDateFormat.parse(date));
 			}
+			PageDomain pageDomain = TableSupport.buildPageRequest();
+			Integer pageNum = pageDomain.getPageNum();
+			Integer pageSize = pageDomain.getPageSize();
+//			startPage();
 			List<CarApply> carApplyList = carApplyService.selectCarApplyList(carApply);
-			startPage();
-			List<CarApply> list = new LinkedList();
+			List<CarApply> list = new ArrayList<>();
 			if (carApplyList != null) {
 				for (CarApply c : carApplyList) {
 					if (!"3".equals(c.getApproveStatus())) {
+						if ("0".equals(c.getApproveStatus())) {
+							//判断当前预约单是否为车辆管理员审批
+							String carApproveIndex = c.getNeedExtraApproval() ? "4" : "2";
+							EventAuditRecord record = new EventAuditRecord();
+							record.setApplyId(Math.toIntExact(c.getCarApplyId()));
+							record.setStatus("0");
+							List<EventAuditRecord> lst = eventAuditRecordService.selectEventAuditRecordList(record);
+							if (lst != null && !lst.isEmpty()) {
+								EventAuditRecord record1 = lst.get(0);
+								c.setCarApprove(record1.getApprovalOrder().equals(carApproveIndex));
+							} else {
+								log.error("查询为空！applyId为" + record.getApplyId());
+							}
+						}
 						list.add(c);
 					}
 				}
 			}
+			int size = list.size();
+			list = list.subList((pageNum - 1) * pageSize, Math.min(pageNum * pageSize, size));
 			return ResultGenerator.genSuccessResult("获取成功", list);
 		} catch (Exception e) {
 			e.printStackTrace();

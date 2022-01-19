@@ -1,10 +1,13 @@
 package com.mkst.umap.app.admin.domain;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mkst.mini.systemplus.common.base.BaseEntity;
 import com.mkst.mini.systemplus.common.utils.DateUtils;
+import com.mkst.umap.app.admin.service.ICarApplyService;
 import lombok.Data;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -100,6 +103,8 @@ public class CarApply extends BaseEntity
 	 * 是否需要额外审批
 	 */
 	private Boolean needExtraApproval;
+
+	private boolean isCarApprove;
 
 	public Boolean getNeedExtraApproval() {
 		Boolean isTimeOver1Day = isTimeOver1Day();
