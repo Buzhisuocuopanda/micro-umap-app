@@ -226,46 +226,20 @@
     </select>
 
     <select id="checkCarUseByTime" parameterType="CarApply" resultType="java.lang.Long">
-        select distinct a.car_id
-        from (
-                 SELECT car_id
-                 FROM umap_car_apply
-                 WHERE #{startTime} &lt;= start_time
-                   AND #{endTime} &gt;= start_time
-                   AND #{endTime} &lt;= end_time
-                   AND car_id is not null
-                   AND approve_status IN (0, 1)
-                   AND del_flag = '0'
-                 GROUP BY car_id
-                 UNION
-                 SELECT car_id
-                 FROM umap_car_apply
-                 WHERE #{startTime} &gt;= start_time
-                   AND #{endTime} &gt;= start_time
-                   AND #{endTime} &lt;= end_time
-                   AND car_id is not null
-                   AND approve_status IN (0, 1)
-                   AND del_flag = '0'
-                 GROUP BY car_id
-                 UNION
-                 SELECT car_id
-                 FROM umap_car_apply
-                 WHERE #{startTime} &gt;= start_time
-                   AND #{startTime} &lt;= end_time
-                   AND #{endTime} &gt;= end_time
-                   AND car_id is not null
-                   AND approve_status IN (0, 1)
-                   AND del_flag = '0'
-                 GROUP BY car_id
-                 UNION
-                 SELECT car_id
-                 FROM umap_car_apply
-                 WHERE #{startTime} &lt;= start_time
-                   AND #{endTime} &gt;= end_time
-                   AND car_id is not null
-                   AND approve_status IN (0, 1)
-                   AND del_flag = '0'
-                 GROUP BY car_id) as a
+        SELECT car_id
+        FROM umap_car_apply
+        WHERE (
+            <!--开始时间在开始和结束时间之间-->
+            (#{startTime} >= start_time AND #{startTime} &lt;= end_time)
+            <!--结束时间在开始和结束时间之间-->
+            OR (#{endTime} >= start_time AND #{endTime} &lt;= end_time)
+            <!--时间段整个被覆盖-->
+            OR (#{startTime} &lt;= start_time AND #{endTime} >= end_time)
+        )
+        AND car_id is not null
+        AND approve_status IN (0, 1)
+        AND del_flag = '0'
+        GROUP BY car_id
     </select>
 
     <select id="checkDriverByTime" parameterType="CarApply" resultType="java.lang.Long">

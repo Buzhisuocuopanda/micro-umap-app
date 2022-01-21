@@ -588,8 +588,43 @@ public class CarManageApi extends BaseApi {
 			return ResultGenerator.genFailResult("查询失败，请联系管理员或稍后重试！");
 		}
 	}
-	/*已废弃的接口和方法*/
-	/*
+
+	@PostMapping("/getAvailableDriverList")
+	@ApiOperation("获取司机集合")
+	@Login
+	public Result getAvailableDriverList(@RequestBody Map<String, String> map) {
+		try {
+			String carApplyId = map.get("carApplyId");
+			if (StringUtil.isBlank(carApplyId)) {
+				return ResultGenerator.genFailResult("服务异常");
+			}
+			CarApply carApply = carApplyService.selectCarApplyById(Long.parseLong(carApplyId));
+			//通过 开始时间和结束时间判断  是否可预约
+			CarApply select = new CarApply();
+
+			select.setStartTime(carApply.getStartTime());
+			select.setEndTime(carApply.getEndTime());
+			List<Long> unavailableDrivers = carApplyService.checkDriverByTime(select);
+			List<SysUser> drivers = sysUserService.findUserListByPostCode("sj");
+
+			List<SysUser> availableDrivers = new ArrayList<>();
+			drivers.forEach(driver -> {
+				if (!unavailableDrivers.contains(driver.getUserId()))
+					availableDrivers.add(driver);
+			});
+
+			if (BeanUtil.isEmpty(availableDrivers)) {
+				return ResultGenerator.genFailResult("无空闲司机，请联系管理员");
+			} else {
+				return ResultGenerator.genSuccessResult("获取成功", availableDrivers);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultGenerator.genFailResult("异常问题，请联系管理员");
+		}
+	}
+
+	/*  已废弃的接口和方法
 	 *	@PostMapping("/audit")
 	 *	@ApiOperation("预约申请审核 支持批量")
 	 *	@Login
