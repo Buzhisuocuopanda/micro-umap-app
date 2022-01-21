@@ -1,1008 +1,1593 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mkst.umap.app.admin.mapper.ArraignAppointmentMapper">
+	<resultMap type="com.mkst.umap.app.admin.domain.ArraignAppointment" id="ArraignAppointmentResult">
+		<result property="id" column="id"/>
+		<result property="roomId" column="room_id"/>
+		<result property="scheduleId" column="schedule_id"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="criminalName" column="criminal_name"/>
+		<result property="criminalType" column="criminal_type"/>
+		<result property="criminalBirth" column="criminal_birth"/>
+		<result property="stage" column="stage"/>
+		<result property="criminalAdmit" column="criminal_admit"/>
+		<result property="needLegalAid" column="need_legal_aid"/>
+		<result property="prosecutorId" column="prosecutor_id"/>
+		<result property="prosecutorUserId" column="prosecutor_user_id"/>
+		<result property="prosecutorName" column="prosecutor_name"/>
+		<result property="status" column="status"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="delFlag" column="del_flag"/>
+		<result property="arraignType" column="arraign_type"/>
+		<result property="numOrder" column="num_order"/>
+		<result property="timePie" column="time_pie"/>
+		<result property="cancelReason" column="cancel_reason"/>
+		<result property="finishStatus" column="finish_status"/>
+		<result property="finishTime" column="finish_time"/>
+		<result property="finishBy" column="finish_by"/>
+	</resultMap>
 
-    <resultMap type="com.mkst.umap.app.admin.domain.ArraignAppointment" id="ArraignAppointmentResult">
-        <result property="id" column="id"/>
-        <result property="roomId" column="room_id"/>
-        <result property="scheduleId" column="schedule_id"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="criminalName" column="criminal_name"/>
-        <result property="criminalType" column="criminal_type"/>
-        <result property="criminalBirth" column="criminal_birth"/>
-        <result property="stage" column="stage"/>
-        <result property="criminalAdmit" column="criminal_admit"/>
-        <result property="needLegalAid" column="need_legal_aid"/>
-        <result property="prosecutorId" column="prosecutor_id"/>
-        <result property="prosecutorUserId" column="prosecutor_user_id"/>
-        <result property="prosecutorName" column="prosecutor_name"/>
-        <result property="status" column="status"/>
-        <result property="createBy" column="create_by"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateBy" column="update_by"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="remark" column="remark"/>
-        <result property="delFlag" column="del_flag"/>
-        <result property="arraignType" column="arraign_type"/>
-        <result property="numOrder" column="num_order"/>
-        <result property="timePie" column="time_pie"/>
-        <result property="cancelReason" column="cancel_reason"/>
-        <result property="finishStatus" column="finish_status"/>
-        <result property="finishTime" column="finish_time"/>
-        <result property="finishBy" column="finish_by"/>
-    </resultMap>
+	<resultMap id="appointmentDetailVo" type="com.mkst.umap.app.admin.dto.arraign.AppointmentDetailDto">
+		<id property="id" column="id"/>
+		<result property="createBy" column="create_by"/>
+		<result property="undertaker" column="undertaker"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="criminalName" column="criminal_name"/>
+		<result property="criminalType" column="criminal_type"/>
+		<result property="criminalBirth" column="criminal_birth"/>
+		<result property="stage" column="stage"/>
+		<result property="criminalAdmit" column="criminal_admit"/>
+		<result property="needLegalAid" column="need_legal_aid"/>
+		<result property="prosecutorId" column="prosecutor_id"/>
+		<result property="prosecutorUserId" column="prosecutor_user_id"/>
+		<result property="prosecutorName" column="prosecutor_name"/>
+		<result property="status" column="status"/>
+		<result property="roomName" column="room_name"/>
+		<result property="createTime" column="create_time"/>
+		<result property="arraignType" column="arraign_type"/>
+		<result property="numOrder" column="num_order"/>
+		<result property="timePie" column="time_pie"/>
+		<result property="cancelReason" column="cancel_reason"/>
+		<result property="finishStatus" column="finish_status"/>
+		<result property="finishTime" column="finish_time"/>
+		<result property="finishBy" column="finish_by"/>
+	</resultMap>
 
-    <resultMap id="appointmentDetailVo" type="com.mkst.umap.app.admin.dto.arraign.AppointmentDetailDto">
-        <id property="id" column="id"/>
-        <result property="createBy" column="create_by"/>
-        <result property="undertaker" column="undertaker"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="criminalName" column="criminal_name"/>
-        <result property="criminalType" column="criminal_type"/>
-        <result property="criminalBirth" column="criminal_birth"/>
-        <result property="stage" column="stage"/>
-        <result property="criminalAdmit" column="criminal_admit"/>
-        <result property="needLegalAid" column="need_legal_aid"/>
-        <result property="prosecutorId" column="prosecutor_id"/>
-        <result property="prosecutorUserId" column="prosecutor_user_id"/>
-        <result property="prosecutorName" column="prosecutor_name"/>
-        <result property="status" column="status"/>
-        <result property="roomName" column="room_name"/>
-        <result property="createTime" column="create_time"/>
-        <result property="arraignType" column="arraign_type"/>
-        <result property="numOrder" column="num_order"/>
-        <result property="timePie" column="time_pie"/>
-        <result property="cancelReason" column="cancel_reason"/>
-        <result property="finishStatus" column="finish_status"/>
-        <result property="finishTime" column="finish_time"/>
-        <result property="finishBy" column="finish_by"/>
-    </resultMap>
+	<resultMap id="ArraignAppointmentTotalDto" type="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto">
+		<result property="value" column="value"/>
+		<result property="name" column="name"/>
+	</resultMap>
 
-    <resultMap id="ArraignAppointmentTotalDto" type="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto">
-        <result property="value" column="value"/>
-        <result property="name" column="name"/>
-    </resultMap>
+	<resultMap id="ReportDto" type="com.mkst.umap.app.admin.dto.arraign.ReportDto">
+		<result property="count" column="count"/>
+		<result property="deptName" column="deptName"/>
+		<result property="dateFormat" column="dateFormat"/>
+		<result property="deptId" column="deptId"/>
+		<result property="prosecutorUserId" column="prosecutorUser_id"/>
 
-    <resultMap id="ReportDto" type="com.mkst.umap.app.admin.dto.arraign.ReportDto">
-        <result property="count" column="count"/>
-        <result property="deptName" column="deptName"/>
-        <result property="dateFormat" column="dateFormat"/>
-        <result property="deptId" column="deptId"/>
-        <result property="prosecutorUserId" column="prosecutorUser_id"/>
+		<result property="id" column="id"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="criminalName" column="criminal_name"/>
+		<result property="criminalType" column="criminal_type"/>
+		<result property="criminalBirth" column="criminal_birth"/>
+		<result property="stage" column="stage"/>
+		<result property="criminalAdmit" column="criminal_admit"/>
+		<result property="needLegalAid" column="need_legal_aid"/>
+		<result property="prosecutorId" column="prosecutor_id"/>
+		<result property="prosecutorName" column="prosecutor_name"/>
+		<result property="status" column="status"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="delFlag" column="del_flag"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="criminalName" column="criminal_name"/>
+		<result property="criminalType" column="criminal_type"/>
+		<result property="criminalBirth" column="criminal_birth"/>
+		<result property="stage" column="stage"/>
+		<result property="criminalAdmit" column="criminal_admit"/>
+		<result property="needLegalAid" column="need_legal_aid"/>
+		<result property="prosecutorId" column="prosecutor_id"/>
+		<result property="prosecutorName" column="prosecutor_name"/>
+		<result property="status" column="status"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="delFlag" column="del_flag"/>
+	</resultMap>
 
-        <result property="id" column="id"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="criminalName" column="criminal_name"/>
-        <result property="criminalType" column="criminal_type"/>
-        <result property="criminalBirth" column="criminal_birth"/>
-        <result property="stage" column="stage"/>
-        <result property="criminalAdmit" column="criminal_admit"/>
-        <result property="needLegalAid" column="need_legal_aid"/>
-        <result property="prosecutorId" column="prosecutor_id"/>
-        <result property="prosecutorName" column="prosecutor_name"/>
-        <result property="status" column="status"/>
-        <result property="createBy" column="create_by"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateBy" column="update_by"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="remark" column="remark"/>
-        <result property="delFlag" column="del_flag"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="criminalName" column="criminal_name"/>
-        <result property="criminalType" column="criminal_type"/>
-        <result property="criminalBirth" column="criminal_birth"/>
-        <result property="stage" column="stage"/>
-        <result property="criminalAdmit" column="criminal_admit"/>
-        <result property="needLegalAid" column="need_legal_aid"/>
-        <result property="prosecutorId" column="prosecutor_id"/>
-        <result property="prosecutorName" column="prosecutor_name"/>
-        <result property="status" column="status"/>
-        <result property="createBy" column="create_by"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateBy" column="update_by"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="remark" column="remark"/>
-        <result property="delFlag" column="del_flag"/>
-    </resultMap>
-
-    <resultMap id="CriminalTypeResult" type="com.mkst.umap.app.admin.dto.arraign.CriminalTypeResultDto">
-        <result property="cDateType" column="cDateType"/>
-        <result property="type0" column="type0"/>
-        <result property="type1" column="type1"/>
-        <result property="type2" column="type2"/>
-        <result property="type3" column="type3"/>
-        <result property="type4" column="type4"/>
-        <result property="type5" column="type5"/>
-        <result property="type6" column="type6"/>
-        <result property="type7" column="type7"/>
-        <result property="type8" column="type8"/>
-        <result property="type9" column="type9"/>
-        <result property="type10" column="type10"/>
-        <result property="type11" column="type11"/>
-        <result property="type12" column="type12"/>
-        <result property="type13" column="type13"/>
-        <result property="type14" column="type14"/>
-        <result property="type15" column="type15"/>
-        <result property="type16" column="type16"/>
-        <result property="type17" column="type17"/>
-        <result property="type18" column="type18"/>
-        <result property="type19" column="type19"/>
-    </resultMap>
-
-
-    <resultMap id="DeptCountVo"
-               type="com.mkst.umap.app.admin.dto.arraign.CountDto">
-        <result property="name" column="name"/>
-        <result property="address" column="address"/>
-        <result property="total" column="total"/>
-        <result property="date" column="date"/>
-    </resultMap>
-
-    <sql id="selectArraignAppointmentVo">
-        select id,room_id,schedule_id, start_time, end_time, criminal_name, criminal_type, criminal_birth, stage, criminal_admit,
-         need_legal_aid, prosecutor_id,prosecutor_user_id, prosecutor_name, status, create_by, create_time, update_by, update_time, remark, del_flag,
-        arraign_type , num_order , time_pie, cancel_reason , finish_status , finish_time , finish_by
-        from umap_arraign_appointment
-    </sql>
-
-    <sql id="appointmentDetailVo">
-        SELECT
-            aa.id id,
-            aa.create_by create_by,
-            aa.create_time create_time,
-            aa.cancel_reason,
-            d.dept_name dept,
-            u.user_name undertaker,
-            aa.start_time start_time,
-            aa.end_time end_time,
-            aa.criminal_name criminal_name,
-            aa.criminal_type criminal_type,
-            aa.criminal_birth criminal_birth,
-            aa.stage stage,
-            aa.criminal_admit criminal_admit,
-            aa.need_legal_aid need_legal_aid,
-            aa.prosecutor_id prosecutor_id,
-            aa.prosecutor_user_id prosecutor_user_id,
-            aa.prosecutor_name prosecutor_name,
-            aa.arraign_type arraign_type,
-            aa.remark remark,
-            aa.num_order num_order,
-            aa.time_pie time_pie,
-            aa.finish_status ,
-            aa.finish_time ,
-            aa.finish_by,
-            aa.`status` status,
-            r.`name` room_name
-        FROM
-            umap_arraign_appointment AS aa
-        LEFT JOIN umap_arraign_room AS r ON aa.room_id = r.id
-        LEFT JOIN sys_user u ON aa.create_by = u.login_name
-        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
-    </sql>
-
-    <select id="selectArraignAppointmentAuditCount" resultType="Integer">
-        select count(1) from umap_arraign_appointment where status = 0 or status = 5
-    </select>
-
-    <select id="selectArraignAppointmentList" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment"
-            resultMap="ArraignAppointmentResult">
-        <include refid="selectArraignAppointmentVo"/>
-        <where>
-            <if test="id != null ">and id = #{id}</if>
-            <if test="roomId != null ">and room_id = #{roomId}</if>
-            <if test="scheduleId != null ">and schedule_id = #{scheduleId}</if>
-            <if test="startTime != null "> and start_time &gt;= #{startTime}</if>
-            <if test="endTime != null "> and end_time &lt;= #{endTime}</if>
-            <if test="criminalName != null  and criminalName != '' ">and criminal_name like CONCAT('%',#{criminalName},'%') </if>
-            <if test="criminalType != null  and criminalType != '' ">and criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and prosecutor_id like CONCAT('%', #{prosecutorId},'%') </if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and prosecutor_name like CONCAT('%',#{prosecutorName},'%') </if>
-            <if test="status != null  and status != '' ">and status = #{status}</if>
-            <if test="needDeal != null  and needDeal != '' and needDeal == 0 ">and (status = 0 or status = 5)</if>
-            <if test="needDeal != null  and needDeal != '' and needDeal != 0 ">and status != 0 and status != 5</if>
-            <if test="auditStatus != null  and auditStatus != '' and auditStatus == 0">and (remark is null or remark != "plus")</if>
-            <if test="auditStatus != null  and auditStatus != '' and auditStatus == 5">and remark="plus"</if>
-            <if test="appointmentDate != null and appointmentDate != ''">and start_time like
-                concat(#{appointmentDate}, '%')
-            </if>
-            <if test="checkDate != null">and TO_DAYS(start_time) = TO_DAYS(#{checkDate})</if>
-            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
-            <if test="createTime != null ">and create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and update_time = #{updateTime}</if>
-            <if test="timePie != null ">and time_pie = #{timePie}</if>
-            <if test="numOrder != null ">and num_order = #{numOrder}</if>
-            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
-            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
-            <if test="checkCreateBy != null and checkCreateBy != '' and checkProsecutorUserId != null and checkProsecutorUserId != ''">
-                and (create_by = #{checkCreateBy} or prosecutor_user_id = #{checkProsecutorUserId})
-            </if>
-        </where>
-        <if test="orderBy != null and orderBy != ''">
-            order by ${orderBy}
-        </if>
-        <if test="orderBy == null or orderBy == ''">
-            order by create_time desc
-        </if>
-
-    </select>
-
-    <select id="selectArraignAppointmentListByDto" parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto"
-            resultMap="ArraignAppointmentResult">
-        <include refid="selectArraignAppointmentVo"/>
-        <where>
-            <if test="id != null ">and id = #{id}</if>
-            <if test="roomId != null ">and room_id = #{roomId}</if>
-            <if test="scheduleId != null ">and schedule_id = #{scheduleId}</if>
-            <if test="startTime != null "> and start_time &gt;= #{startTime}</if>
-            <if test="endTime != null "> and end_time &lt;= #{endTime}</if>
-            <if test="criminalName != null  and criminalName != '' ">and criminal_name like CONCAT('%',#{criminalName},'%')</if>
-            <if test="criminalType != null  and criminalType != '' ">and criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null ">and prosecutor_id like CONCAT('%', #{prosecutorId},'%')</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and prosecutor_name like CONCAT('%', #{prosecutorName},'%') </if>
-            <if test="status != null  and status != '' ">and status = #{status}</if>
-            <if test="needDeal != null  and needDeal != '' and needDeal == 0 ">and status = #{needDeal}</if>
-            <if test="needDeal != null  and needDeal != '' and needDeal != 0 ">and status != 0</if>
-            <if test="appointmentDate != null  and appointmentDate != '' ">and start_time like
-                concat(#{appointmentDate}, '%')
-            </if>
-            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
-            <if test="createTime != null ">and create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and update_time = #{updateTime}</if>
-            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
-            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
-            <if test="totalType != null and totalType != '' and totalType == 'today'">
-                and to_days(start_time) = to_days(now())
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'week'">
-                and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'month'">
-                and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'season'">
-                and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'year'">
-                and YEAR(start_time)=YEAR(NOW())
-            </if>
-        </where>
-        order by status,create_time desc
-    </select>
-
-    <select id="selectArraignAppointmentById" parameterType="Long" resultMap="ArraignAppointmentResult">
-        <include refid="selectArraignAppointmentVo"/>
-        where id = #{id} and del_flag = '0'
-    </select>
+	<resultMap id="CriminalTypeResult" type="com.mkst.umap.app.admin.dto.arraign.CriminalTypeResultDto">
+		<result property="cDateType" column="cDateType"/>
+		<result property="type0" column="type0"/>
+		<result property="type1" column="type1"/>
+		<result property="type2" column="type2"/>
+		<result property="type3" column="type3"/>
+		<result property="type4" column="type4"/>
+		<result property="type5" column="type5"/>
+		<result property="type6" column="type6"/>
+		<result property="type7" column="type7"/>
+		<result property="type8" column="type8"/>
+		<result property="type9" column="type9"/>
+		<result property="type10" column="type10"/>
+		<result property="type11" column="type11"/>
+		<result property="type12" column="type12"/>
+		<result property="type13" column="type13"/>
+		<result property="type14" column="type14"/>
+		<result property="type15" column="type15"/>
+		<result property="type16" column="type16"/>
+		<result property="type17" column="type17"/>
+		<result property="type18" column="type18"/>
+		<result property="type19" column="type19"/>
+	</resultMap>
 
 
-    <select id="selectAppointmentDetail" resultMap="appointmentDetailVo"
-            parameterType="com.mkst.umap.app.admin.dto.arraign.AppointmentDetailDto">
-        SELECT
-        aa.id id,
-        aa.create_by create_by,
-        aa.create_time create_time,
-        aa.cancel_reason,
-        d.dept_name dept,
-        u.user_name undertaker,
-        aa.start_time start_time,
-        aa.end_time end_time,
-        aa.criminal_name criminal_name,
-        aa.criminal_type criminal_type,
-        aa.criminal_birth criminal_birth,
-        aa.stage stage,
-        aa.criminal_admit criminal_admit,
-        aa.need_legal_aid need_legal_aid,
-        aa.prosecutor_id prosecutor_id,
-        aa.prosecutor_user_id prosecutor_user_id,
-        aa.prosecutor_name prosecutor_name,
-        aa.arraign_type arraign_type,
-        aa.remark remark,
-        aa.num_order num_order,
-        aa.time_pie time_pie,
-        aa.finish_status ,
-        aa.finish_time ,
-        aa.finish_by,
-        aa.`status` status,
-        CASE aa.`status` when 5 then -1 else aa.`status` end as orderstatus ,
-        r.`name` room_name
-        FROM
-        umap_arraign_appointment AS aa
-        LEFT JOIN umap_arraign_room AS r ON aa.room_id = r.id
-        LEFT JOIN sys_user u ON aa.create_by = u.login_name
-        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
-        <where>
-            <if test="id != null and id != ''">aa.id = #{id}</if>
-            <if test="createBy != null and createBy != ''">aa.create_by = #{createBy}</if>
-            <if test="startTime != null ">and aa.start_time &gt;= #{startTime}</if>
-            <if test="endTime != null ">and aa.end_time &lt;= #{endTime}</if>
-            <if test="criminalName != null  and criminalName != '' ">and aa.criminal_name like
-                CONCAT('%',#{criminalName},'%')
-            </if>
-            <if test="criminalType != null  and criminalType != '' ">and aa.criminal_type = #{criminalType}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and aa.prosecutor_id like CONCAT('%',
-                #{prosecutorId},'%')
-            </if>
-            <if test="prosecutorUserId != null and prosecutorUserId != '' ">and aa.prosecutor_user_id =
-                #{prosecutorUserId}
-            </if>
-            <if test="criminalBirth != null ">and TO_DAYS(aa.criminal_birth) = TO_DAYS(#{criminalBirth})</if>
-            <if test="stage != null  and stage != '' ">and aa.stage = #{stage}</if>
-            <if test="status != null  and status != '' ">and aa.status = #{status}</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and aa.prosecutor_name like
-                CONCAT('%',#{prosecutorName},'%')
-            </if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and aa.criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and aa.need_legal_aid = #{needLegalAid}</if>
-        </where>
-        and r.type = '0' and aa.del_flag = '0' and u.del_flag = '0'
-        order by orderstatus,aa.create_time desc
-    </select>
+	<resultMap id="DeptCountVo"
+	           type="com.mkst.umap.app.admin.dto.arraign.CountDto">
+		<result property="name" column="name"/>
+		<result property="address" column="address"/>
+		<result property="total" column="total"/>
+		<result property="date" column="date"/>
+	</resultMap>
 
-    <select id="selectGroupByCriminalType" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="CriminalTypeResult">
-        select dd.dateFormat AS cDateType,
-        <if test="criminalTypeList != null">
-            <foreach collection="criminalTypeList" item="id" index="index" separator=",">
-                SUM( CASE dd.criminal_type WHEN #{id} THEN dd.count ELSE 0 END ) AS type${id}
-            </foreach>
-        </if>
-        from (
-        select DATE_FORMAT(uaa.start_time,#{dateType}) as dateFormat,uaa.criminal_type,count(1) as 'count' from umap_arraign_appointment uaa
-        left join sys_user su on uaa.prosecutor_user_id = su.user_id
-        left join sys_dept sd on su.dept_id = sd.dept_id
-        <where>
-            <if test="prosecutorUserId != null ">and uaa.prosecutor_user_id = #{prosecutorUserId}</if>
-            <if test="createBy != null  and createBy != '' ">and uaa.create_by = #{createBy}</if>
-            <if test="createTime != null ">and uaa.create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and uaa.update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and uaa.update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and uaa.del_flag = #{delFlag}</if>
-            <if test="criminalName != null  and criminalName != '' ">and  uaa.criminal_name = like CONCAT('%',#{criminalName},'%')</if>
-            <if test="criminalType != null  and criminalType != '' ">and  uaa.criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and  uaa.criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and  uaa.stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and  uaa.criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and  uaa.need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and  uaa.prosecutor_id like CONCAT('%',#{prosecutorId},'%') </if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and  uaa.prosecutor_name like CONCAT('%',#{prosecutorName},'%') </if>
-            <if test="status != null  and status != '' ">and uaa.status = #{status}</if>
-            <if test="deptIds != null and deptIds.length !=0">
-                and sd.dept_id IN
-                <foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
-                    #{id}
-                </foreach>
-            </if>
-        </where>
-        group by dateFormat, uaa.criminal_type) as dd GROUP BY dd.dateFormat
-        <!--<if test="criminalTypeGrouping ==&quot;Y&quot;  ">, uaa.criminal_type</if>
-        <if test="deptGrouping ==&quot;Y&quot; ">, sd.dept_name</if>-->
-    </select>
+	<sql id="selectArraignAppointmentVo">
+		select id,
+		       room_id,
+		       schedule_id,
+		       start_time,
+		       end_time,
+		       criminal_name,
+		       criminal_type,
+		       criminal_birth,
+		       stage,
+		       criminal_admit,
+		       need_legal_aid,
+		       prosecutor_id,
+		       prosecutor_user_id,
+		       prosecutor_name,
+		       status,
+		       create_by,
+		       create_time,
+		       update_by,
+		       update_time,
+		       remark,
+		       del_flag,
+		       arraign_type,
+		       num_order,
+		       time_pie,
+		       cancel_reason,
+		       finish_status,
+		       finish_time,
+		       finish_by
+		from umap_arraign_appointment
+	</sql>
 
+	<sql id="appointmentDetailVo">
+		SELECT aa.id                 as id,
+		       aa.create_by          as create_by,
+		       aa.create_time        as create_time,
+		       aa.cancel_reason,
+		       d.dept_name           as dept,
+		       u.user_name           as undertaker,
+		       aa.start_time         as start_time,
+		       aa.end_time           as end_time,
+		       aa.criminal_name      as criminal_name,
+		       aa.criminal_type      as criminal_type,
+		       aa.criminal_birth     as criminal_birth,
+		       aa.stage              as stage,
+		       aa.criminal_admit     as criminal_admit,
+		       aa.need_legal_aid     as need_legal_aid,
+		       aa.prosecutor_id      as prosecutor_id,
+		       aa.prosecutor_user_id as prosecutor_user_id,
+		       aa.prosecutor_name    as prosecutor_name,
+		       aa.arraign_type       as arraign_type,
+		       aa.remark             as remark,
+		       aa.num_order          as num_order,
+		       aa.time_pie           as time_pie,
+		       aa.finish_status,
+		       aa.finish_time,
+		       aa.finish_by,
+		       aa.`status`           as status,
+		       r.`name`              room_name
+		FROM umap_arraign_appointment AS aa
+				     LEFT JOIN umap_arraign_room AS r ON aa.room_id = r.id
+				     LEFT JOIN sys_user u ON aa.create_by = u.login_name
+				     LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+	</sql>
 
-    <select id="select30Day" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="CriminalTypeResult">
-        select dd.dateFormat AS cDateType,
-        <if test="criminalTypeList != null">
-            <foreach collection="criminalTypeList" item="id" index="index" separator=",">
-                SUM( CASE dd.criminal_type WHEN #{id} THEN dd.count ELSE 0 END ) AS type${id}
-            </foreach>
-        </if>
-        from (
-        select DATE_FORMAT(uaa.start_time,#{dateType}) as dateFormat,uaa.criminal_type,count(1) as 'count' from umap_arraign_appointment uaa
-        left join sys_user su on uaa.prosecutor_user_id = su.user_id
-        left join sys_dept sd on su.dept_id = sd.dept_id
-        WHERE
-        DATE_SUB( CURDATE(), INTERVAL 30 DAY ) &lt;= uaa.start_time
-        AND uaa.del_flag = '0'
-        group by dateFormat, uaa.criminal_type) as dd GROUP BY dd.dateFormat
-    </select>
+	<select id="selectArraignAppointmentAuditCount" resultType="Integer">
+		select count(1)
+		from umap_arraign_appointment
+		where status = 0
+		   or status = 5
+	</select>
 
-    <select id="selectDeptFive30Day" resultMap="DeptCountVo">
-        SELECT
-        a.dept_name as `name`,
-        IFNULL( b.total, 0 ) as total
-        FROM
-        ( SELECT d.dept_name, d.dept_id FROM sys_dept d ) as a
-        LEFT JOIN (
-        SELECT
-        d.dept_name,
-        d.dept_id,
-        count( d.dept_id ) AS total
-        FROM
-        sys_dept d
-        LEFT JOIN sys_user u ON d.dept_id = u.dept_id
-        LEFT JOIN umap_arraign_appointment aa ON aa.create_by = u.login_name
-        WHERE
-        aa.del_flag = '0'
-        AND DATE_SUB( CURDATE(), INTERVAL 30 DAY ) &lt;= aa.start_time
-        GROUP BY
-        d.dept_id limit 5) as b on a.dept_id = b.dept_id order by total desc
-    </select>
+	<select id="selectArraignAppointmentList" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment"
+	        resultMap="ArraignAppointmentResult">
+		<include refid="selectArraignAppointmentVo"/>
+		<where>
+			<if test="id != null ">
+				and id = #{id}
+			</if>
+			<if test="roomId != null ">
+				and room_id = #{roomId}
+			</if>
+			<if test="scheduleId != null ">
+				and schedule_id = #{scheduleId}
+			</if>
+			<if test="startTime != null ">
+				and start_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null ">
+				and end_time &lt;= #{endTime}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and prosecutor_id like CONCAT('%',
+				#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and status = #{status}
+			</if>
+			<if test="needDeal != null  and needDeal != '' and needDeal == 0 ">
+				and (status = 0 or status = 5)
+			</if>
+			<if test="needDeal != null  and needDeal != '' and needDeal != 0 ">
+				and status != 0 and status != 5
+			</if>
+			<if test="auditStatus != null  and auditStatus != '' and auditStatus == 0">
+				and (remark is null or remark !=
+				"plus")
+			</if>
+			<if test="auditStatus != null  and auditStatus != '' and auditStatus == 5">
+				and remark="plus"
+			</if>
+			<if test="appointmentDate != null and appointmentDate != ''">
+				and start_time like
+				concat(#{appointmentDate}, '%')
+			</if>
+			<if test="checkDate != null">
+				and TO_DAYS(start_time) = TO_DAYS(#{checkDate})
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and update_time = #{updateTime}
+			</if>
+			<if test="timePie != null ">
+				and time_pie = #{timePie}
+			</if>
+			<if test="numOrder != null ">
+				and num_order = #{numOrder}
+			</if>
+			<if test="remark != null  and remark != '' ">
+				and remark = #{remark}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and del_flag = #{delFlag}
+			</if>
+			<if test="checkCreateBy != null and checkCreateBy != '' and checkProsecutorUserId != null and checkProsecutorUserId != ''">
+				and (create_by = #{checkCreateBy} or prosecutor_user_id = #{checkProsecutorUserId})
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			order by ${orderBy}
+		</if>
+		<if test="orderBy == null or orderBy == ''">
+			order by create_time desc
+		</if>
+	</select>
 
+	<select id="selectArraignAppointmentListByDto"
+	        parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto"
+	        resultMap="ArraignAppointmentResult">
+		<include refid="selectArraignAppointmentVo"/>
+		<where>
+			<if test="id != null ">
+				and id = #{id}
+			</if>
+			<if test="roomId != null ">
+				and room_id = #{roomId}
+			</if>
+			<if test="scheduleId != null ">
+				and schedule_id = #{scheduleId}
+			</if>
+			<if test="startTime != null ">
+				and start_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null ">
+				and end_time &lt;= #{endTime}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null ">
+				and prosecutor_id like CONCAT('%', #{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and prosecutor_name like CONCAT('%',
+				#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and status = #{status}
+			</if>
+			<if test="needDeal != null  and needDeal != '' and needDeal == 0 ">
+				and status = #{needDeal}
+			</if>
+			<if test="needDeal != null  and needDeal != '' and needDeal != 0 ">
+				and status != 0
+			</if>
+			<if test="appointmentDate != null  and appointmentDate != '' ">
+				and start_time like
+				concat(#{appointmentDate}, '%')
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and update_time = #{updateTime}
+			</if>
+			<if test="remark != null  and remark != '' ">
+				and remark = #{remark}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and del_flag = #{delFlag}
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'today'">
+				and to_days(start_time) = to_days(now())
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'week'">
+				and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'month'">
+				and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'season'">
+				and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'year'">
+				and YEAR(start_time)=YEAR(NOW())
+			</if>
+		</where>
+		order by status,create_time desc
+	</select>
 
-    <select id="selectActiveUsers" parameterType="String" resultType="java.lang.String">
-	SELECT
-		oper_name
-	FROM
-		sys_app_log
-	WHERE
-		DATE_FORMAT( oper_time, '%Y-%m-%d' ) = #{date}
-    </select>
-
-
-    <select id="selectSeasonGroupByCriminalType" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="CriminalTypeResult">
-        select dd.dateFormat AS cDateType,
-        <if test="criminalTypeList != null">
-            <foreach collection="criminalTypeList" item="id" index="index" separator=",">
-                SUM( CASE dd.criminal_type WHEN #{id} THEN dd.count ELSE 0 END ) AS type${id}
-            </foreach>
-        </if>
-        from ( select CONCAT(YEAR(uaa.start_time),FLOOR((date_format(uaa.start_time, '%m')+2)/3)) as dateFormat,uaa.criminal_type,count(1) as 'count' from umap_arraign_appointment uaa
-        left join sys_user su on uaa.prosecutor_user_id = su.user_id
-        left join sys_dept sd on su.dept_id = sd.dept_id
-        <where>
-            <if test="prosecutorUserId != null ">and uaa.prosecutor_user_id = #{prosecutorUserId}</if>
-            <if test="createBy != null  and createBy != '' ">and uaa.create_by = #{createBy}</if>
-            <if test="createTime != null ">and uaa.create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and uaa.update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and uaa.update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and uaa.del_flag = #{delFlag}</if>
-            <if test="criminalName != null  and criminalName != '' ">and  uaa.criminal_name like CONCAT('%',#{criminalName},'%') </if>
-            <if test="criminalType != null  and criminalType != '' ">and  uaa.criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and  uaa.criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and  uaa.stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and  uaa.criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and  uaa.need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != '' ">and  uaa.prosecutor_id like CONCAT('%',#{prosecutorId},'%')</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and  uaa.prosecutor_name like CONCAT('%',#{prosecutorName},'%')</if>
-            <if test="status != null  and status != '' ">and uaa.status = #{status}</if>
-            <if test="deptIds != null and deptIds.length !=0">
-                and sd.dept_id IN
-                <foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
-                    #{id}
-                </foreach>
-            </if>
-        </where>
-        group by dateFormat, uaa.criminal_type) as dd GROUP BY dd.dateFormat
-
-    </select>
-
-    <select id="selectReport" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="ReportDto">
-        select DATE_FORMAT(uaa.start_time,#{dateType}) as dateFormat,sd.dept_name as deptName ,sd.dept_id as deptId,count(1) as 'count' ,
-        uaa.start_time,uaa.end_time,uaa.criminal_name,uaa.criminal_type,uaa.criminal_birth,uaa.stage,uaa.criminal_admit,uaa.need_legal_aid,uaa.prosecutor_id
-        ,uaa.prosecutor_name ,uaa.status from umap_arraign_appointment uaa
-        left join sys_user su on uaa.prosecutor_user_id = su.user_id
-        left join sys_dept sd on su.dept_id = sd.dept_id
-        <where>
-            <if test="prosecutorUserId != null ">and uaa.prosecutor_user_id = #{prosecutorUserId}</if>
-            <if test="createBy != null  and createBy != '' ">and uaa.create_by = #{createBy}</if>
-            <if test="createTime != null ">and uaa.create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and uaa.update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and uaa.update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and uaa.del_flag = #{delFlag}</if>
-            <if test="criminalName != null  and criminalName != '' ">and  uaa.criminal_name like CONCAT('%',#{criminalName},'%')</if>
-            <if test="criminalType != null  and criminalType != '' ">and  uaa.criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and  uaa.criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and  uaa.stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and  uaa.criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and  uaa.need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and  uaa.prosecutor_id like CONCAT('%',#{prosecutorId},'%')</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and  uaa.prosecutor_name like CONCAT('%',#{prosecutorName},'%')</if>
-            <if test="status != null  and status != '' ">and uaa.status = #{status}</if>
-            <if test="deptIds != null and deptIds.length !=0">
-                and sd.dept_id IN
-                <foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
-                    #{id}
-                </foreach>
-            </if>
-        </where>
-        group by dateFormat, uaa.criminal_type, sd.dept_id
-
-    </select>
-
-
-    <select id="selectSeasonReport" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="ReportDto">
-        select CONCAT(YEAR(uaa.start_time),FLOOR((date_format(uaa.start_time, '%m')+2)/3)) as dateFormat,sd.dept_name as deptName,sd.dept_id as deptId ,count(1) as 'count' ,
-        uaa.start_time,uaa.end_time,uaa.criminal_name,uaa.criminal_type,uaa.criminal_birth,uaa.stage,uaa.criminal_admit,uaa.need_legal_aid,uaa.prosecutor_id
-        ,uaa.prosecutor_name ,uaa.status from umap_arraign_appointment uaa
-        left join sys_user su on uaa.prosecutor_user_id = su.user_id
-        left join sys_dept sd on su.dept_id = sd.dept_id
-        <where>
-            <if test="prosecutorUserId != null ">and uaa.prosecutor_user_id = #{prosecutorUserId}</if>
-            <if test="createBy != null  and createBy != '' ">and uaa.create_by = #{createBy}</if>
-            <if test="createTime != null ">and uaa.create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and uaa.update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and uaa.update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and uaa.del_flag = #{delFlag}</if>
-            <if test="criminalName != null  and criminalName != '' ">and  uaa.criminal_name like CONCAT('%', #{criminalName},'%')</if>
-            <if test="criminalType != null  and criminalType != '' ">and  uaa.criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and  uaa.criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and  uaa.stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and  uaa.criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and  uaa.need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''" >and  uaa.prosecutor_id like CONCAT('%',#{prosecutorId},'%')</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and  uaa.prosecutor_name like CONCAT('%',#{prosecutorName},'%')</if>
-            <if test="status != null  and status != '' ">and  uaa.status = #{status}</if>
-            <if test="deptIds != null  and deptIds.length !=0">
-                and sd.dept_id IN
-                <foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
-                    #{id}
-                </foreach>
-            </if>
-        </where>
-        group by dateFormat, uaa.criminal_type, sd.dept_id
-        <!--<if test="criminalTypeGrouping ==&quot;Y&quot;  ">, uaa.criminal_type</if>
-        <if test="deptGrouping ==&quot;Y&quot;  ">, sd.dept_name</if>-->
-
-    </select>
-
-
-    <select id="selectTotalByRoomId" parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto" resultMap="ArraignAppointmentTotalDto">
-        SELECT count(a.room_id) as 'value' ,r.`name` as 'name' FROM umap_arraign_appointment as a
-        left join umap_arraign_room as r on a.room_id = r.id
-        <where>
-            <if test="startTime != null "> and start_time &gt;= #{startTime}</if>
-            <if test="endTime != null "> and end_time &lt;= #{endTime}</if>
-            <if test="criminalName != null  and criminalName != '' ">and a.criminal_name like CONCAT('%',#{criminalName},'%')</if>
-            <if test="criminalType != null  and criminalType != '' ">and a.criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and a.criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and a.stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and a.criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and a.need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and a.prosecutor_id like CONCAT('%',#{prosecutorId},'%') </if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and a.prosecutor_name like CONCAT('%',#{prosecutorName},'%')</if>
-            <if test="status != null  and status != '' ">and a.status = #{status}</if>
-            <if test="totalType != null and totalType != '' and totalType == 'today'">
-                and to_days(start_time) = to_days(now())
-            </if>
-            <if test="createBy != null  and createBy != '' ">and a.create_by = #{createBy}</if>
-            <if test="createTime != null ">and a.create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and a.update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and a.update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and a.del_flag = #{delFlag}</if>
-            <if test="totalType != null and totalType != '' and totalType == 'week'">
-                and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'month'">
-                and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'season'">
-                and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'year'">
-                and YEAR(start_time)=YEAR(NOW())
-            </if>
-            and a.del_flag = 0
-        </where>
-        group by a.room_id;
-    </select>
+	<select id="selectArraignAppointmentById" parameterType="Long" resultMap="ArraignAppointmentResult">
+		<include refid="selectArraignAppointmentVo"/>
+		where id = #{id} and del_flag = '0'
+	</select>
 
 
-    <select id="selectTotalByCriminalType" parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto" resultMap="ArraignAppointmentTotalDto">
-        select count(criminal_type)  as 'value' , criminal_type  as 'name' from umap_arraign_appointment
-        <where>
-            <if test="startTime != null ">and  start_time like
-                concat(#{startTime}, '%')</if>
-            <if test="endTime != null ">and  end_time like
-                concat(#{endTime}, '%')</if>
-            <if test="criminalName != null  and criminalName != '' ">and criminal_name like CONCAT('%',#{criminalName},'%') </if>
-            <if test="criminalType != null  and criminalType != '' ">and criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and prosecutor_id like CONCAT('%',#{prosecutorId},'%')</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and prosecutor_name like CONCAT('%',#{prosecutorName},'%') </if>
-            <if test="status != null  and status != '' ">and status = #{status}</if>
-            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
-            <if test="createTime != null ">and create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
-            <if test="totalType != null and totalType != '' and totalType == 'today'">
-                and to_days(start_time) = to_days(now())
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'week'">
-                and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'month'">
-                and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'season'">
-                and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'year'">
-                and YEAR(start_time)=YEAR(NOW())
-            </if>
-            and del_flag = 0
-        </where>
+	<select id="selectAppointmentDetail" resultMap="appointmentDetailVo"
+	        parameterType="com.mkst.umap.app.admin.dto.arraign.AppointmentDetailDto">
+		SELECT
+		aa.id id,
+		aa.create_by create_by,
+		aa.create_time create_time,
+		aa.cancel_reason,
+		d.dept_name dept,
+		u.user_name undertaker,
+		aa.start_time start_time,
+		aa.end_time end_time,
+		aa.criminal_name criminal_name,
+		aa.criminal_type criminal_type,
+		aa.criminal_birth criminal_birth,
+		aa.stage stage,
+		aa.criminal_admit criminal_admit,
+		aa.need_legal_aid need_legal_aid,
+		aa.prosecutor_id prosecutor_id,
+		aa.prosecutor_user_id prosecutor_user_id,
+		aa.prosecutor_name prosecutor_name,
+		aa.arraign_type arraign_type,
+		aa.remark remark,
+		aa.num_order num_order,
+		aa.time_pie time_pie,
+		aa.finish_status ,
+		aa.finish_time ,
+		aa.finish_by,
+		aa.`status` status,
+		CASE aa.`status` when 5 then -1 else aa.`status` end as orderstatus ,
+		r.`name` room_name
+		FROM
+		umap_arraign_appointment AS aa
+		LEFT JOIN umap_arraign_room AS r ON aa.room_id = r.id
+		LEFT JOIN sys_user u ON aa.create_by = u.login_name
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		<where>
+			<if test="id != null and id != ''">
+				aa.id = #{id}
+			</if>
+			<if test="createBy != null and createBy != ''">
+				aa.create_by = #{createBy}
+			</if>
+			<if test="startTime != null ">
+				and aa.start_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null ">
+				and aa.end_time &lt;= #{endTime}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and aa.criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and aa.criminal_type = #{criminalType}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and aa.prosecutor_id like CONCAT('%',
+				#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorUserId != null and prosecutorUserId != '' ">
+				and aa.prosecutor_user_id =
+				#{prosecutorUserId}
+			</if>
+			<if test="criminalBirth != null ">
+				and TO_DAYS(aa.criminal_birth) = TO_DAYS(#{criminalBirth})
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and aa.stage = #{stage}
+			</if>
+			<if test="status != null  and status != '' ">
+				and aa.status = #{status}
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and aa.prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and aa.criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and aa.need_legal_aid = #{needLegalAid}
+			</if>
+		</where>
+		and r.type = '0' and aa.del_flag = '0' and u.del_flag = '0'
+		order by orderstatus,aa.create_time desc
+	</select>
 
-        group by criminal_type;
-    </select>
-
-
-    <select id="selectTotalByTime" parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto" resultType="java.lang.Integer">
-        select count(1) as 'value' from umap_arraign_appointment
-        <where>
-            ((DATE_FORMAT(start_time, '%H:%i' ) BETWEEN #{startTimeAxis}
-            AND #{endTimeAxis}))
-            <if test="startTime != null ">and  start_time like
-                concat(#{startTime}, '%')</if>
-            <if test="endTime != null ">and  end_time like
-                concat(#{endTime}, '%')</if>
-            <if test="criminalName != null  and criminalName != '' ">and criminal_name like CONCAT('%',#{criminalName},'%')</if>
-            <if test="criminalType != null  and criminalType != '' ">and criminal_type = #{criminalType}</if>
-            <if test="criminalBirth != null ">and criminal_birth = #{criminalBirth}</if>
-            <if test="stage != null  and stage != '' ">and stage = #{stage}</if>
-            <if test="criminalAdmit != null  and criminalAdmit != '' ">and criminal_admit = #{criminalAdmit}</if>
-            <if test="needLegalAid != null  and needLegalAid != '' ">and need_legal_aid = #{needLegalAid}</if>
-            <if test="prosecutorId != null and prosecutorId != ''">and prosecutor_id like CONCAT('%', #{prosecutorId},'%')</if>
-            <if test="prosecutorName != null  and prosecutorName != '' ">and prosecutor_name like CONCAT('%',#{prosecutorName},'%') </if>
-            <if test="status != null  and status != '' ">and status = #{status}</if>
-            <if test="createBy != null  and createBy != '' ">and create_by = #{createBy}</if>
-            <if test="createTime != null ">and create_time = #{createTime}</if>
-            <if test="updateBy != null  and updateBy != '' ">and update_by = #{updateBy}</if>
-            <if test="updateTime != null ">and update_time = #{updateTime}</if>
-            <if test="delFlag != null  and delFlag != '' ">and del_flag = #{delFlag}</if>
-            <if test="totalType != null and totalType != '' and totalType == 'today'">
-                and to_days(start_time) = to_days(now())
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'week'">
-                and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'month'">
-                and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'season'">
-                and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
-            </if>
-            <if test="totalType != null and totalType != '' and totalType == 'year'">
-                and YEAR(start_time)=YEAR(NOW())
-            </if>
-            and del_flag = 0
-        </where>
-
-    </select>
-
-    <select id="selectTotalByDay" resultType="integer">
-        select count(1) from umap_arraign_appointment
-        where del_flag = 0
-        and start_time >= #{startTime} and start_time &lt;= #{endTime}
-    </select>
-
-    <select id="selectTotal" resultType="integer">
-        select count(1) from umap_arraign_appointment
-        where del_flag = 0
-    </select>
-
-    <select id="analysisList" resultType="com.mkst.umap.app.admin.statistics.AnalysisCountResult">
-        select d1.date `date` , IFNULL(d2.sumappointment,0) `value` from (
-            select date from
-            (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from
-            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
-            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
-            (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
-            where date between #{startDay} and #{endDay}
-        ) d1 left join
-        (
-            select DATE_FORMAT(start_time,"%Y-%m-%d") date , count(1) sumappointment
-            from umap_arraign_appointment
-            where  del_flag = 0
-            and start_time >= '${startDay} 00:00:00'
-            and start_time &lt;= '${endDay} 23:59:59'
-            GROUP BY date
-        ) d2 on d1.date = d2.date
-        order by date
-    </select>
-
-    <select id="selectMaxNumOrderByDay" resultType="Integer">
-        select ifnull(max(num_order),0) from umap_arraign_appointment where TO_DAYS(start_time) = TO_DAYS(#{checkDay}) and status = #{status} and time_pie = #{timePie}
-    </select>
-
-    <insert id="insertArraignAppointment" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment"
-            useGeneratedKeys="true" keyProperty="id">
-        insert into umap_arraign_appointment
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">id,</if>
-            <if test="roomId != null  ">room_id,</if>
-            <if test="scheduleId != null  ">schedule_id,</if>
-            <if test="startTime != null  ">start_time,</if>
-            <if test="endTime != null  ">end_time,</if>
-            <if test="criminalName != null  and criminalName != ''  ">criminal_name,</if>
-            <if test="criminalType != null  and criminalType != ''  ">criminal_type,</if>
-            <if test="criminalBirth != null  ">criminal_birth,</if>
-            <if test="stage != null  and stage != ''  ">stage,</if>
-            <if test="criminalAdmit != null  and criminalAdmit != ''  ">criminal_admit,</if>
-            <if test="needLegalAid != null  and needLegalAid != ''  ">need_legal_aid,</if>
-            <if test="prosecutorId != null  ">prosecutor_id,</if>
-            <if test="prosecutorUserId != null  ">prosecutor_user_id,</if>
-            <if test="prosecutorName != null  and prosecutorName != ''  ">prosecutor_name,</if>
-            <if test="status != null  and status != ''  ">status,</if>
-            <if test="createBy != null  and createBy != ''  ">create_by,</if>
-            <if test="createTime != null  ">create_time,</if>
-            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
-            <if test="updateTime != null  ">update_time,</if>
-            <if test="remark != null  and remark != ''  ">remark,</if>
-            <if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
-            <if test="arraignType != null  and arraignType != ''  ">arraign_type,</if>
-            <if test="numOrder != null  and numOrder != ''  ">num_order,</if>
-            <if test="timePie != null  and timePie != ''  ">time_pie,</if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">#{id},</if>
-            <if test="roomId != null  ">#{roomId},</if>
-            <if test="scheduleId != null  ">#{scheduleId},</if>
-            <if test="startTime != null  ">#{startTime},</if>
-            <if test="endTime != null  ">#{endTime},</if>
-            <if test="criminalName != null  and criminalName != ''  ">#{criminalName},</if>
-            <if test="criminalType != null  and criminalType != ''  ">#{criminalType},</if>
-            <if test="criminalBirth != null  ">#{criminalBirth},</if>
-            <if test="stage != null  and stage != ''  ">#{stage},</if>
-            <if test="criminalAdmit != null  and criminalAdmit != ''  ">#{criminalAdmit},</if>
-            <if test="needLegalAid != null  and needLegalAid != ''  ">#{needLegalAid},</if>
-            <if test="prosecutorId != null  ">#{prosecutorId},</if>
-            <if test="prosecutorUserId != null  ">#{prosecutorUserId},</if>
-            <if test="prosecutorName != null  and prosecutorName != ''  ">#{prosecutorName},</if>
-            <if test="status != null  and status != ''  ">#{status},</if>
-            <if test="createBy != null  and createBy != ''  ">#{createBy},</if>
-            <if test="createTime != null  ">#{createTime},</if>
-            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
-            <if test="updateTime != null  ">#{updateTime},</if>
-            <if test="remark != null  and remark != ''  ">#{remark},</if>
-            <if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
-            <if test="arraignType != null  and arraignType != ''  ">#{arraignType},</if>
-            <if test="numOrder != null  and numOrder != ''  ">#{numOrder},</if>
-            <if test="timePie != null  and timePie != ''  ">#{timePie},</if>
-        </trim>
-    </insert>
-
-    <update id="updateArraignAppointment" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
-        update umap_arraign_appointment
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="roomId != null  ">room_id = #{roomId},</if>
-            <if test="scheduleId != null  ">schedule_id = #{scheduleId},</if>
-            <if test="startTime != null  ">start_time = #{startTime},</if>
-            <if test="endTime != null  ">end_time = #{endTime},</if>
-            <if test="criminalName != null  and criminalName != ''  ">criminal_name = #{criminalName},</if>
-            <if test="criminalType != null  and criminalType != ''  ">criminal_type = #{criminalType},</if>
-            <if test="criminalBirth != null  ">criminal_birth = #{criminalBirth},</if>
-            <if test="stage != null  and stage != ''  ">stage = #{stage},</if>
-            <if test="criminalAdmit != null  and criminalAdmit != ''  ">criminal_admit = #{criminalAdmit},</if>
-            <if test="needLegalAid != null  and needLegalAid != ''  ">need_legal_aid = #{needLegalAid},</if>
-            <if test="prosecutorId != null  ">prosecutor_id = #{prosecutorId},</if>
-            <if test="prosecutorUserId != null  ">prosecutor_user_id = #{prosecutorUserId},</if>
-            <if test="prosecutorName != null  and prosecutorName != ''  ">prosecutor_name = #{prosecutorName},</if>
-            <if test="status != null  and status != ''  ">status = #{status},</if>
-            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
-            <if test="createTime != null  ">create_time = #{createTime},</if>
-            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
-            <if test="updateTime != null  ">update_time = #{updateTime},</if>
-            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
-            <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
-            <if test="cancelReason != null  and cancelReason != ''  ">cancel_reason = #{cancelReason},</if>
-            <if test="numOrder != null  and numOrder != ''  ">num_order = #{numOrder},</if>
-            <if test="timePie != null  and timePie != ''  ">time_pie = #{timePie},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <delete id="deleteArraignAppointmentById" parameterType="Long">
-        delete from umap_arraign_appointment where id = #{id}
-    </delete>
-
-    <delete id="deleteArraignAppointmentByIds" parameterType="String">
-        delete from umap_arraign_appointment where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
+	<select id="selectGroupByCriminalType" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto"
+	        resultMap="CriminalTypeResult">
+		select dd.dateFormat AS cDateType,
+		<if test="criminalTypeList != null">
+			<foreach collection="criminalTypeList" item="id" index="index" separator=",">
+				SUM( CASE dd.criminal_type WHEN #{id} THEN dd.count ELSE 0 END ) AS type${id}
+			</foreach>
+		</if>
+		from (
+		select DATE_FORMAT(uaa.start_time,#{dateType}) as dateFormat,uaa.criminal_type,count(1) as 'count' from
+		umap_arraign_appointment uaa
+		left join sys_user su on uaa.prosecutor_user_id = su.user_id
+		left join sys_dept sd on su.dept_id = sd.dept_id
+		<where>
+			<if test="prosecutorUserId != null ">
+				and uaa.prosecutor_user_id = #{prosecutorUserId}
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and uaa.create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and uaa.create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and uaa.update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and uaa.update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and uaa.del_flag = #{delFlag}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and uaa.criminal_name = like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and uaa.criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and uaa.criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and uaa.stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and uaa.criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and uaa.need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and uaa.prosecutor_id like
+				CONCAT('%',#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and uaa.prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and uaa.status = #{status}
+			</if>
+			<if test="deptIds != null and deptIds.length !=0">
+				and sd.dept_id IN
+				<foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		group by dateFormat, uaa.criminal_type) as dd GROUP BY dd.dateFormat
+		<!--<if test="criminalTypeGrouping ==&quot;Y&quot;  ">, uaa.criminal_type</if>
+		<if test="deptGrouping ==&quot;Y&quot; ">, sd.dept_name</if>-->
+	</select>
 
 
-    <resultMap id="arraignAuditDtoResult" type="com.mkst.umap.app.admin.dto.arraign.ArraignAuditDto">
-        <result property="id" column="id"/>
-        <result property="deptName" column="dept"/>
-        <result property="undertaker" column="undertaker"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="criminalName" column="criminal_name"/>
-        <result property="criminalType" column="criminal_type"/>
-        <result property="criminalBirth" column="criminal_birth"/>
-        <result property="stage" column="stage"/>
-        <result property="criminalAdmit" column="criminal_admit"/>
-        <result property="needLegalAid" column="need_legal_aid"/>
-        <result property="prosecutorName" column="prosecutor_name"/>
-        <result property="status" column="status"/>
-        <result property="roomName" column="room_name"/>
-        <result property="createTime" column="create_time"/>
-    </resultMap>
+	<select id="select30Day" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto"
+	        resultMap="CriminalTypeResult">
+		select dd.dateFormat AS cDateType,
+		<if test="criminalTypeList != null">
+			<foreach collection="criminalTypeList" item="id" index="index" separator=",">
+				SUM( CASE dd.criminal_type WHEN #{id} THEN dd.count ELSE 0 END ) AS type${id}
+			</foreach>
+		</if>
+		from (
+		select DATE_FORMAT(uaa.start_time,#{dateType}) as dateFormat,uaa.criminal_type,count(1) as 'count' from
+		umap_arraign_appointment uaa
+		left join sys_user su on uaa.prosecutor_user_id = su.user_id
+		left join sys_dept sd on su.dept_id = sd.dept_id
+		WHERE
+		DATE_SUB( CURDATE(), INTERVAL 30 DAY ) &lt;= uaa.start_time
+		AND uaa.del_flag = '0'
+		group by dateFormat, uaa.criminal_type) as dd GROUP BY dd.dateFormat
+	</select>
 
-    <select id="getArraignAuditDtoList" resultMap="arraignAuditDtoResult">
-        <include refid="appointmentDetailVo"></include>
-        <where>
-            <if test="criminalType != null and criminalType != ''">and aa.criminal_type = #{criminalType}</if>
-            <if test="roomId != null and roomId != ''">and aa.room_id = #{roomId}</if>
-            <if test="status != null and status != ''">and aa.status = #{status}</if>
-            <if test="appointmentDate != null">and TO_DAYS(aa.start_time) = TO_DAYS(#{appointmentDate})</if>
-        </where>
-        and aa.del_flag = '0' and u.del_flag = '0'
-    </select>
+	<select id="selectDeptFive30Day" resultMap="DeptCountVo">
+		SELECT a.dept_name        as `name`,
+		       IFNULL(b.total, 0) as total
+		FROM (SELECT d.dept_name, d.dept_id FROM sys_dept d) as a
+				     LEFT JOIN (
+				SELECT d.dept_name,
+				       d.dept_id,
+				       count(d.dept_id) AS total
+				FROM sys_dept d
+						     LEFT JOIN sys_user u ON d.dept_id = u.dept_id
+						     LEFT JOIN umap_arraign_appointment aa ON aa.create_by = u.login_name
+				WHERE aa.del_flag = '0'
+				  AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= aa.start_time
+				GROUP BY d.dept_id
+				limit 5) as b on a.dept_id = b.dept_id
+		order by total desc
+	</select>
 
-    <resultMap id="dayCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
-        <result column="dayName" property="name"/>
-        <result column="dayCount" property="count"/>
-        <result column="info" property="info"/>
-    </resultMap>
-    <select id="selectDayCount" resultMap="dayCountResultMap" parameterType="com.mkst.umap.app.admin.api.bean.param.ArraignAppointmentParam">
-        SELECT
-        date_format(a.start_time,'%Y-%m-%d')  dayName,
-        COUNT(1) dayCount,
-        '已预约' info
-        FROM
-        umap_arraign_appointment a
-        <trim prefix="WHERE" prefixOverrides="AND">
-            <if test="year != null and year != ''">and YEAR (a.start_time) = #{year}</if>
-            <if test="month != null and month != ''">and MONTH (a.start_time) = #{month}</if>
-            <if test="createBy != null and createBy != '' and prosecutorUserId != null">and (a.create_by = #{createBy} or a.prosecutor_user_id = #{prosecutorUserId})</if>
-            <if test="status != null and status != ''">and a.status = #{status}</if>
-        </trim>
-        GROUP BY
-        TO_DAYS(a.start_time)
-        order by dayName
-    </select>
 
-    <resultMap id="timeApplyResult" type="com.mkst.umap.app.admin.api.bean.result.arraign.TimeApplyResult">
-        <result property="id" column="id"/>
-        <result property="timeCon" column="time_con"/>
-        <result property="nowStatus" column="now_status"/>
-        <result property="roomName" column="room_name"/>
-        <result property="deptName" column="dept_name"/>
-        <result property="auditStatus" column="audit_status"/>
-        <result property="useByName" column="prosecutor_name"/>
-        <result property="numOrder" column="num_order"/>
-        <result property="timePie" column="time_pie"/>
-        <result property="criminalName" column="criminal_name"/>
-        <result property="criminalType" column="criminal_type"/>
-        <result property="stage" column="stage"/>
-        <result property="remark" column="remark"></result>
-        <result property="startTime" column="start_time"></result>
-    </resultMap>
-    <select id="selectTimeApplyList"
-            resultMap="timeApplyResult"
-            parameterType="com.mkst.umap.app.admin.api.bean.param.ArraignAppointmentParam">
-        SELECT
-        CONCAT(
-        DATE_FORMAT(a.start_time, '%H:%i'),
-        '-',
-        DATE_FORMAT(a.end_time, '%H:%i')
-        ) AS time_con,
-        a.id id,
-        a.num_order num_order,
-        a.time_pie time_pie,
-        a.status audit_status,
-        #{nowStatus} now_status, /*这里要求参数必须传递当前时间状态*/
-        a.prosecutor_name prosecutor_name,
-        a.criminal_name criminal_name,
-        a.criminal_type criminal_type,
-        a.stage stage,
-        d.dept_name dept_name,
-        r.`name` room_name,
-        a.remark,
-        a.start_time
-        FROM
-        umap_arraign_appointment AS a
-        LEFT JOIN umap_arraign_room r ON a.room_id = r.id
-        LEFT JOIN sys_user u ON a.prosecutor_user_id = u.user_id
-        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
-        <where>
-            <if test="checkDate != null">AND TO_DAYS(a.start_time) = TO_DAYS(#{checkDate})</if>
-            <if test="nowStatus != null and nowStatus != ''">
-                <if test="nowStatus == '0'.toString()">AND NOW() &lt; a.start_time</if>
-                <if test="nowStatus == '1'.toString()">AND (NOW() &gt;= a.start_time and NOW() &lt; a.end_time)</if>
-                <if test="nowStatus == '2'.toString()">AND NOW() &gt; a.end_time</if>
-            </if>
-            <if test="status != null and status != ''">AND a.status = #{status}</if>
-            <if test="timePie != null and timePie != ''">AND a.time_pie = #{timePie}</if>
-            <if test="passStatus != null and passStatus != ''and passStatus == 2 ">AND a.status != '2'</if>
-            <if test="createBy == null and prosecutorUserId != null">and a.prosecutor_user_id = #{prosecutorUserId})</if>
-            <if test="createBy != null and createBy != '' and prosecutorUserId != null">and (a.create_by = #{createBy} or a.prosecutor_user_id = #{prosecutorUserId})</if>
-        </where>
-        order by a.start_time
-    </select>
+	<select id="selectActiveUsers" parameterType="String" resultType="java.lang.String">
+		SELECT oper_name
+		FROM sys_app_log
+		WHERE DATE_FORMAT(oper_time, '%Y-%m-%d') = #{date}
+	</select>
 
-    <update id="updateNumOrder">
-        update umap_arraign_appointment set num_order = #{numOrder} , time_pie = #{timePie} where id = #{id}
-    </update>
 
-    <update id="finish">
-        update umap_arraign_appointment set finish_status = #{finishStatus} , finish_time = #{finishTime} , finish_by = #{finishBy} where id = #{id}
-    </update>
+	<select id="selectSeasonGroupByCriminalType" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto"
+	        resultMap="CriminalTypeResult">
+		select dd.dateFormat AS cDateType,
+		<if test="criminalTypeList != null">
+			<foreach collection="criminalTypeList" item="id" index="index" separator=",">
+				SUM( CASE dd.criminal_type WHEN #{id} THEN dd.count ELSE 0 END ) AS type${id}
+			</foreach>
+		</if>
+		from ( select CONCAT(YEAR(uaa.start_time),FLOOR((date_format(uaa.start_time, '%m')+2)/3)) as
+		dateFormat,uaa.criminal_type,count(1) as 'count' from umap_arraign_appointment uaa
+		left join sys_user su on uaa.prosecutor_user_id = su.user_id
+		left join sys_dept sd on su.dept_id = sd.dept_id
+		<where>
+			<if test="prosecutorUserId != null ">
+				and uaa.prosecutor_user_id = #{prosecutorUserId}
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and uaa.create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and uaa.create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and uaa.update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and uaa.update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and uaa.del_flag = #{delFlag}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and uaa.criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and uaa.criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and uaa.criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and uaa.stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and uaa.criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and uaa.need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != '' ">
+				and uaa.prosecutor_id like
+				CONCAT('%',#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and uaa.prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and uaa.status = #{status}
+			</if>
+			<if test="deptIds != null and deptIds.length !=0">
+				and sd.dept_id IN
+				<foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		group by dateFormat, uaa.criminal_type) as dd GROUP BY dd.dateFormat
+	</select>
 
-    <select id="selectNotFinishAppointment" resultMap="ArraignAppointmentResult">
-        <include refid="selectArraignAppointmentVo"/>
-        where prosecutor_user_id = #{prosecutorUserId} and status = #{status}  and finish_status = #{finishStatus} and end_time &lt; #{endDate}
-    </select>
+	<select id="selectReport" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="ReportDto">
+		select DATE_FORMAT(uaa.start_time,#{dateType}) as dateFormat,sd.dept_name as deptName ,sd.dept_id as
+		deptId,count(1) as 'count' ,
+		uaa.start_time,uaa.end_time,uaa.criminal_name,uaa.criminal_type,uaa.criminal_birth,uaa.stage,uaa.criminal_admit,uaa.need_legal_aid,uaa.prosecutor_id
+		,uaa.prosecutor_name ,uaa.status from umap_arraign_appointment uaa
+		left join sys_user su on uaa.prosecutor_user_id = su.user_id
+		left join sys_dept sd on su.dept_id = sd.dept_id
+		<where>
+			<if test="prosecutorUserId != null ">
+				and uaa.prosecutor_user_id = #{prosecutorUserId}
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and uaa.create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and uaa.create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and uaa.update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and uaa.update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and uaa.del_flag = #{delFlag}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and uaa.criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and uaa.criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and uaa.criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and uaa.stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and uaa.criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and uaa.need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and uaa.prosecutor_id like
+				CONCAT('%',#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and uaa.prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and uaa.status = #{status}
+			</if>
+			<if test="deptIds != null and deptIds.length !=0">
+				and sd.dept_id IN
+				<foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		group by dateFormat, uaa.criminal_type, sd.dept_id
+	</select>
 
-    <resultMap type="SysUser" id="SysUserResult">
-        <id     property="userId"       column="user_id"      />
-        <result property="deptId"       column="dept_id"      />
-        <result property="loginName"    column="login_name"   />
-        <result property="userName"     column="user_name"    />
-        <result property="userType"     column="user_type"    />
-        <result property="email"        column="email"        />
-        <result property="phonenumber"  column="phonenumber"  />
-        <result property="sex"          column="sex"          />
-        <result property="avatar"       column="avatar"       />
-        <result property="password"     column="password"     />
-        <result property="salt"         column="salt"         />
-        <result property="status"       column="status"       />
-        <result property="delFlag"      column="del_flag"     />
-        <result property="loginIp"      column="login_ip"     />
-        <result property="loginDate"    column="login_date"   />
-        <result property="createBy"     column="create_by"    />
-        <result property="createTime"   column="create_time"  />
-        <result property="updateBy"     column="update_by"    />
-        <result property="updateTime"   column="update_time"  />
-        <result property="remark"       column="remark"       />
-        <result property="resetTime"       column="reset_time"       />
-        <association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
-        <association property="userInfo"  javaType="SysUserInfo" resultMap="userInfoResult" />
-        <collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
-    </resultMap>
 
-    <resultMap id="deptResult" type="SysDept">
-        <id     property="deptId"   column="dept_id"     />
-        <result property="parentId" column="parent_id"   />
-        <result property="deptName" column="dept_name"   />
-        <result property="orderNum" column="order_num"   />
-        <result property="status"   column="dept_status" />
-    </resultMap>
+	<select id="selectSeasonReport" parameterType="com.mkst.umap.app.admin.dto.arraign.ReportDto" resultMap="ReportDto">
+		select CONCAT(YEAR(uaa.start_time),FLOOR((date_format(uaa.start_time, '%m')+2)/3)) as dateFormat,sd.dept_name as
+		deptName,sd.dept_id as deptId ,count(1) as 'count' ,
+		uaa.start_time,uaa.end_time,uaa.criminal_name,uaa.criminal_type,uaa.criminal_birth,uaa.stage,uaa.criminal_admit,uaa.need_legal_aid,uaa.prosecutor_id
+		,uaa.prosecutor_name ,uaa.status from umap_arraign_appointment uaa
+		left join sys_user su on uaa.prosecutor_user_id = su.user_id
+		left join sys_dept sd on su.dept_id = sd.dept_id
+		<where>
+			<if test="prosecutorUserId != null ">
+				and uaa.prosecutor_user_id = #{prosecutorUserId}
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and uaa.create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and uaa.create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and uaa.update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and uaa.update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and uaa.del_flag = #{delFlag}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and uaa.criminal_name like CONCAT('%',
+				#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and uaa.criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and uaa.criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and uaa.stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and uaa.criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and uaa.need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and uaa.prosecutor_id like
+				CONCAT('%',#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and uaa.prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and uaa.status = #{status}
+			</if>
+			<if test="deptIds != null  and deptIds.length !=0">
+				and sd.dept_id IN
+				<foreach collection="deptIds" item="id" index="index" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		group by dateFormat, uaa.criminal_type, sd.dept_id
+		<!--<if test="criminalTypeGrouping ==&quot;Y&quot;  ">, uaa.criminal_type</if>
+		<if test="deptGrouping ==&quot;Y&quot;  ">, sd.dept_name</if>-->
+	</select>
 
-    <resultMap id="RoleResult" type="SysRole">
-        <id     property="roleId"       column="role_id"        />
-        <result property="roleName"     column="role_name"      />
-        <result property="roleKey"      column="role_key"       />
-        <result property="roleSort"     column="role_sort"      />
-        <result property="dataScope"     column="data_scope"    />
-        <result property="status"       column="role_status"    />
-    </resultMap>
 
-    <resultMap type="SysUserInfo" id="userInfoResult">
-        <result property="userId"    column="user_id"    />
-        <result property="idCard"    column="id_card"    />
-        <result property="wxOpenid"    column="wx_openid"    />
-        <result property="maOpenid"    column="ma_openid"    />
-        <result property="qqOpenid"    column="qq_openid"    />
-        <result property="mobileImei"    column="mobile_imei"    />
-        <result property="phone"    column="phone"    />
-        <result property="imNo"    column="im_no"    />
-        <result property="empNo"    column="emp_no"    />
-        <result property="extendS1"    column="extend_s1"    />
-        <result property="extendS2"    column="extend_s2"    />
-        <result property="extendS3"    column="extend_s3"    />
-        <result property="extendS4"    column="extend_s4"    />
-        <result property="extendS5"    column="extend_s5"    />
-        <result property="extendS6"    column="extend_s6"    />
-        <result property="extendD1"    column="extend_d1"    />
-        <result property="extendD2"    column="extend_d2"    />
-        <result property="extendD3"    column="extend_d3"    />
-        <result property="extendD4"    column="extend_d4"    />
-    </resultMap>
+	<select id="selectTotalByRoomId" parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto"
+	        resultMap="ArraignAppointmentTotalDto">
+		SELECT count(a.room_id) as 'value' ,r.`name` as 'name' FROM umap_arraign_appointment as a
+		left join umap_arraign_room as r on a.room_id = r.id
+		<where>
+			<if test="startTime != null ">
+				and start_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null ">
+				and end_time &lt;= #{endTime}
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and a.criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and a.criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and a.criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and a.stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and a.criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and a.need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and a.prosecutor_id like
+				CONCAT('%',#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and a.prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and a.status = #{status}
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'today'">
+				and to_days(start_time) = to_days(now())
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and a.create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and a.create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and a.update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and a.update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and a.del_flag = #{delFlag}
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'week'">
+				and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'month'">
+				and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'season'">
+				and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'year'">
+				and YEAR(start_time)=YEAR(NOW())
+			</if>
+			and a.del_flag = 0
+		</where>
+		group by a.room_id;
+	</select>
+
+
+	<select id="selectTotalByCriminalType"
+	        parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto"
+	        resultMap="ArraignAppointmentTotalDto">
+		select count(criminal_type) as 'value' , criminal_type as 'name' from umap_arraign_appointment
+		<where>
+			<if test="startTime != null ">
+				and start_time like
+				concat(#{startTime}, '%')
+			</if>
+			<if test="endTime != null ">
+				and end_time like
+				concat(#{endTime}, '%')
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and prosecutor_id like
+				CONCAT('%',#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and status = #{status}
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and del_flag = #{delFlag}
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'today'">
+				and to_days(start_time) = to_days(now())
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'week'">
+				and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'month'">
+				and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'season'">
+				and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'year'">
+				and YEAR(start_time)=YEAR(NOW())
+			</if>
+			and del_flag = 0
+		</where>
+
+		group by criminal_type;
+	</select>
+
+
+	<select id="selectTotalByTime" parameterType="com.mkst.umap.app.admin.dto.arraign.ArraignAppointmentTotalDto"
+	        resultType="java.lang.Integer">
+		select count(1) as 'value' from umap_arraign_appointment
+		<where>
+			((DATE_FORMAT(start_time, '%H:%i' ) BETWEEN #{startTimeAxis}
+			AND #{endTimeAxis}))
+			<if test="startTime != null ">
+				and start_time like
+				concat(#{startTime}, '%')
+			</if>
+			<if test="endTime != null ">
+				and end_time like
+				concat(#{endTime}, '%')
+			</if>
+			<if test="criminalName != null  and criminalName != '' ">
+				and criminal_name like
+				CONCAT('%',#{criminalName},'%')
+			</if>
+			<if test="criminalType != null  and criminalType != '' ">
+				and criminal_type = #{criminalType}
+			</if>
+			<if test="criminalBirth != null ">
+				and criminal_birth = #{criminalBirth}
+			</if>
+			<if test="stage != null  and stage != '' ">
+				and stage = #{stage}
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != '' ">
+				and criminal_admit = #{criminalAdmit}
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != '' ">
+				and need_legal_aid = #{needLegalAid}
+			</if>
+			<if test="prosecutorId != null and prosecutorId != ''">
+				and prosecutor_id like CONCAT('%',
+				#{prosecutorId},'%')
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != '' ">
+				and prosecutor_name like
+				CONCAT('%',#{prosecutorName},'%')
+			</if>
+			<if test="status != null  and status != '' ">
+				and status = #{status}
+			</if>
+			<if test="createBy != null  and createBy != '' ">
+				and create_by = #{createBy}
+			</if>
+			<if test="createTime != null ">
+				and create_time = #{createTime}
+			</if>
+			<if test="updateBy != null  and updateBy != '' ">
+				and update_by = #{updateBy}
+			</if>
+			<if test="updateTime != null ">
+				and update_time = #{updateTime}
+			</if>
+			<if test="delFlag != null  and delFlag != '' ">
+				and del_flag = #{delFlag}
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'today'">
+				and to_days(start_time) = to_days(now())
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'week'">
+				and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'month'">
+				and DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'season'">
+				and DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= start_time
+			</if>
+			<if test="totalType != null and totalType != '' and totalType == 'year'">
+				and YEAR(start_time)=YEAR(NOW())
+			</if>
+			and del_flag = 0
+		</where>
+	</select>
+
+	<select id="selectTotalByDay" resultType="integer">
+		select count(1)
+		from umap_arraign_appointment
+		where del_flag = 0
+		  and start_time >= #{startTime}
+		  and start_time &lt;= #{endTime}
+	</select>
+
+	<select id="selectTotal" resultType="integer">
+		select count(1)
+		from umap_arraign_appointment
+		where del_flag = 0
+	</select>
+
+	<select id="analysisList" resultType="com.mkst.umap.app.admin.statistics.AnalysisCountResult">
+		select d1.date `date`, IFNULL(d2.sumappointment, 0) `value`
+		from (
+				     select date
+				     from (select adddate('1970-01-01', t4.i * 10000 + t3.i * 1000 + t2.i * 100 + t1.i * 10 + t0.i) date
+				           from (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+				                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+				                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+				                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+				                (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
+				     where date between #{startDay} and #{endDay}
+				     ) d1
+				     left join
+				     (
+						     select DATE_FORMAT(start_time, '%Y-%m-%d') date, count(1) sumappointment
+						     from umap_arraign_appointment
+						     where del_flag = 0
+							   and start_time >= '${startDay} 00:00:00'
+							   and start_time &lt;= '${endDay} 23:59:59'
+						     GROUP BY date
+						     ) d2 on d1.date = d2.date
+		order by date
+	</select>
+
+	<select id="selectMaxNumOrderByDay" resultType="Integer">
+		select ifnull(max(num_order), 0)
+		from umap_arraign_appointment
+		where TO_DAYS(start_time) = TO_DAYS(#{checkDay})
+		  and status = #{status}
+		  and time_pie = #{timePie}
+	</select>
+
+	<insert id="insertArraignAppointment" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment"
+	        useGeneratedKeys="true" keyProperty="id">
+		insert into umap_arraign_appointment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">
+				id,
+			</if>
+			<if test="roomId != null  ">
+				room_id,
+			</if>
+			<if test="scheduleId != null  ">
+				schedule_id,
+			</if>
+			<if test="startTime != null  ">
+				start_time,
+			</if>
+			<if test="endTime != null  ">
+				end_time,
+			</if>
+			<if test="criminalName != null  and criminalName != ''  ">
+				criminal_name,
+			</if>
+			<if test="criminalType != null  and criminalType != ''  ">
+				criminal_type,
+			</if>
+			<if test="criminalBirth != null  ">
+				criminal_birth,
+			</if>
+			<if test="stage != null  and stage != ''  ">
+				stage,
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != ''  ">
+				criminal_admit,
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != ''  ">
+				need_legal_aid,
+			</if>
+			<if test="prosecutorId != null  ">
+				prosecutor_id,
+			</if>
+			<if test="prosecutorUserId != null  ">
+				prosecutor_user_id,
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != ''  ">
+				prosecutor_name,
+			</if>
+			<if test="status != null  and status != ''  ">
+				status,
+			</if>
+			<if test="createBy != null  and createBy != ''  ">
+				create_by,
+			</if>
+			<if test="createTime != null  ">
+				create_time,
+			</if>
+			<if test="updateBy != null  and updateBy != ''  ">
+				update_by,
+			</if>
+			<if test="updateTime != null  ">
+				update_time,
+			</if>
+			<if test="remark != null  and remark != ''  ">
+				remark,
+			</if>
+			<if test="delFlag != null  and delFlag != ''  ">
+				del_flag,
+			</if>
+			<if test="arraignType != null  and arraignType != ''  ">
+				arraign_type,
+			</if>
+			<if test="numOrder != null  and numOrder != ''  ">
+				num_order,
+			</if>
+			<if test="timePie != null  and timePie != ''  ">
+				time_pie,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">
+				#{id},
+			</if>
+			<if test="roomId != null  ">
+				#{roomId},
+			</if>
+			<if test="scheduleId != null  ">
+				#{scheduleId},
+			</if>
+			<if test="startTime != null  ">
+				#{startTime},
+			</if>
+			<if test="endTime != null  ">
+				#{endTime},
+			</if>
+			<if test="criminalName != null  and criminalName != ''  ">
+				#{criminalName},
+			</if>
+			<if test="criminalType != null  and criminalType != ''  ">
+				#{criminalType},
+			</if>
+			<if test="criminalBirth != null  ">
+				#{criminalBirth},
+			</if>
+			<if test="stage != null  and stage != ''  ">
+				#{stage},
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != ''  ">
+				#{criminalAdmit},
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != ''  ">
+				#{needLegalAid},
+			</if>
+			<if test="prosecutorId != null  ">
+				#{prosecutorId},
+			</if>
+			<if test="prosecutorUserId != null  ">
+				#{prosecutorUserId},
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != ''  ">
+				#{prosecutorName},
+			</if>
+			<if test="status != null  and status != ''  ">
+				#{status},
+			</if>
+			<if test="createBy != null  and createBy != ''  ">
+				#{createBy},
+			</if>
+			<if test="createTime != null  ">
+				#{createTime},
+			</if>
+			<if test="updateBy != null  and updateBy != ''  ">
+				#{updateBy},
+			</if>
+			<if test="updateTime != null  ">
+				#{updateTime},
+			</if>
+			<if test="remark != null  and remark != ''  ">
+				#{remark},
+			</if>
+			<if test="delFlag != null  and delFlag != ''  ">
+				#{delFlag},
+			</if>
+			<if test="arraignType != null  and arraignType != ''  ">
+				#{arraignType},
+			</if>
+			<if test="numOrder != null  and numOrder != ''  ">
+				#{numOrder},
+			</if>
+			<if test="timePie != null  and timePie != ''  ">
+				#{timePie},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateArraignAppointment" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
+		update umap_arraign_appointment
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="roomId != null  ">
+				room_id = #{roomId},
+			</if>
+			<if test="scheduleId != null  ">
+				schedule_id = #{scheduleId},
+			</if>
+			<if test="startTime != null  ">
+				start_time = #{startTime},
+			</if>
+			<if test="endTime != null  ">
+				end_time = #{endTime},
+			</if>
+			<if test="criminalName != null  and criminalName != ''  ">
+				criminal_name = #{criminalName},
+			</if>
+			<if test="criminalType != null  and criminalType != ''  ">
+				criminal_type = #{criminalType},
+			</if>
+			<if test="criminalBirth != null  ">
+				criminal_birth = #{criminalBirth},
+			</if>
+			<if test="stage != null  and stage != ''  ">
+				stage = #{stage},
+			</if>
+			<if test="criminalAdmit != null  and criminalAdmit != ''  ">
+				criminal_admit = #{criminalAdmit},
+			</if>
+			<if test="needLegalAid != null  and needLegalAid != ''  ">
+				need_legal_aid = #{needLegalAid},
+			</if>
+			<if test="prosecutorId != null  ">
+				prosecutor_id = #{prosecutorId},
+			</if>
+			<if test="prosecutorUserId != null  ">
+				prosecutor_user_id = #{prosecutorUserId},
+			</if>
+			<if test="prosecutorName != null  and prosecutorName != ''  ">
+				prosecutor_name = #{prosecutorName},
+			</if>
+			<if test="status != null  and status != ''  ">
+				status = #{status},
+			</if>
+			<if test="createBy != null  and createBy != ''  ">
+				create_by = #{createBy},
+			</if>
+			<if test="createTime != null  ">
+				create_time = #{createTime},
+			</if>
+			<if test="updateBy != null  and updateBy != ''  ">
+				update_by = #{updateBy},
+			</if>
+			<if test="updateTime != null  ">
+				update_time = #{updateTime},
+			</if>
+			<if test="remark != null  and remark != ''  ">
+				remark = #{remark},
+			</if>
+			<if test="delFlag != null  and delFlag != ''  ">
+				del_flag = #{delFlag},
+			</if>
+			<if test="cancelReason != null  and cancelReason != ''  ">
+				cancel_reason = #{cancelReason},
+			</if>
+			<if test="numOrder != null  and numOrder != ''  ">
+				num_order = #{numOrder},
+			</if>
+			<if test="timePie != null  and timePie != ''  ">
+				time_pie = #{timePie},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteArraignAppointmentById" parameterType="Long">
+		delete
+		from umap_arraign_appointment
+		where id = #{id}
+	</delete>
+
+	<delete id="deleteArraignAppointmentByIds" parameterType="String">
+		delete from umap_arraign_appointment where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+
+	<resultMap id="arraignAuditDtoResult" type="com.mkst.umap.app.admin.dto.arraign.ArraignAuditDto">
+		<result property="id" column="id"/>
+		<result property="deptName" column="dept"/>
+		<result property="undertaker" column="undertaker"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="criminalName" column="criminal_name"/>
+		<result property="criminalType" column="criminal_type"/>
+		<result property="criminalBirth" column="criminal_birth"/>
+		<result property="stage" column="stage"/>
+		<result property="criminalAdmit" column="criminal_admit"/>
+		<result property="needLegalAid" column="need_legal_aid"/>
+		<result property="prosecutorName" column="prosecutor_name"/>
+		<result property="status" column="status"/>
+		<result property="roomName" column="room_name"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+
+	<select id="getArraignAuditDtoList" resultMap="arraignAuditDtoResult">
+		<include refid="appointmentDetailVo">
+		</include>
+		<where>
+			<if test="criminalType != null and criminalType != ''">
+				and aa.criminal_type = #{criminalType}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				and aa.room_id = #{roomId}
+			</if>
+			<if test="status != null and status != ''">
+				and aa.status = #{status}
+			</if>
+			<if test="appointmentDate != null">
+				and TO_DAYS(aa.start_time) = TO_DAYS(#{appointmentDate})
+			</if>
+		</where>
+		and aa.del_flag = '0' and u.del_flag = '0'
+	</select>
+
+	<resultMap id="dayCountResultMap" type="com.mkst.umap.app.admin.api.bean.result.NameCountResult">
+		<result column="dayName" property="name"/>
+		<result column="dayCount" property="count"/>
+		<result column="info" property="info"/>
+	</resultMap>
+	<select id="selectDayCount" resultMap="dayCountResultMap"
+	        parameterType="com.mkst.umap.app.admin.api.bean.param.ArraignAppointmentParam">
+		SELECT
+		date_format(a.start_time,'%Y-%m-%d') dayName,
+		COUNT(1) dayCount,
+		'已预约' info
+		FROM
+		umap_arraign_appointment a
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="year != null and year != ''">
+				and YEAR (a.start_time) = #{year}
+			</if>
+			<if test="month != null and month != ''">
+				and MONTH (a.start_time) = #{month}
+			</if>
+			<if test="createBy != null and createBy != '' and prosecutorUserId != null">
+				and (a.create_by = #{createBy}
+				or a.prosecutor_user_id = #{prosecutorUserId})
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+		</trim>
+		GROUP BY
+		TO_DAYS(a.start_time)
+		order by dayName
+	</select>
+
+	<resultMap id="timeApplyResult" type="com.mkst.umap.app.admin.api.bean.result.arraign.TimeApplyResult">
+		<result property="id" column="id"/>
+		<result property="timeCon" column="time_con"/>
+		<result property="nowStatus" column="now_status"/>
+		<result property="roomName" column="room_name"/>
+		<result property="deptName" column="dept_name"/>
+		<result property="auditStatus" column="audit_status"/>
+		<result property="useByName" column="prosecutor_name"/>
+		<result property="numOrder" column="num_order"/>
+		<result property="timePie" column="time_pie"/>
+		<result property="criminalName" column="criminal_name"/>
+		<result property="criminalType" column="criminal_type"/>
+		<result property="stage" column="stage"/>
+		<result property="remark" column="remark"/>
+		<result property="startTime" column="start_time"/>
+	</resultMap>
+	<select id="selectTimeApplyList"
+	        resultMap="timeApplyResult"
+	        parameterType="com.mkst.umap.app.admin.api.bean.param.ArraignAppointmentParam">
+		SELECT CONCAT(DATE_FORMAT(a.start_time, '%H:%i'), '-', DATE_FORMAT(a.end_time, '%H:%i')) AS time_con,
+		a.id as id,
+		a.num_order as num_order,
+		a.time_pie as time_pie,
+		a.status as audit_status,
+		a.prosecutor_name as prosecutor_name,
+		a.criminal_name as criminal_name,
+		a.criminal_type as criminal_type,
+		a.stage as stage,
+		d.dept_name as dept_name,
+		r.`name` as room_name,
+		a.remark,
+		a.start_time
+		FROM umap_arraign_appointment AS a
+		LEFT JOIN umap_arraign_room r ON a.room_id = r.id
+		LEFT JOIN sys_user u ON a.prosecutor_user_id = u.user_id
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		<where>
+			<if test="checkDate != null">
+				AND TO_DAYS(a.start_time) = TO_DAYS(#{checkDate})
+			</if>
+			<if test="nowStatus != null and nowStatus != ''">
+				<if test="nowStatus == '0'.toString()">
+					AND NOW() &lt; a.start_time
+				</if>
+				<if test="nowStatus == '1'.toString()">
+					AND (NOW() &gt;= a.start_time and NOW() &lt; a.end_time)
+				</if>
+				<if test="nowStatus == '2'.toString()">
+					AND NOW() &gt; a.end_time
+				</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="timePie != null and timePie != ''">
+				AND a.time_pie = #{timePie}
+			</if>
+			<if test="passStatus != null and passStatus != ''and passStatus == 2 ">
+				AND a.status != '2'
+			</if>
+			<if test="createBy == null and prosecutorUserId != null">
+				and a.prosecutor_user_id = #{prosecutorUserId})
+			</if>
+			<if test="createBy != null and createBy != '' and prosecutorUserId != null">
+				and (a.create_by = #{createBy}
+				or a.prosecutor_user_id = #{prosecutorUserId})
+			</if>
+		</where>
+		order by a.start_time
+	</select>
+
+	<update id="updateNumOrder">
+		update umap_arraign_appointment
+		set num_order = #{numOrder},
+		    time_pie  = #{timePie}
+		where id = #{id}
+	</update>
+
+	<update id="finish">
+		update umap_arraign_appointment
+		set finish_status = #{finishStatus},
+		    finish_time   = #{finishTime},
+		    finish_by     = #{finishBy}
+		where id = #{id}
+	</update>
+
+	<select id="selectNotFinishAppointment" resultMap="ArraignAppointmentResult">
+		<include refid="selectArraignAppointmentVo"/>
+		where prosecutor_user_id = #{prosecutorUserId} and status = #{status} and finish_status = #{finishStatus} and
+		end_time &lt; #{endDate}
+	</select>
+
+	<resultMap type="com.mkst.mini.systemplus.system.domain.SysUser" id="SysUserResult">
+		<id property="userId" column="user_id"/>
+		<result property="deptId" column="dept_id"/>
+		<result property="loginName" column="login_name"/>
+		<result property="userName" column="user_name"/>
+		<result property="userType" column="user_type"/>
+		<result property="email" column="email"/>
+		<result property="phonenumber" column="phonenumber"/>
+		<result property="sex" column="sex"/>
+		<result property="avatar" column="avatar"/>
+		<result property="password" column="password"/>
+		<result property="salt" column="salt"/>
+		<result property="status" column="status"/>
+		<result property="delFlag" column="del_flag"/>
+		<result property="loginIp" column="login_ip"/>
+		<result property="loginDate" column="login_date"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="resetTime" column="reset_time"/>
+		<association property="dept" column="dept_id" javaType="com.mkst.mini.systemplus.system.domain.SysDept" resultMap="deptResult"/>
+		<association property="userInfo" javaType="com.mkst.mini.systemplus.system.domain.SysUserInfo" resultMap="userInfoResult"/>
+		<collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
+	</resultMap>
+
+	<resultMap id="deptResult" type="com.mkst.mini.systemplus.system.domain.SysDept">
+		<id property="deptId" column="dept_id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="deptName" column="dept_name"/>
+		<result property="orderNum" column="order_num"/>
+		<result property="status" column="dept_status"/>
+	</resultMap>
+
+	<resultMap id="RoleResult" type="com.mkst.mini.systemplus.system.domain.SysRole">
+		<id property="roleId" column="role_id"/>
+		<result property="roleName" column="role_name"/>
+		<result property="roleKey" column="role_key"/>
+		<result property="roleSort" column="role_sort"/>
+		<result property="dataScope" column="data_scope"/>
+		<result property="status" column="role_status"/>
+	</resultMap>
+
+	<resultMap type="com.mkst.mini.systemplus.system.domain.SysUserInfo" id="userInfoResult">
+		<result property="userId" column="user_id"/>
+		<result property="idCard" column="id_card"/>
+		<result property="wxOpenid" column="wx_openid"/>
+		<result property="maOpenid" column="ma_openid"/>
+		<result property="qqOpenid" column="qq_openid"/>
+		<result property="mobileImei" column="mobile_imei"/>
+		<result property="phone" column="phone"/>
+		<result property="imNo" column="im_no"/>
+		<result property="empNo" column="emp_no"/>
+		<result property="extendS1" column="extend_s1"/>
+		<result property="extendS2" column="extend_s2"/>
+		<result property="extendS3" column="extend_s3"/>
+		<result property="extendS4" column="extend_s4"/>
+		<result property="extendS5" column="extend_s5"/>
+		<result property="extendS6" column="extend_s6"/>
+		<result property="extendD1" column="extend_d1"/>
+		<result property="extendD2" column="extend_d2"/>
+		<result property="extendD3" column="extend_d3"/>
+		<result property="extendD4" column="extend_d4"/>
+	</resultMap>
 
     <sql id="selectUserVo">
         select  u.user_id, u.dept_id, u.login_name, u.user_name, u.user_type, u.email, u.phonenumber, u.sex, u.avatar, u.password, u.salt, u.status, u.del_flag, u.login_ip, u.login_date, u.create_time, u.remark, u.reset_time,
@@ -1010,68 +1595,90 @@
        		    r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status,
 				ui.user_id, ui.id_card, ui.wx_openid, ui.ma_openid, ui.qq_openid, ui.mobile_imei, ui.phone, ui.im_no, ui.emp_no, ui.extend_s1, ui.extend_s2, ui.extend_s3, ui.extend_s4, ui.extend_s5, ui.extend_s6, ui.extend_d1, ui.extend_d2, ui.extend_d3, ui.extend_d4
 		from sys_user u
-			 left join sys_dept d on u.dept_id = d.dept_id
-			 left join sys_user_role ur on u.user_id = ur.user_id
-			 left join sys_role r on r.role_id = ur.role_id
-			 left join sys_user_info ui on u.user_id = ui.user_id
-    </sql>
+				     left join sys_dept d on u.dept_id = d.dept_id
+				     left join sys_user_role ur on u.user_id = ur.user_id
+				     left join sys_role r on r.role_id = ur.role_id
+				     left join sys_user_info ui on u.user_id = ui.user_id
+	</sql>
 
-    <select id="selectProsecutorList" parameterType="com.mkst.umap.app.admin.api.bean.param.SelectProcustorParam" resultMap="SysUserResult">
-        <include refid="selectUserVo"/>
-        WHERE u.del_flag = '0'
-        and u.user_id in (
-            select DISTINCT prosecutor_user_id
-            from umap_arraign_appointment
-            <where>
-                <if test="createBy != null and createBy != '' and prosecutorUserId != null">AND (create_by = #{createBy} or prosecutor_user_id = #{prosecutorUserId})</if>
-                <if test="checkDate != null">AND TO_DAYS(start_time) = TO_DAYS(#{checkDate})</if>
-                <if test="limitDate != null">AND start_time > #{limitDate}</if>
-            </where>
-        )
-    </select>
+	<select id="selectProsecutorList" parameterType="com.mkst.umap.app.admin.api.bean.param.SelectProcustorParam"
+	        resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		WHERE u.del_flag = '0'
+		and u.user_id in (
+		select DISTINCT prosecutor_user_id
+		from umap_arraign_appointment
+		<where>
+			<if test="createBy != null and createBy != '' and prosecutorUserId != null">
+				AND (create_by = #{createBy} or
+				prosecutor_user_id = #{prosecutorUserId})
+			</if>
+			<if test="checkDate != null">
+				AND TO_DAYS(start_time) = TO_DAYS(#{checkDate})
+			</if>
+			<if test="limitDate != null">
+				AND start_time > #{limitDate}
+			</if>
+		</where>
+		)
+	</select>
 
-    <update id="modifyFinishStatus">
-        update umap_arraign_appointment set finish_status = '1'
-        where id in
-          (
-              select id from
-                  (
-                      select id from umap_arraign_appointment where status = '1' and end_time &lt; NOW()
-                  ) temp
-          )
-    </update>
+	<update id="modifyFinishStatus">
+		update umap_arraign_appointment
+		set finish_status = '1'
+		where id in
+		      (
+				      select id
+				      from (
+						           select id from umap_arraign_appointment where status = '1' and end_time &lt; NOW()
+						           ) temp
+				      )
+	</update>
 
-    <select id="selectDayShift" parameterType="com.mkst.umap.app.admin.domain.ArraignShift" resultType="com.mkst.umap.app.admin.domain.ArraignShift">
-        select id, apply_time_pie as applyTimePie, apply_num_order as applyNumOrder,
-        target_time_pie as targetTimePie, target_num_order as targetNumOrder,
-        apply_arraign_appointment_id as applyArraignAppointmentId, target_arraign_appointment_id as targetArraignAppointmentId
-        from umap_arraign_shift where apply_source_date = #{applySourceDate} and status = '1' order by id
-    </select>
+	<select id="selectDayShift" parameterType="com.mkst.umap.app.admin.domain.ArraignShift"
+	        resultType="com.mkst.umap.app.admin.domain.ArraignShift">
+		select id,
+		       apply_time_pie                as applyTimePie,
+		       apply_num_order               as applyNumOrder,
+		       target_time_pie               as targetTimePie,
+		       target_num_order              as targetNumOrder,
+		       apply_arraign_appointment_id  as applyArraignAppointmentId,
+		       target_arraign_appointment_id as targetArraignAppointmentId
+		from umap_arraign_shift
+		where apply_source_date = #{applySourceDate}
+		  and status = '1'
+		order by id
+	</select>
 
-    <select id="selectAppoint" resultType="com.mkst.umap.app.admin.domain.ArraignAppointment" parameterType="long">
-        select id, schedule_id as scheduleId, start_time as startTime, end_time as endTime
-        from umap_arraign_appointment
-        where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </select>
+	<select id="selectAppoint" resultType="com.mkst.umap.app.admin.domain.ArraignAppointment" parameterType="long">
+		select id, schedule_id as scheduleId, start_time as startTime, end_time as endTime
+		from umap_arraign_appointment
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
 
-    <update id="changeTime" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
-        update umap_arraign_appointment
-        set start_time = #{startTime}, end_time = #{endTime}
-        where id = #{id}
-    </update>
+	<update id="changeTime" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
+		update umap_arraign_appointment
+		set start_time = #{startTime},
+		    end_time   = #{endTime}
+		where id = #{id}
+	</update>
 
-    <update id="changeRoomTime" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomSchedule">
-        update umap_arraign_room_schedule
-        set start_time = #{startTime}, end_time = #{endTime}
-        where id = #{id}
-    </update>
+	<update id="changeRoomTime" parameterType="com.mkst.umap.app.admin.domain.ArraignRoomSchedule">
+		update umap_arraign_room_schedule
+		set start_time = #{startTime},
+		    end_time   = #{endTime}
+		where id = #{id}
+	</update>
 
-    <select id="isArraign" resultType="int" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
-        select count(1) from umap_arraign_appointment
-        where start_time = #{startTime} and del_flag = '0' and status != '4' and status != '2'
-    </select>
-
+	<select id="isArraign" resultType="int" parameterType="com.mkst.umap.app.admin.domain.ArraignAppointment">
+		select count(1)
+		from umap_arraign_appointment
+		where start_time = #{startTime}
+		  and del_flag = '0'
+		  and status != '4'
+		  and status != '2'
+	</select>
 </mapper>

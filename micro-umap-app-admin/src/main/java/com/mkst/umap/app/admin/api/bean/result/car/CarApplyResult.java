@@ -29,4 +29,6 @@ public class CarApplyResult {
     private MapLocation startPoint;
 
     private MapLocation endPoint;
+    /** 接单状态 1待处理 2已完成 3已报销 */
+    private Integer driverStatus;
 }

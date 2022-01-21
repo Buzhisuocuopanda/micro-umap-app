@@ -413,13 +413,13 @@ public class CarManageApi extends BaseApi {
 				users.forEach(u -> {
 					CarApplyServiceImpl.sendAppMsg(u.getLoginName(), carApply.getCarApplyId(), "公车预约", "车辆 " + carInfoService.selectCarInfoById(carApply.getCarId()).getLicensePlateNumber() + " 已归库");
 				});
-				return ResultGenerator.genSuccessResult("完单成功");
+				return ResultGenerator.genSuccessResult("本次行程结束成功。");
 			} else {
-				return ResultGenerator.genFailResult("完单失败，请联系管理员或稍后重试！");
+				return ResultGenerator.genFailResult("行程结束失败，请联系管理员或稍后重试！");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResultGenerator.genFailResult("查询失败，请联系管理员或稍后重试！");
+			return ResultGenerator.genFailResult("系统错误，请联系管理员或稍后重试！");
 		}
 	}
 

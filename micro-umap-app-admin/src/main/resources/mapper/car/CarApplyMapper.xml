@@ -57,6 +57,7 @@
         <result property="licensePlateNumber" column="license_plate_number"/>
         <result property="createTime" column="create_time"/>
         <result property="approvalUserId" column="approval_user_id"/>
+        <result property="driverStatus" column="driver_status"/>
     </resultMap>
 
     <resultMap type="com.mkst.umap.app.admin.dto.carApply.CarApplyInfoDto" id="CarApplyInfoDtoResult">
@@ -106,7 +107,8 @@
                apply_status,
                approval_user_id,
                fee_type,
-               fee_total
+               fee_total,
+               driver_status
         from umap_car_apply
     </sql>
 
@@ -359,7 +361,8 @@
                c.license_plate_number,
                a.progress,
                a.approval_user_id,
-               d.user_name as driver_name
+               d.user_name as driver_name,
+               a.driver_status
         FROM umap_car_apply a
                  left join sys_user u on a.user_id = u.user_id
                  left join sys_user d on a.driver_id = d.user_id

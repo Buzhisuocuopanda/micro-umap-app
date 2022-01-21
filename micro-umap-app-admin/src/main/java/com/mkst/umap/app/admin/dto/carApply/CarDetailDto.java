@@ -90,4 +90,6 @@ public class CarDetailDto extends BaseEntity {
      * 司机号码
      */
     private String driverPhoneNumber;
+    /** 接单状态 1待处理 2已完成 3已报销 */
+    private Integer driverStatus;
 }

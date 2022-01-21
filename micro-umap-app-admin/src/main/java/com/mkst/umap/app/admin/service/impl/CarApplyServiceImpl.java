@@ -157,6 +157,7 @@ public class CarApplyServiceImpl implements ICarApplyService {
 			result.setStartTime(c.getStartTime());
 			result.setApproveId(c.getApprovalUserId());
 			result.setCarApplyId(c.getCarApplyId());
+			result.setDriverStatus(c.getDriverStatus());
 			resultList.add(result);
 		}
 		return resultList;
