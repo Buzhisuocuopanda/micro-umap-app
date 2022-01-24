@@ -407,6 +407,7 @@ public class CarManageApi extends BaseApi {
 		try {
 			CarApply carApply = carApplyService.selectCarApplyById(applyId);
 			carApply.setDriverStatus(DriverStatusEnum.DRIVER_COMPLETE.getValue());
+			carApply.setApproveStatus("6");
 			int row = carApplyService.updateCarApply(carApply);
 			if (row > 0) {
 				List<SysUser> users = sysUserService.selectUserLitByRoleKey("clgly");
