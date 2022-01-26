@@ -130,7 +130,7 @@ public class CarManageApi extends BaseApi {
 		eventAuditRecord.setUpdateBy(sysUser.getLoginName());
 		eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
 
-		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击进入查看", "您有新的公务车预约申请待审批");
+		CarApplyServiceImpl.sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击查看", "您有新的公务车预约申请待审批");
 		return row > 0 ? ResultGenerator.genSuccessResult("新增车辆申请成功") : ResultGenerator.genFailResult("新增车辆申请失败，请联系管理员或稍后重试！");
 	}
 
@@ -412,7 +412,7 @@ public class CarManageApi extends BaseApi {
 			if (row > 0) {
 				List<SysUser> users = sysUserService.selectUserLitByRoleKey("clgly");
 				users.forEach(u -> {
-					CarApplyServiceImpl.sendAppMsg(u.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击进入查看", "车辆 " + carInfoService.selectCarInfoById(carApply.getCarId()).getLicensePlateNumber() + " 已归库");
+					CarApplyServiceImpl.sendAppMsg(u.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击查看", "车辆 " + carInfoService.selectCarInfoById(carApply.getCarId()).getLicensePlateNumber() + " 已归库");
 				});
 				return ResultGenerator.genSuccessResult("本次行程结束成功");
 			} else {

@@ -284,7 +284,7 @@ public class CarApplyServiceImpl implements ICarApplyService {
 		if (StringUtils.equals(KeyConstant.EVENT_AUDIT_STATUS_FAIL, param.getAuditStatus().toString())) {
 			//审核结果是驳回
 			carApply.setApproveStatus(param.getAuditStatus().toString());
-			sendAppMsg(user.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击进入查看", "您的公务车预约申请被拒绝，进入APP查看拒绝原因");
+			sendAppMsg(user.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击查看", "您的公务车预约申请被拒绝，进入APP查看拒绝原因");
 			return carApplyMapper.updateCarApply(carApply);
 		}
 
@@ -312,7 +312,7 @@ public class CarApplyServiceImpl implements ICarApplyService {
 			eventAuditRecordService.insertEventAuditRecord(eventAuditRecord);
 
 			//给下一级审批人发送APP消息提醒审批
-			sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击进入查看", "您有新的公务车预约申请待审批!");
+			sendAppMsg(sysUser.getLoginName(), carApply.getCarApplyId(), "您有一条新的公车预约消息，点击查看", "您有新的公务车预约申请待审批!");
 		} else {
 			// 最后一步
 			CarApply select = new CarApply();
@@ -352,7 +352,7 @@ public class CarApplyServiceImpl implements ICarApplyService {
 		         */
 
 				//通知申请人车辆申请已通过
-				sendAppMsg(sysUserService.selectUserById(carApply.getUserId()).getLoginName(),carApply.getCarApplyId(),"您有一条新的公车预约消息，点击进入查看","您的公务车预约已通过，进入APP查看车辆信息。");
+				sendAppMsg(sysUserService.selectUserById(carApply.getUserId()).getLoginName(),carApply.getCarApplyId(),"您有一条新的公车预约消息，点击查看","您的公务车预约已通过，进入APP查看车辆信息。");
 
 				//通知司机有新的出车任务
 				SysUser driver = sysUserService.selectUserById(param.getDriverId());
