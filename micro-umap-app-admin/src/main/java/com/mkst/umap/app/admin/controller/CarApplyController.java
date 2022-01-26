@@ -143,11 +143,14 @@ public class CarApplyController extends BaseController {
 
 	@GetMapping("/detail/{id}")
 	public String detail(@PathVariable("id") Long id, ModelMap mmap) {
+		CarApply apply = carApplyService.selectCarApplyById(id);
+
 		AuditRecord auditRecord = new AuditRecord();
 		auditRecord.setApplyId(id);
-		auditRecord.setApplyType(ApproveTypeEnum.APPROVE_CAR_EXTRA.getValue());
+		String approveType = apply.getNeedExtraApproval() ? ApproveTypeEnum.APPROVE_CAR_EXTRA.getValue() : ApproveTypeEnum.APPROVE_CAR_SIMPLE.getValue();
+		auditRecord.setApplyType(approveType);
 		//List<AuditRecord> auditRecords = auditRecordService.selectAuditRecordList(auditRecord);
-		List<EventAuditRecord> eventAuditRecords = carApplyService.selectAuditList(ApproveTypeEnum.APPROVE_CAR_EXTRA.getValue(),id);
+		List<EventAuditRecord> eventAuditRecords = carApplyService.selectAuditList(approveType,id);
 		mmap.put("auditRecords", eventAuditRecords);
 		return prefix + "/auditRecord";
 	}

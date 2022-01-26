@@ -33,10 +33,10 @@
             <!--/*@thymesVar id="auditRecords" type="com.mkst.umap.app.admin.domain.AuditRecord"*/-->
             <tr th:each="audit:${auditRecords}">
                 <!--<td th:text="${@sysUserServiceImpl.selectUserByLoginName(audit.createBy).getUserName()}"/>-->
-                <td th:text="${audit.approvalUserName}"/>
-                <td th:text="${@dict.getLabel('event_audit_status',audit.status)}"/>
-                <td th:text="${#dates.format(audit.updateTime, 'yyyy-MM-dd HH:mm:ss')}"/>
-                <td th:text="${audit.reason}"/>
+                <td th:text="*{audit.approvalUserName}"></td>
+                <td th:text="*{@dict.getLabel('event_audit_status',audit.status)}"></td>
+                <td th:text="*{#dates.format(audit.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="*{audit.reason}"></td>
             </tr>
             </tbody>
         </table>
