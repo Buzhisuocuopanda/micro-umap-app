@@ -41,7 +41,8 @@ public enum BusinessTypeEnum {
     UMAP_MAIL_OPINION_CPPCC("政协委员意见","umap_mail_opinion_cppcc"),
     UMAP_MAIL_OPINION_INSPECTORS("人大代表意见","umap_mail_opinion_inspectors"),
     UMAP_MAIL_NOPUBLIC_LEGAL_ADVICE("非公经济-法律咨询","umap_mail_nopublic_legal_advice"),
-    UMAP_REPAST_APPOINTMENT("就餐预约","umap_Repast_appointment");
+    UMAP_REPAST_APPOINTMENT("就餐预约","umap_Repast_appointment"),
+    UMAP_LEGAL_AUDIT("法律意见审核", "umap_legal_audit");
 
     private String type;
     private String value;
