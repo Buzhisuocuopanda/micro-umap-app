@@ -151,7 +151,8 @@
         u.update_time,
         u.start_time,
         u.end_time,
-        s.user_name
+        s.user_name,
+        u.need_extra_approval
         FROM
         wf_event_audit_record r
         LEFT JOIN
