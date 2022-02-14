@@ -36,7 +36,6 @@ public class MessageApi extends BaseApi {
     @PostMapping("/sendAppMsg")
     @ApiOperation("发送即时通知")
     @ResponseBody
-    @Login
     public AjaxResult sendMessage(MessageApi.MsgContent content) {
         try {
             Map<String, String> params = new HashMap<>();
