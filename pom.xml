@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mkst.umap</groupId>
 	<artifactId>micro-umap-app</artifactId>
-	<version>1.0</version>
+	<version>2.0</version>
 	<packaging>pom</packaging>
 
 	<description>智慧检务统一移动应用平台.</description>
@@ -27,7 +27,7 @@
 		<java.version>1.8</java.version>
 		
 		<micro-systemplus.version>3.5</micro-systemplus.version>
-		<micro-umap.version>1.0</micro-umap.version>
+		<micro-umap.version>2.0</micro-umap.version>
 		<spring-boot.version>2.3.0.RELEASE</spring-boot.version>
 		<fastjson.version>1.2.74</fastjson.version>
 		<com-google-zxing.version>3.4.0</com-google-zxing.version>
