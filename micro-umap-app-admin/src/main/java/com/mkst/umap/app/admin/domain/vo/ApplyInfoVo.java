@@ -24,6 +24,7 @@ public class ApplyInfoVo
 	private Long applyId;
 	/** 申请人 */
 	private String applicant;
+	private String applicantSex;
 	/** 部门名 */
 	private String deptName;
 	/** 申请类型 */

@@ -1,13 +1,15 @@
 package com.mkst.umap.app.admin.mapper;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
+import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
 import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-import java.util.Map;
+import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
 
 /**
  * 备勤间申请 数据层
@@ -86,8 +88,10 @@ public interface ApplyInfoMapper
 
 	List<ApplyInfoDto> selectApplyInfoByStatus(ApplyInfo applyInfo);
 
-	List selectDayCount(BackUpParam param);
+	List<NameCountResult> selectDayCount(BackUpParam param);
 
 	List<ApplyInfo> selectApplyInfoListByMap(Map<String , Object> params);
+	
+	List<ApplyNumberDto> countGroupbyRoomIdByTime(Date startTime);
 	
 }

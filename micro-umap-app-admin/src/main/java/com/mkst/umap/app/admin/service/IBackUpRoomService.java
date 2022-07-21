@@ -1,9 +1,10 @@
 package com.mkst.umap.app.admin.service;
 
+import java.util.List;
+
 import com.mkst.umap.app.admin.domain.BackUpRoom;
 import com.mkst.umap.app.admin.dto.apply.BackUpRoomDto;
-
-import java.util.List;
+import com.mkst.umap.app.admin.dto.apply.DoorLockDeviceDto;
 
 /**
  * 备勤间 服务层
@@ -82,5 +83,12 @@ public interface IBackUpRoomService
 	 * @return 结果
 	 */
 	public String checkRoomNumUnique(String roomNum);
+	/**
+	 * 从设备管理系统获取门锁列表
+	 *
+	 * @param 已绑定ID
+	 * @return 结果
+	 */
+	public List<DoorLockDeviceDto> listDoorLock(String selectedId);
 	
 }

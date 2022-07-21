@@ -24,6 +24,10 @@ public class ApplyInfoDto {
     /** 申请人id */
     @ApiModelProperty(value = "申请人id")
     private Long applicantId;
+    @ApiModelProperty(value = "申请人姓名")
+    private String applicant;
+    @ApiModelProperty(value = "申请人性别")
+	private String applicantSex;
 
     /** 房间id */
     @ApiModelProperty(value = "房间id")

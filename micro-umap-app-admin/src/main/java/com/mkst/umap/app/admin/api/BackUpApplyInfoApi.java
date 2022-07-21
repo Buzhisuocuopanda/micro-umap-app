@@ -1,49 +1,72 @@
 package com.mkst.umap.app.admin.api;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSON;
 import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
 import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
-import com.mkst.mini.systemplus.common.utils.DateUtils;
+import com.mkst.mini.systemplus.common.util.DictUtils;
+import com.mkst.mini.systemplus.system.domain.SysDictData;
 import com.mkst.mini.systemplus.system.domain.SysRole;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.mapper.SysRoleMapper;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
+import com.mkst.mini.systemplus.util.SysConfigUtil;
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
-import com.mkst.umap.app.admin.api.bean.param.meeting.MeetingParam;
 import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
-import com.mkst.umap.app.admin.api.bean.result.car.AuditParam;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.AuditRecord;
-import com.mkst.umap.app.admin.domain.BackUpGuest;
 import com.mkst.umap.app.admin.domain.BackUpRoom;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
-import com.mkst.umap.app.admin.domain.vo.BackUpGuestVo;
 import com.mkst.umap.app.admin.domain.vo.BackUpRoomVo;
 import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
+import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
 import com.mkst.umap.app.admin.dto.apply.BackUpRoomDto;
+import com.mkst.umap.app.admin.dto.apply.DoorLockDeviceDto;
 import com.mkst.umap.app.admin.service.IApplyInfoService;
 import com.mkst.umap.app.admin.service.IAuditRecordService;
 import com.mkst.umap.app.admin.service.IBackUpGuestService;
 import com.mkst.umap.app.admin.service.IBackUpRoomService;
 import com.mkst.umap.app.admin.util.MyDateUtil;
-import com.mkst.umap.app.common.enums.*;
+import com.mkst.umap.app.admin.util.WebcardApiUtil;
+import com.mkst.umap.app.common.enums.ApplyStatusEnum;
+import com.mkst.umap.app.common.enums.ApproveStatusEnum;
+import com.mkst.umap.app.common.enums.AuditRecordTypeEnum;
+import com.mkst.umap.app.common.enums.BusinessTypeEnum;
+import com.mkst.umap.app.common.enums.RoleKeyEnum;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @ClassName ApplyInfoApi
@@ -150,9 +173,32 @@ public class BackUpApplyInfoApi extends BaseApi {
         }*/
     }
 
+    @GetMapping("/lockDetail")
+    @ApiOperation("备勤间蓝牙锁详情")
+    @ResponseBody
+    public Result lockDetail(Integer roomId) {
+        // 获取锁设备ID
+        BackUpRoom backUpRoom = backUpRoomService.selectBackUpRoomById(roomId);
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", backUpRoom.getDoorLockId());
+
+        String url = "/api/device/getDeviceDetail";
+		String responseData = WebcardApiUtil.sendPost(url, paramMap);
+		DoorLockDeviceDto doorLock = JSON.parseObject(responseData, DoorLockDeviceDto.class);
+        if(doorLock == null){
+            return ResultGenerator.genFailResult("备勤间尚未关联门锁，请联系管理员。");
+        }
+        return ResultGenerator.genSuccessResult(doorLock);
+    }
+    
+    public static void main(String[] args) {
+		System.out.println(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+	}
+    
+    @Login
     @ApiOperation("新增申请")
     @PostMapping("/addSave")
-    @Login
+    @Transactional(rollbackFor = Exception.class)
     public Result addSave(HttpServletRequest request,@RequestBody  @ApiParam(name = "applyInfoDto", value = "申请表数据传递对象", required = true) ApplyInfoDto applyInfoDto)
     {
         ApplyInfo applyInfo = new ApplyInfo();
@@ -163,10 +209,27 @@ public class BackUpApplyInfoApi extends BaseApi {
         //applyInfo.setApplicantId(getUserId(request));
         applyInfo.setCreateBy(getLoginName(request));
         applyInfo.setApplyStatus(ApplyStatusEnum.Pending.getValue());
-        applyInfo.setApproveStatus(0);
+        applyInfo.setApproveStatus(ApproveStatusEnum.Pending.getValue());
         //int rows = applyInfoService.insertApplyInfoWithGuests(applyInfo);
 
+        
+        // step 1 判断预约时间是否超过晚上10点，如果10以后系统自动审批通过
+        int auditTime = Integer.valueOf(SysConfigUtil.getKey("umap_backupRoom_auditTime"));
+        if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) > auditTime) {
+        	applyInfo.setApplyStatus(ApplyStatusEnum.Approval.getValue());
+            applyInfo.setApproveStatus(ApproveStatusEnum.SUCCESS.getValue());
+        }
+        // step 2 锁定房间，房间锁定规则：双人间→三人间→单人间，需要避免有房间经常轮空的情况
+        BackUpRoom room = allotRoom(applyInfo.getStartTime());
+        if(room == null) {
+        	return ResultGenerator.genFailResult("房间已全部约满");
+        }
+        applyInfo.setRoomId(room.getRoomId());
         int rows = applyInfoService.insertApply(applyInfo);
+        
+        room.setUseCount(room.getUseCount()+1); // 使用次数+1
+        backUpRoomService.updateBackUpRoom(room);
+        // step 3 通知备勤间管理员审批
 
         // 推送app内部消息
         if (rows > 0){
@@ -178,6 +241,75 @@ public class BackUpApplyInfoApi extends BaseApi {
         return rows>0 ? ResultGenerator.genSuccessResult("提交申请成功！") : ResultGenerator.genFailResult("提交申请失败，请联系管理员");
     }
 
+    
+	/**
+	 * <p>分配房间
+	 * 
+	 * <p>房间锁定规则：双人间→三人间→单人间，需要避免有房间经常轮空的情况
+	 */
+	private BackUpRoom allotRoom(Date date) {
+		// 所有房间
+		List<BackUpRoom> allRoomList = backUpRoomService.selectBackUpRoomList(new BackUpRoom());
+		//根据房间类型来分组
+		Map<String, List<BackUpRoom>> roomGroup = new HashMap<String, List<BackUpRoom>>();
+		List<BackUpRoom> roomGroupList = null;
+		for (BackUpRoom backUpRoom : allRoomList) {
+			// roomType值应遵循规则，1：单人间，2：双人间，3：三人间，以此类推
+			String roomType = backUpRoom.getRoomType().toString();
+			if(roomGroup.containsKey(roomType)) {
+				roomGroupList = roomGroup.get(roomType);
+				roomGroupList.add(backUpRoom);
+			}else {
+				roomGroupList = new ArrayList<BackUpRoom>();
+				roomGroupList.add(backUpRoom);
+				roomGroup.put(roomType, roomGroupList);
+			}
+		}
+		
+		// 该时间每个房间的预约人数
+		List<ApplyNumberDto> applyInfoList = applyInfoService.countGroupbyRoomIdByTime(date);
+		Map<String, Integer> applyMap = new HashMap<String, Integer>();
+		for (ApplyNumberDto map : applyInfoList) {
+			applyMap.put(map.getRoomId(), map.getApplyNumber());
+		}
+		
+		// 根据房间类型数组来遍历（排序需要遵循规则：双人间、三人间、N人间、最后单人间）
+		List<SysDictData> listDictData = DictUtils.getDictCache("back_up_room_type");
+		for (SysDictData sysDictData : listDictData) {
+			// 几人间
+			Integer roomType = Integer.valueOf(sysDictData.getDictValue());
+			roomGroupList = roomGroup.get(sysDictData.getDictValue());
+			if(roomGroupList == null) {
+				continue;
+			}
+			// 优先分配已住人，但未住满的房间，如果不存在没住满的房间，则优先安排入住次数最少的同类型房间
+			for (BackUpRoom backUpRoom : roomGroupList) {
+				// 该房间已约人数
+				Integer applyNumber = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
+				// 如果该房间未约满，则分配这个房间
+				if(applyNumber != null && applyNumber.intValue() < roomType.intValue()) {
+					return backUpRoom;
+				}
+			}
+			// 按入住次数升序排列
+			Collections.sort(roomGroupList, new Comparator<BackUpRoom>() {
+				@Override
+				public int compare(BackUpRoom o1, BackUpRoom o2) {
+					return o1.getUseCount() - o2.getUseCount();
+				}
+			});
+			for (BackUpRoom backUpRoom : roomGroupList) {
+				// 该房间已约人数
+				Integer applyNumber = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
+				// 排除已预约的房间
+				if(applyNumber == null) {
+					return backUpRoom;
+				}
+			}
+		}
+		
+		return null;
+	}
 
     // todo 信息有待完善
     private void sendAppMsg(Long id) {

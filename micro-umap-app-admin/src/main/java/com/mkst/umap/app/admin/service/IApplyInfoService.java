@@ -1,15 +1,17 @@
 package com.mkst.umap.app.admin.service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.ui.ModelMap;
+
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
-import com.mkst.umap.app.admin.api.bean.param.meeting.MeetingParam;
 import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
 import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
-import org.springframework.ui.ModelMap;
-
-import java.util.List;
-import java.util.Map;
+import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
 
 /**
  * 备勤间申请 服务层
@@ -107,5 +109,7 @@ public interface IApplyInfoService
 	List<NameCountResult> selectDayCount(BackUpParam param);
 
 	List<ApplyInfo> selectApplyInfoListByMap(Map<String , Object> params );
+	
+	List<ApplyNumberDto> countGroupbyRoomIdByTime(Date startTime);
 
 }

@@ -25,6 +25,11 @@ public class BackUpRoom extends BaseEntity
 	/** 删除标识 */
 	private String delFlag;
 
+	/**
+	 * 门锁设备ID
+	 */
+	private String doorLockId;
+	private Integer useCount;
 
 	public void setRoomId(Long roomId)
 	{
@@ -63,6 +68,22 @@ public class BackUpRoom extends BaseEntity
 		return delFlag;
 	}
 
+	public String getDoorLockId() {
+		return doorLockId;
+	}
+
+	public void setDoorLockId(String doorLockId) {
+		this.doorLockId = doorLockId;
+	}
+
+	public Integer getUseCount() {
+		return useCount;
+	}
+
+	public void setUseCount(Integer useCount) {
+		this.useCount = useCount;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -75,6 +96,7 @@ public class BackUpRoom extends BaseEntity
 				.append("updateTime", getUpdateTime())
 				.append("delFlag", getDelFlag())
 				.append("remark", getRemark())
+				.append("doorLockId", getDoorLockId())
 				.toString();
 	}
 

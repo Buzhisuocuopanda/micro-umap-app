@@ -9,10 +9,8 @@ systemplus:
   # 获取ip地址开关
   addressEnabled: false
   # 文件上传路径
-#profile: D:\profile\umap\files\ #开发环境
+  #profile: D:\profile\umap\files\ #开发环境
   profile: /data/umap/ #测试环境
-#profile: /resources/umap/ #生产环境
-  #profile: E:\resources\umap\ #生产环境windows
   # 开启初始化模块表和扫描api并存储到数据库
   initialize:
     tables: false
@@ -237,10 +235,10 @@ userSync:
   #webcase: jdbc:mysql://127.0.0.1:3306/micro-webcase?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
   #webcard: jdbc:mysql://127.0.0.1:3306/micro-webcard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
   #mini: jdbc:mysql://10.148.28.28:3306/mycostern_zhlj_service?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
-  im: jdbc:mysql://192.168.1.26:3306/micro-im?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
-  webcase: jdbc:mysql://192.168.1.26:3306/micro-webcase?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
-  webcard: jdbc:mysql://192.168.1.26:3306/micro-webcard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
-  mini: jdbc:mysql://192.168.1.26:3306/mycostern_zhlj_service?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+  im: jdbc:mysql://192.168.1.27:3306/micro-im?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  webcase: jdbc:mysql://192.168.1.27:3306/micro-webcase?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  webcard: jdbc:mysql://192.168.1.27:3306/micro-webcard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
+  mini: jdbc:mysql://192.168.1.27:3306/mycostern_zhlj_service?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
 
 
 #密钥通过com.mkst.mini.systemplus.util.RsaCastle 生成

@@ -22,6 +22,7 @@
         <result property="remark" column="remark"/>
         <result property="deptName" column="dept_name"/>
         <result property="applicant" column="applicant"/>
+        <result property="applicantSex" column="applicant_sex"/>
         <result property="roomNum" column="room_num"/>
         <result property="progress" column="progress"/>
         <result property="approvalUserId" column="approval_user_id"/>
@@ -55,7 +56,8 @@
         a.standard_room_num ,
         d.dept_name,
         r.room_num,
-        u2.user_name as applicant
+        u2.user_name as applicant,
+        u2.sex as applicant_sex
         from umap_apply_info a
         left join sys_user u2 on a.applicant_id = u2.user_id
         left join sys_dept d on a.dept_id = d.dept_id
@@ -65,7 +67,7 @@
 
     <sql id="selectApplyVo">
         select a.apply_id, a.apply_type, a.apply_reason, a.start_time, a.end_time, a.apply_status, a.create_time,
-               u2.user_name as applicant,a.approve_status,
+               u2.user_name as applicant, u2.sex as applicantSex,a.approve_status,
                d.dept_name,
                r.room_num
         from umap_apply_info a
@@ -130,6 +132,16 @@
             <if test="remark != null  and remark != '' ">and a.remark = #{remark}</if>
         </where>
         order by a.apply_status,a.create_time desc
+    </select>
+    
+    <!-- 查询指定日期各房间的申请人数 -->
+    <select id="countGroupbyRoomIdByTime" resultType="com.mkst.umap.app.admin.dto.apply.ApplyNumberDto">
+        select a.room_id as 'roomId', count(1) as 'applyNumber'
+        from umap_apply_info a
+        <where>
+            a.del_flag = '0' and a.apply_status in (0, 1) and a.start_time = #{startTime}
+        </where>
+        group by a.room_id
     </select>
 
 

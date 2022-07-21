@@ -69,8 +69,9 @@ public class BackUpRoomController extends BaseController
 	 * 新增备勤间
 	 */
 	@GetMapping("/add")
-	public String add()
+	public String add(ModelMap mmap)
 	{
+		mmap.put("listDoorLock", backUpRoomService.listDoorLock(null));
 	    return prefix + "/add";
 	}
 	
@@ -94,6 +95,7 @@ public class BackUpRoomController extends BaseController
 	{
 		BackUpRoom backUpRoom = backUpRoomService.selectBackUpRoomById(roomId);
 		mmap.put("backUpRoom", backUpRoom);
+		mmap.put("listDoorLock", backUpRoomService.listDoorLock(backUpRoom.getDoorLockId()));
 	    return prefix + "/edit";
 	}
 	
@@ -129,6 +131,16 @@ public class BackUpRoomController extends BaseController
 	public String checkRoomNumUnique(BackUpRoom backUpRoom)
 	{
 		return backUpRoomService.checkRoomNumUnique(backUpRoom.getRoomNum());
+	}
+	
+	/**
+	 * 从设备管理系统获取门锁列表
+	 */
+	@PostMapping("/listDoorLock")
+	@ResponseBody
+	public AjaxResult listDoorLock()
+	{
+		return AjaxResult.success(backUpRoomService.listDoorLock(null));
 	}
 	
 }

@@ -47,6 +47,7 @@ public class ApplyInfo extends BaseEntity
 	private String deptName;
 
 	private String applicant;
+	private String applicantSex;
 
 	/** 使用人 */
 	private List<BackUpGuest> backUpGuests;

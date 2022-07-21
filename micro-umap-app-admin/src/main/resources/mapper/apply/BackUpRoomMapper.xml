@@ -15,10 +15,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="del_flag"    />
         <result property="remark"    column="remark"    />
+        <result property="doorLockId"    column="door_lock_id"    />
+        <result property="useCount"    column="use_count"    />
     </resultMap>
 	
 	<sql id="selectBackUpRoomVo">
-        select room_id, room_num, room_type, status, create_by, create_time, update_by, update_time, del_flag, remark from umap_back_up_room
+        select room_id, room_num, room_type, status, create_by, create_time, update_by, update_time, del_flag, remark, door_lock_id, use_count from umap_back_up_room
     </sql>
 	
     <select id="selectBackUpRoomList" parameterType="BackUpRoom" resultMap="BackUpRoomResult">
@@ -34,7 +36,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
              <if test="updateTime != null "> and update_time = #{updateTime}</if>
              <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="doorLockId != null  and doorLockId != '' "> and door_lock_id = #{doorLockId}</if>
+             <if test="useCount != null  and useCount != '' "> and use_count = #{useCount}</if>
          </where>
+         order by room_type
     </select>
     
     <select id="selectBackUpRoomById" parameterType="Integer" resultMap="BackUpRoomResult">
@@ -74,6 +79,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="updateTime != null  ">update_time,</if>
 			<if test="delFlag != null  and delFlag != ''  ">del_flag,</if>
 			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="doorLockId != null  and doorLockId != ''  ">door_lock_id,</if>
+			<if test="useCount != null  and useCount != ''  ">use_count,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="roomId != null  ">#{roomId},</if>
@@ -86,6 +93,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="updateTime != null  ">#{updateTime},</if>
 			<if test="delFlag != null  and delFlag != ''  ">#{delFlag},</if>
 			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="doorLockId != null  and doorLockId != ''  ">#{doorLockId},</if>
+			<if test="useCount != null  and useCount != ''  ">#{useCount},</if>
          </trim>
     </insert>
 	 
@@ -101,6 +110,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null  ">update_time = #{updateTime},</if>
             <if test="delFlag != null  and delFlag != ''  ">del_flag = #{delFlag},</if>
             <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="doorLockId != null  and doorLockId != ''  ">door_lock_id = #{doorLockId},</if>
+            <if test="useCount != null  and useCount != ''  ">use_count = #{useCount},</if>
         </trim>
         where room_id = #{roomId}
     </update>
@@ -119,7 +130,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{roomId}
         </foreach>
     </delete>
-
 
     <delete id="deleteBackUpRoomByIdsUpdateDelFlag" parameterType="String">
         update umap_back_up_room set del_flag = '2' where room_id in

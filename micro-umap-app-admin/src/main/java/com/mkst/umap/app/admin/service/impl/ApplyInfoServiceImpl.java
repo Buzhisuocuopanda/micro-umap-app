@@ -1,5 +1,14 @@
 package com.mkst.umap.app.admin.service.impl;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
+
 import com.mkst.mini.systemplus.common.shiro.utils.ShiroUtils;
 import com.mkst.mini.systemplus.common.support.Convert;
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
@@ -10,25 +19,17 @@ import com.mkst.umap.app.admin.domain.BackUpGuest;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
 import com.mkst.umap.app.admin.domain.vo.BackUpGuestVo;
 import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
+import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
 import com.mkst.umap.app.admin.mapper.ApplyInfoMapper;
 import com.mkst.umap.app.admin.mapper.AuditRecordMapper;
 import com.mkst.umap.app.admin.service.IApplyInfoService;
 import com.mkst.umap.app.admin.service.IAuditRecordService;
 import com.mkst.umap.app.admin.service.IBackUpGuestService;
-import com.mkst.umap.app.common.constant.KeyConstant;
 import com.mkst.umap.app.common.constant.MsgConstant;
 import com.mkst.umap.app.common.enums.ApplyStatusEnum;
 import com.mkst.umap.app.common.enums.ApproveStatusEnum;
 import com.mkst.umap.app.common.enums.AuditRecordTypeEnum;
 import com.mkst.umap.app.common.enums.AuditStatusEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 备勤间申请 服务层实现
@@ -234,5 +235,10 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 	public List<ApplyInfo> selectApplyInfoListByMap(Map<String , Object> params ){
 
 		return applyInfoMapper.selectApplyInfoListByMap(params);
+	}
+	
+	@Override
+	public List<ApplyNumberDto> countGroupbyRoomIdByTime(Date startTime) {
+		return applyInfoMapper.countGroupbyRoomIdByTime(startTime);
 	}
 }
