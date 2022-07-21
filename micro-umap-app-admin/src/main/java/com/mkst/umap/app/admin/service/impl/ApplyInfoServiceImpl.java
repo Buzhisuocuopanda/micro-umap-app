@@ -12,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import com.mkst.mini.systemplus.common.shiro.utils.ShiroUtils;
 import com.mkst.mini.systemplus.common.support.Convert;
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
+import com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount;
 import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.AuditRecord;
@@ -240,5 +241,25 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 	@Override
 	public List<ApplyNumberDto> countGroupbyRoomIdByTime(Date startTime) {
 		return applyInfoMapper.countGroupbyRoomIdByTime(startTime);
+	}
+	
+	/**
+	 * 获取预约总数
+	 */
+	@Override
+	public int countApplyNumber() {
+		return applyInfoMapper.countApplyNumber();
+	}
+	/**
+	 * 获取今日预约数量
+	 */
+	@Override
+	public int countApplyNumberByDay() {
+		return applyInfoMapper.countApplyNumberByDay();
+	}
+	
+	@Override
+	public List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo) {
+		return applyInfoMapper.countApplyNumberByUserAndDate(applyInfo);
 	}
 }

@@ -39,6 +39,7 @@ import com.mkst.mini.systemplus.system.mapper.SysRoleMapper;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
 import com.mkst.mini.systemplus.util.SysConfigUtil;
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
+import com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount;
 import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.AuditRecord;
@@ -522,4 +523,29 @@ public class BackUpApplyInfoApi extends BaseApi {
         List<ApplyInfo> list = applyInfoService.selectApplyInfoListByMap(params);
         return ResultGenerator.genSuccessResult("查询成功",list);
     }
+    
+    @Login
+    @ApiOperation(value = "获取预约总数和今日预约数量")
+    @GetMapping(value = "/countApplyNumber")
+    public Result countApplyNumber(HttpServletRequest request){
+    	BackUpApplyCount count = new BackUpApplyCount();
+    	count.setDayNumber(applyInfoService.countApplyNumberByDay());
+    	count.setTotalNumber(applyInfoService.countApplyNumber());
+        return ResultGenerator.genSuccessResult(count);
+    }
+    
+    @Login
+    @ApiOperation(value = "获取预约统计列表")
+    @GetMapping(value = "/countApplyList")
+    public Result countApplyList(HttpServletRequest request, @RequestParam(value = "startDate", required = true) Date startDate, @RequestParam(value = "endDate", required = true) Date endDate){
+    	if(startDate == null || endDate == null) {
+    		return ResultGenerator.genSuccessResult();
+    	}
+    	ApplyInfo applyInfo = new ApplyInfo();
+    	applyInfo.setStartTime(startDate);
+    	applyInfo.setEndTime(endDate);
+    	List<BackUpApplyCount> countList = applyInfoService.countApplyNumberByUserAndDate(applyInfo);
+        return ResultGenerator.genSuccessResult(countList);
+    }
+    
 }

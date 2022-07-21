@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
+import com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount;
 import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
@@ -94,4 +95,13 @@ public interface ApplyInfoMapper
 	
 	List<ApplyNumberDto> countGroupbyRoomIdByTime(Date startTime);
 	
+	/**
+	 * 获取预约总数和今日预约数量
+	 */
+	int countApplyNumber();
+	/**
+	 * 获取今日预约数量
+	 */
+	int countApplyNumberByDay();
+	List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo);
 }

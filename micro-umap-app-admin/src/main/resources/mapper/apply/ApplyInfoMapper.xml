@@ -143,6 +143,24 @@
         </where>
         group by a.room_id
     </select>
+    <!-- 查询申请总次数 -->
+    <select id="countApplyNumber" resultType="java.lang.Integer">
+        select count(1) as 'applyNumber' from umap_apply_info a
+        where a.del_flag = '0' and a.apply_status in (0, 1)
+    </select>
+    <!-- 查询当日申请总次数 -->
+    <select id="countApplyNumberByDay" resultType="java.lang.Integer">
+        select count(1) as 'applyNumber' from umap_apply_info a
+        where a.del_flag = '0' and a.apply_status in (0, 1) and a.start_time = #{startTime}
+    </select>
+    <!-- 根据用户和日期查询申请次数 -->
+    <select id="countApplyNumberByUserAndDate" resultType="com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount">
+        select a.applicant_id, u.user_name as userName, d.dept_name as deptName, count(1) as applyNumber from umap_apply_info a 
+		left join sys_user u on a.applicant_id = u.user_id
+		left join sys_dept d on u.dept_id = d.dept_id
+		where a.start_time &gt;= #{startTime} and a.start_time &lt;= #{endTime}
+		GROUP BY a.applicant_id, u.user_name, d.dept_name
+    </select>
 
 
     <select id="selectApplyInfoListTask" parameterType="ApplyInfo" resultMap="ApplyInfoResult">

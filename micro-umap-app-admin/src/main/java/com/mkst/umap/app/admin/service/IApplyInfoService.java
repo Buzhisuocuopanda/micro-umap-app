@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.ui.ModelMap;
 
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
+import com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount;
 import com.mkst.umap.app.admin.api.bean.result.NameCountResult;
 import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
@@ -111,5 +112,15 @@ public interface IApplyInfoService
 	List<ApplyInfo> selectApplyInfoListByMap(Map<String , Object> params );
 	
 	List<ApplyNumberDto> countGroupbyRoomIdByTime(Date startTime);
+	
+	/**
+	 * 获取预约总数
+	 */
+	int countApplyNumber();
+	/**
+	 * 获取今日预约数量
+	 */
+	int countApplyNumberByDay();
+	List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo);
 
 }
