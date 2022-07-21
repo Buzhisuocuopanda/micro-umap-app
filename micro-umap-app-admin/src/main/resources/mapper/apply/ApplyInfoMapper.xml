@@ -134,14 +134,15 @@
         order by a.apply_status,a.create_time desc
     </select>
     
-    <!-- 查询指定日期各房间的申请人数 -->
+    <!-- 查询指定日期各房间不同性别的申请人数 -->
     <select id="countGroupbyRoomIdByTime" resultType="com.mkst.umap.app.admin.dto.apply.ApplyNumberDto">
-        select a.room_id as 'roomId', count(1) as 'applyNumber'
+        select a.room_id as 'roomId', u.sex as applyUserSex, count(1) as 'applyNumber'
         from umap_apply_info a
+        left join sys_user u on a.applicant_id = u.user_id
         <where>
             a.del_flag = '0' and a.apply_status in (0, 1) and a.start_time = #{startTime}
         </where>
-        group by a.room_id
+        group by a.room_id, u.sex
     </select>
     <!-- 查询申请总次数 -->
     <select id="countApplyNumber" resultType="java.lang.Integer">

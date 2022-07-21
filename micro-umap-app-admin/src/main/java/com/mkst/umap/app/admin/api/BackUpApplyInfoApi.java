@@ -221,7 +221,8 @@ public class BackUpApplyInfoApi extends BaseApi {
             applyInfo.setApproveStatus(ApproveStatusEnum.SUCCESS.getValue());
         }
         // step 2 锁定房间，房间锁定规则：双人间→三人间→单人间，需要避免有房间经常轮空的情况
-        BackUpRoom room = allotRoom(applyInfo.getStartTime());
+        SysUser applyUser = getSysUser(request);
+        BackUpRoom room = allotRoom(applyUser.getSex(), applyInfo.getStartTime());
         if(room == null) {
         	return ResultGenerator.genFailResult("房间已全部约满");
         }
@@ -248,7 +249,7 @@ public class BackUpApplyInfoApi extends BaseApi {
 	 * 
 	 * <p>房间锁定规则：双人间→三人间→单人间，需要避免有房间经常轮空的情况
 	 */
-	private BackUpRoom allotRoom(Date date) {
+	private BackUpRoom allotRoom(String userSex, Date date) {
 		// 所有房间
 		List<BackUpRoom> allRoomList = backUpRoomService.selectBackUpRoomList(new BackUpRoom());
 		//根据房间类型来分组
@@ -269,9 +270,9 @@ public class BackUpApplyInfoApi extends BaseApi {
 		
 		// 该时间每个房间的预约人数
 		List<ApplyNumberDto> applyInfoList = applyInfoService.countGroupbyRoomIdByTime(date);
-		Map<String, Integer> applyMap = new HashMap<String, Integer>();
+		Map<String, ApplyNumberDto> applyMap = new HashMap<String, ApplyNumberDto>();
 		for (ApplyNumberDto map : applyInfoList) {
-			applyMap.put(map.getRoomId(), map.getApplyNumber());
+			applyMap.put(map.getRoomId(), map);
 		}
 		
 		// 根据房间类型数组来遍历（排序需要遵循规则：双人间、三人间、N人间、最后单人间）
@@ -286,9 +287,10 @@ public class BackUpApplyInfoApi extends BaseApi {
 			// 优先分配已住人，但未住满的房间，如果不存在没住满的房间，则优先安排入住次数最少的同类型房间
 			for (BackUpRoom backUpRoom : roomGroupList) {
 				// 该房间已约人数
-				Integer applyNumber = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
-				// 如果该房间未约满，则分配这个房间
-				if(applyNumber != null && applyNumber.intValue() < roomType.intValue()) {
+				ApplyNumberDto applyNumberDto = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
+				Integer applyNumber = applyNumberDto.getApplyNumber();
+				// 如果该房间未约满，并且申请人性别跟已申请这个房间的人相同，则分配这个房间
+				if(applyNumber != null && applyNumber.intValue() < roomType.intValue() && userSex.equals(applyNumberDto.getApplyUserSex())) {
 					return backUpRoom;
 				}
 			}
@@ -300,9 +302,9 @@ public class BackUpApplyInfoApi extends BaseApi {
 				}
 			});
 			for (BackUpRoom backUpRoom : roomGroupList) {
-				// 该房间已约人数
-				Integer applyNumber = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
-				// 排除已预约的房间
+				// 分配第一个预约次数最少的空房间
+				ApplyNumberDto applyNumberDto = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
+				Integer applyNumber = applyNumberDto.getApplyNumber();
 				if(applyNumber == null) {
 					return backUpRoom;
 				}

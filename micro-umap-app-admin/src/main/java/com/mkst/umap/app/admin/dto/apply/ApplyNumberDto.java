@@ -16,6 +16,8 @@ public class ApplyNumberDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String roomId;
+	
+	private String applyUserSex;
 
 	private Integer applyNumber;
 }
