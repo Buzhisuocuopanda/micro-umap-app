@@ -33,11 +33,11 @@ import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
-import com.mkst.mini.systemplus.common.util.DictUtils;
 import com.mkst.mini.systemplus.system.domain.SysDictData;
 import com.mkst.mini.systemplus.system.domain.SysRole;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.mapper.SysRoleMapper;
+import com.mkst.mini.systemplus.system.service.ISysDictDataService;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
 import com.mkst.mini.systemplus.util.HolidayUtil;
 import com.mkst.mini.systemplus.util.SysConfigUtil;
@@ -53,11 +53,8 @@ import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
 import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
 import com.mkst.umap.app.admin.dto.apply.BackUpRoomDto;
 import com.mkst.umap.app.admin.dto.apply.DoorLockDeviceDto;
-import com.mkst.umap.app.admin.dto.arraign.DayStatusDto;
-import com.mkst.umap.app.admin.dto.arraign.RoomScheduleDto;
 import com.mkst.umap.app.admin.service.IApplyInfoService;
 import com.mkst.umap.app.admin.service.IAuditRecordService;
-import com.mkst.umap.app.admin.service.IBackUpGuestService;
 import com.mkst.umap.app.admin.service.IBackUpRoomService;
 import com.mkst.umap.app.admin.util.MyDateUtil;
 import com.mkst.umap.app.admin.util.WebcardApiUtil;
@@ -67,7 +64,6 @@ import com.mkst.umap.app.common.enums.ApproveStatusEnum;
 import com.mkst.umap.app.common.enums.AuditRecordTypeEnum;
 import com.mkst.umap.app.common.enums.BusinessTypeEnum;
 import com.mkst.umap.app.common.enums.RoleKeyEnum;
-import com.mkst.umap.base.core.util.UmapDateUtils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
@@ -75,14 +71,12 @@ import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @ClassName ApplyInfoApi
  * @Description 备勤间申请服务接口
  * @Author lcq
  */
-@Slf4j
 @Api("备勤间申请服务接口")
 @RestController
 @RequestMapping("/api/backUp")
@@ -99,7 +93,7 @@ public class BackUpApplyInfoApi extends BaseApi {
     @Autowired
     private SysRoleMapper sysRoleMapper;
     @Autowired
-    private IBackUpGuestService backUpGuestService;
+    private ISysDictDataService sysDictDataService;
 
     @PostMapping("/applyInfo")
     @ApiOperation("获取备勤间申请表信息集合")
@@ -108,7 +102,7 @@ public class BackUpApplyInfoApi extends BaseApi {
         try {
             List<ApplyInfoVo> applyInfoVos;
             Long applicantId;
-            Long approverId;
+//            Long approverId;
             SysUser sysUser = getSysUser(request);
             if(StrUtil.isBlank(applyInfoDto.getSelectType())) {
                 applyInfoDto.setSelectType("0");
@@ -284,7 +278,7 @@ public class BackUpApplyInfoApi extends BaseApi {
 		}
 		
 		// 根据房间类型数组来遍历（排序需要遵循规则：双人间、三人间、N人间、最后单人间）
-		List<SysDictData> listDictData = DictUtils.getDictCache("back_up_room_type");
+		List<SysDictData> listDictData = sysDictDataService.selectDictDataByType("back_up_room_type");
 		for (SysDictData sysDictData : listDictData) {
 			// 几人间
 			Integer roomType = Integer.valueOf(sysDictData.getDictValue());
@@ -628,14 +622,4 @@ public class BackUpApplyInfoApi extends BaseApi {
 		return new Date().getTime() > openTime.getTime();
 	}
 
-	/**
-	 * 判断是否周末
-	 * @param date
-	 * @return
-	 */
-	private boolean isWeekend(Date date){
-		int weekendDay = DateUtil.dayOfWeek(date);
-		//周六是一周的第七天  周日是一周的第一天
-		return weekendDay == 7 || weekendDay == 1;
-	}
 }
