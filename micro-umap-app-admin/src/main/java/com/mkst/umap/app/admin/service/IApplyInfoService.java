@@ -120,7 +120,7 @@ public interface IApplyInfoService
 	/**
 	 * 获取今日预约数量
 	 */
-	int countApplyNumberByDay();
+	int countApplyNumberByDay(Date date);
 	List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo);
 
 }

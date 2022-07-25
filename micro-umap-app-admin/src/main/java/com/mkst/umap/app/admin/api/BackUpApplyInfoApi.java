@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.mkst.mini.systemplus.api.common.annotation.ApiLog;
 import com.mkst.mini.systemplus.api.common.annotation.Login;
+import com.mkst.mini.systemplus.api.common.enums.ApiOperatorType;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
 import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
@@ -37,6 +39,7 @@ import com.mkst.mini.systemplus.system.domain.SysRole;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.mapper.SysRoleMapper;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
+import com.mkst.mini.systemplus.util.HolidayUtil;
 import com.mkst.mini.systemplus.util.SysConfigUtil;
 import com.mkst.umap.app.admin.api.bean.param.backup.BackUpParam;
 import com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount;
@@ -50,19 +53,24 @@ import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
 import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
 import com.mkst.umap.app.admin.dto.apply.BackUpRoomDto;
 import com.mkst.umap.app.admin.dto.apply.DoorLockDeviceDto;
+import com.mkst.umap.app.admin.dto.arraign.DayStatusDto;
+import com.mkst.umap.app.admin.dto.arraign.RoomScheduleDto;
 import com.mkst.umap.app.admin.service.IApplyInfoService;
 import com.mkst.umap.app.admin.service.IAuditRecordService;
 import com.mkst.umap.app.admin.service.IBackUpGuestService;
 import com.mkst.umap.app.admin.service.IBackUpRoomService;
 import com.mkst.umap.app.admin.util.MyDateUtil;
 import com.mkst.umap.app.admin.util.WebcardApiUtil;
+import com.mkst.umap.app.common.constant.KeyConstant;
 import com.mkst.umap.app.common.enums.ApplyStatusEnum;
 import com.mkst.umap.app.common.enums.ApproveStatusEnum;
 import com.mkst.umap.app.common.enums.AuditRecordTypeEnum;
 import com.mkst.umap.app.common.enums.BusinessTypeEnum;
 import com.mkst.umap.app.common.enums.RoleKeyEnum;
+import com.mkst.umap.base.core.util.UmapDateUtils;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -533,7 +541,7 @@ public class BackUpApplyInfoApi extends BaseApi {
     @GetMapping(value = "/countApplyNumber")
     public Result countApplyNumber(HttpServletRequest request){
     	BackUpApplyCount count = new BackUpApplyCount();
-    	count.setDayNumber(applyInfoService.countApplyNumberByDay());
+    	count.setDayNumber(applyInfoService.countApplyNumberByDay(new Date()));
     	count.setTotalNumber(applyInfoService.countApplyNumber());
         return ResultGenerator.genSuccessResult(count);
     }
@@ -552,4 +560,82 @@ public class BackUpApplyInfoApi extends BaseApi {
         return ResultGenerator.genSuccessResult(countList);
     }
     
+    @Login
+    @ApiLog(title = "获取备勤间预约日历", ApiOperatorType = ApiOperatorType.GET)
+    @GetMapping("/calendarList")
+    @ApiOperation("获取备勤间预约日历")
+    public Result calendarList() {
+    	// 每个房间可住人数
+    	BackUpRoom room = new BackUpRoom();
+    	room.setStatus(KeyConstant.RESOURCES_STATUS_AVAILABLE);
+    	List<BackUpRoom> roomList = backUpRoomService.selectBackUpRoomList(room);
+    	// 所有房间每天可预约人数
+    	int totalApplyNum = 0;
+    	for (BackUpRoom backUpRoom : roomList) {
+    		totalApplyNum += backUpRoom.getRoomType();
+		}
+    	
+    	int limitDayCount = Integer.parseInt(SysConfigUtil.getKey(KeyConstant.BACKUPROOM_APPOINTMENT_LIMIT_DAY));
+		String openTime = SysConfigUtil.getKey(KeyConstant.BACKUPROOM_APPOINTMENT_OPEN_TIME_KEY);
+		//是否忽略假日
+		String ignoreHolidayStr = SysConfigUtil.getKey(KeyConstant.BACKUPROOM_APPOINTMENT_IGNORE_HOLIDAY_KEY);
+		boolean ignoreHoliday = "1".equals(ignoreHolidayStr);
+		List<NameCountResult> result  = new ArrayList<>();
+		Date date = new Date();
+		for(int i = 1 ; i <= limitDayCount ; date = DateUtil.offsetDay(date , 1)){
+			//如果是最后一天 校验是否到了开放时间
+			date = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd"),"yyyy-MM-dd");
+			if(i == limitDayCount && !checkOpen(openTime)){
+				break;
+			}
+			if(HolidayUtil.isHoliday(date)){
+				//如果预约提前天数不用忽略假日 则累计
+				if(!ignoreHoliday){
+					i++;
+				}
+				continue;
+			}
+			
+			boolean available = false;
+			// 当前日期的预约人数
+			int todayApplyNum = applyInfoService.countApplyNumberByDay(date);
+			if(todayApplyNum < totalApplyNum) {
+				available = true;
+			}
+			
+			NameCountResult c = new NameCountResult();
+			c.setName(DateUtil.format(date,"yyyy-MM-dd"));
+			if(available){
+				c.setInfo("可预约");
+				c.setStatus(true);
+			}else{
+				c.setInfo("已约满");
+				c.setStatus(false);
+			}
+			result.add(c);
+			i++;
+		}
+        return ResultGenerator.genSuccessResult(result);
+    }
+    
+    /**
+	 * 校验放号时间点
+	 * @param openTimeStr
+	 * @return
+	 */
+	private boolean checkOpen(String openTimeStr){
+		Date openTime = DateUtil.parse(DateUtil.format(new Date(),"yyyy-MM-dd ")+ openTimeStr , "yyyy-MM-dd HH:mm");
+		return new Date().getTime() > openTime.getTime();
+	}
+
+	/**
+	 * 判断是否周末
+	 * @param date
+	 * @return
+	 */
+	private boolean isWeekend(Date date){
+		int weekendDay = DateUtil.dayOfWeek(date);
+		//周六是一周的第七天  周日是一周的第一天
+		return weekendDay == 7 || weekendDay == 1;
+	}
 }

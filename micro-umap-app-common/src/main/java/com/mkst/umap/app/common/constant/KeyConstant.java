@@ -114,4 +114,18 @@ public interface KeyConstant {
      * 提审预约天数是否忽略假日
      */
     String ARRAIGN_APPOINTMENT_IGNORE_HOLIDAY_KEY = "arraign_appointment_ignore_holiday";
+    /**
+     * 备勤间预约放号时间天数
+     */
+    String BACKUPROOM_APPOINTMENT_LIMIT_DAY = "backuproom_appointment_limit_day";
+    
+    /**
+     * 备勤间预约放号时间key
+     */
+    String BACKUPROOM_APPOINTMENT_OPEN_TIME_KEY = "backuproom_appointment_open_number_time";
+    
+    /**
+     * 备勤间预约天数是否忽略假日
+     */
+    String BACKUPROOM_APPOINTMENT_IGNORE_HOLIDAY_KEY = "backuproom_appointment_ignore_holiday";
 }

@@ -254,8 +254,8 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 	 * 获取今日预约数量
 	 */
 	@Override
-	public int countApplyNumberByDay() {
-		return applyInfoMapper.countApplyNumberByDay();
+	public int countApplyNumberByDay(Date date) {
+		return applyInfoMapper.countApplyNumberByDay(date);
 	}
 	
 	@Override
