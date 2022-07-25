@@ -288,6 +288,9 @@ public class BackUpApplyInfoApi extends BaseApi {
 			for (BackUpRoom backUpRoom : roomGroupList) {
 				// 该房间已约人数
 				ApplyNumberDto applyNumberDto = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
+				if(applyNumberDto == null) {
+					continue;
+				}
 				Integer applyNumber = applyNumberDto.getApplyNumber();
 				// 如果该房间未约满，并且申请人性别跟已申请这个房间的人相同，则分配这个房间
 				if(applyNumber != null && applyNumber.intValue() < roomType.intValue() && userSex.equals(applyNumberDto.getApplyUserSex())) {
@@ -304,8 +307,7 @@ public class BackUpApplyInfoApi extends BaseApi {
 			for (BackUpRoom backUpRoom : roomGroupList) {
 				// 分配第一个预约次数最少的空房间
 				ApplyNumberDto applyNumberDto = applyMap.get(String.valueOf(backUpRoom.getRoomId()));
-				Integer applyNumber = applyNumberDto.getApplyNumber();
-				if(applyNumber == null) {
+				if(applyNumberDto == null || applyNumberDto.getApplyNumber() == null) {
 					return backUpRoom;
 				}
 			}
