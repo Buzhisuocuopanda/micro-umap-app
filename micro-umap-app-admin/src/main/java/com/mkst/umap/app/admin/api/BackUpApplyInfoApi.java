@@ -224,7 +224,7 @@ public class BackUpApplyInfoApi extends BaseApi {
         
         // step 1 判断预约时间是否超过晚上10点，如果10以后系统自动审批通过
         int auditTime = Integer.valueOf(SysConfigUtil.getKey("umap_backupRoom_auditTime"));
-        if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) > auditTime) {
+        if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= auditTime) {
         	applyInfo.setApplyStatus(ApplyStatusEnum.Approval.getValue());
             applyInfo.setApproveStatus(ApproveStatusEnum.SUCCESS.getValue());
         }
