@@ -1,5 +1,8 @@
 INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('设备管理备勤间设备分组ID', 'webcard_deviceGroup_bqj', '146', 'N', 'admin', '2022-07-18 20:10:15', '', NULL, '');
 INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('设备管理备勤间门锁设备类型', 'webcard_deviceType_bqj', 'lock', 'N', 'admin', '2022-07-18 20:11:11', '', NULL, '');
+INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('备勤间预约放号提前天数', 'backuproom_appointment_limit_day', '5', 'N', 'admin', '2021-01-15 15:08:02', 'admin', '2021-12-31 16:06:46', '提审预约放号提前天数（含周末）');
+INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('备勤间预约放号时间', 'backuproom_appointment_open_number_time', '8:00', 'N', 'admin', '2021-01-15 15:09:08', 'admin', '2021-02-05 10:36:59', '提审预约放号时间，最后一天可预约时间必须要超过这个时间点才能预约');
+INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('备勤间预约过滤假期', 'backuproom_appointment_ignore_holiday', '1', 'N', 'admin', '2021-02-05 10:39:57', 'admin', '2021-08-24 15:14:42', '');
 
 
 INSERT INTO `umap_back_up_room`(`room_id`, `room_num`, `room_type`, `status`, `door_lock_id`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `remark`) VALUES (21, '3A28', '0', '0', NULL, NULL, '2022-07-14 14:14:22', NULL, '2022-07-14 14:14:22', '0', NULL);
