@@ -354,7 +354,7 @@ public class BackUpApplyInfoApi extends BaseApi {
     {
     	ApplyInfo applyInfo = applyInfoService.selectApplyInfoById(applyId);
     	Long userId = this.getUserId(request);
-    	if(userId.longValue() != applyInfo.getApplyId().longValue()) {
+    	if(userId.longValue() != applyInfo.getApplicantId().longValue()) {
     		return ResultGenerator.genFailResult("非法操作");
     	}
     	applyInfo.setApplyStatus(ApplyStatusEnum.Cancel.getValue());
