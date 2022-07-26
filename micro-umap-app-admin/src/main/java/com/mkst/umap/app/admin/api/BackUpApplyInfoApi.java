@@ -345,6 +345,23 @@ public class BackUpApplyInfoApi extends BaseApi {
     private SysRole getSysRole(){
         return sysRoleMapper.checkRoleKeyUnique(RoleKeyEnum.ROLE_ADMIN.getValue());
     }
+    
+    @Login
+    @ApiOperation("撤销申请")
+    @PostMapping("/cancelApply")
+    @Transactional(rollbackFor = Exception.class)
+    public Result cancelApply(HttpServletRequest request, @ApiParam(name = "applyId", value = "申请ID", required = true) Long applyId)
+    {
+    	ApplyInfo applyInfo = applyInfoService.selectApplyInfoById(applyId);
+    	Long userId = this.getUserId(request);
+    	if(userId.longValue() != applyInfo.getApplyId().longValue()) {
+    		return ResultGenerator.genFailResult("非法操作");
+    	}
+    	applyInfo.setApplyStatus(ApplyStatusEnum.Cancel.getValue());
+    	applyInfo.setApproveStatus(ApproveStatusEnum.CANCEL.getValue());
+    	applyInfoService.updateApplyInfo(applyInfo);
+    	return ResultGenerator.genSuccessResult("撤销成功");
+    }
 
     @ApiOperation("申请表审核")
     @PostMapping("/audit")
