@@ -62,6 +62,7 @@ import com.mkst.umap.app.common.constant.KeyConstant;
 import com.mkst.umap.app.common.enums.ApplyStatusEnum;
 import com.mkst.umap.app.common.enums.ApproveStatusEnum;
 import com.mkst.umap.app.common.enums.AuditRecordTypeEnum;
+import com.mkst.umap.app.common.enums.AuditStatusEnum;
 import com.mkst.umap.app.common.enums.BusinessTypeEnum;
 import com.mkst.umap.app.common.enums.RoleKeyEnum;
 
@@ -377,7 +378,11 @@ public class BackUpApplyInfoApi extends BaseApi {
         }
         ApplyInfo ai = list.get(0);
 
-        ai.setApplyStatus(1);
+        if(AuditStatusEnum.EVENT_AUDIT_STATUS_PASS.getValue().toString().equals(applyInfoDto.getApproverStatus())){
+        	ai.setApplyStatus(ApproveStatusEnum.SUCCESS.getValue());
+		}else {
+			ai.setApplyStatus(ApproveStatusEnum.FAIL.getValue());
+		}
         ai.setApproveStatus(Integer.parseInt(applyInfoDto.getApproverStatus()));
         ai.setApprovalUserId(getUserId(request));
         applyInfoService.auditNew(ai);
