@@ -33,6 +33,7 @@ import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
+import com.mkst.mini.systemplus.common.utils.DateUtils;
 import com.mkst.mini.systemplus.system.domain.SysDictData;
 import com.mkst.mini.systemplus.system.domain.SysRole;
 import com.mkst.mini.systemplus.system.domain.SysUser;
@@ -557,7 +558,7 @@ public class BackUpApplyInfoApi extends BaseApi {
     @GetMapping(value = "/countApplyNumber")
     public Result countApplyNumber(HttpServletRequest request){
     	BackUpApplyCount count = new BackUpApplyCount();
-    	count.setDayNumber(applyInfoService.countApplyNumberByDay(new Date()));
+    	count.setDayNumber(applyInfoService.countApplyNumberByDay(DateUtil.parse(DateUtil.format(new Date(),"yyyy-MM-dd"),"yyyy-MM-dd")));
     	count.setTotalNumber(applyInfoService.countApplyNumber());
         return ResultGenerator.genSuccessResult(count);
     }
