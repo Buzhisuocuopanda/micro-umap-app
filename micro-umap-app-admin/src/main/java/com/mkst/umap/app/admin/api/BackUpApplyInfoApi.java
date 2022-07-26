@@ -379,9 +379,9 @@ public class BackUpApplyInfoApi extends BaseApi {
         ApplyInfo ai = list.get(0);
 
         if(AuditStatusEnum.EVENT_AUDIT_STATUS_PASS.getValue().toString().equals(applyInfoDto.getApproverStatus())){
-        	ai.setApplyStatus(ApproveStatusEnum.SUCCESS.getValue());
+        	ai.setApplyStatus(ApplyStatusEnum.Approval.getValue());
 		}else {
-			ai.setApplyStatus(ApproveStatusEnum.FAIL.getValue());
+			ai.setApplyStatus(ApplyStatusEnum.Fail.getValue());
 		}
         ai.setApproveStatus(Integer.parseInt(applyInfoDto.getApproverStatus()));
         ai.setApprovalUserId(getUserId(request));

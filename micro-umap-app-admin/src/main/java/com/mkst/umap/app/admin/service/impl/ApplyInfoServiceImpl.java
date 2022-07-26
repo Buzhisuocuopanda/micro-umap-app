@@ -212,9 +212,9 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 		auditRecordMapper.insertAuditRecord(auditRecord);
 
 		if(AuditStatusEnum.EVENT_AUDIT_STATUS_PASS.getValue().toString().equals(status)){
-			applyInfo.setApplyStatus(ApproveStatusEnum.SUCCESS.getValue());
+			applyInfo.setApplyStatus(ApplyStatusEnum.Approval.getValue());
 		}else {
-			applyInfo.setApplyStatus(ApproveStatusEnum.FAIL.getValue());
+			applyInfo.setApplyStatus(ApplyStatusEnum.Fail.getValue());
 		}
 
 		int row = this.updateApplyInfo(applyInfo);
