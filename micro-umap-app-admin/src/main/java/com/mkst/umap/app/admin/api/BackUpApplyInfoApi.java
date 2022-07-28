@@ -34,7 +34,6 @@ import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
-import com.mkst.mini.systemplus.common.utils.DateUtils;
 import com.mkst.mini.systemplus.system.domain.SysDictData;
 import com.mkst.mini.systemplus.system.domain.SysRole;
 import com.mkst.mini.systemplus.system.domain.SysUser;
@@ -198,7 +197,8 @@ public class BackUpApplyInfoApi extends BaseApi {
     }
     
     public static void main(String[] args) {
-		System.out.println(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+        System.out.println(DateUtil.format(new Date(),"yyyy年MM月dd日"));
+        System.out.println(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 	}
     
     @Login
@@ -351,7 +351,8 @@ public class BackUpApplyInfoApi extends BaseApi {
     private void sendReserveSuccessSmsMsg(ApplyInfo info) {
         SmsMsgContent msgContent = new SmsMsgContent();
         msgContent.setTitle("备勤间预约成功通知");
-        msgContent.setContent("您的备勤间（房号：xxxx）预约已通过，预约时间xxxx，结束时间xxx，请注意卫生");
+        msgContent.setContent(StrUtil.format("【龙华区人民检察院】【门禁预约】{}您好，您的门禁预约已通过，入住信息如下：入住时间：{}，房号【{}】,注意保管好个人物品，以免丢失。开门权限于明早九点自动失效，请您按时离开房间，多谢合作。"
+                , info.getApplicant(), DateUtil.format(info.getStartTime(),"yyyy年MM月dd日"), info.getRoomNum()));
         MsgPushUtils.push(msgContent, info.getApplyId().toString(), "umap_backup_success", "[CODE]"+info.getApplicantPhoneNumber());
         MsgPushUtils.getMsgPushTask().execute();
     }
