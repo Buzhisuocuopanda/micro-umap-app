@@ -576,7 +576,7 @@ public class BackUpApplyInfoApi extends BaseApi {
     	List<BackUpApplyCount> countList = applyInfoService.countApplyNumberByUserAndDate(applyInfo);
         return ResultGenerator.genSuccessResult(countList);
     }
-    
+
     @Login
     @ApiLog(title = "获取备勤间预约日历", ApiOperatorType = ApiOperatorType.GET)
     @GetMapping("/calendarList")
@@ -598,7 +598,12 @@ public class BackUpApplyInfoApi extends BaseApi {
 		String ignoreHolidayStr = SysConfigUtil.getKey(KeyConstant.BACKUPROOM_APPOINTMENT_IGNORE_HOLIDAY_KEY);
 		boolean ignoreHoliday = "1".equals(ignoreHolidayStr);
 		List<NameCountResult> result  = new ArrayList<>();
+        //第二天放号结束时间
+        int yesterEndTime = Integer.parseInt(SysConfigUtil.getKey(KeyConstant.BACKUPROOM_APPOINTMENT_LIMIT_HOUR));
 		Date date = new Date();
+        if (DateUtil.hour(date, true) < yesterEndTime) {
+            date = DateUtil.offsetDay(date, -1);
+        }
 		for(int i = 1 ; i <= limitDayCount ; date = DateUtil.offsetDay(date , 1)){
 			//如果是最后一天 校验是否到了开放时间
 			date = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd"),"yyyy-MM-dd");

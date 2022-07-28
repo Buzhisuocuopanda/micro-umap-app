@@ -128,4 +128,9 @@ public interface KeyConstant {
      * 备勤间预约天数是否忽略假日
      */
     String BACKUPROOM_APPOINTMENT_IGNORE_HOLIDAY_KEY = "backuproom_appointment_ignore_holiday";
+
+    /**
+     * 备勤间预约放号第二天结束时间
+     */
+    String BACKUPROOM_APPOINTMENT_LIMIT_HOUR = "backuproom_appointment_limit_hour";
 }
