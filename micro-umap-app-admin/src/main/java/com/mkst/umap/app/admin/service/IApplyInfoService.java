@@ -121,6 +121,14 @@ public interface IApplyInfoService
 	 * 获取今日预约数量
 	 */
 	int countApplyNumberByDay(Date date);
+
+	/**
+	 * 获取指定日期使用过的房间
+	 * @param date
+	 * @return
+	 */
+	List<String> selectApplyUseRoomList(Date date);
+
 	List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo);
 
 }

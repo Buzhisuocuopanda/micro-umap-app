@@ -2,6 +2,7 @@ package com.mkst.umap.app.common.enums;
 
 public enum RoleKeyEnum {
 
+    CLEAN_PERSON("清洁人员", "qjry"),
     ROLE_ADMIN("备勤间管理员", "bqgly"),
     ROLE_COMMON("普通角色", "apply_common"),
     ROLE_KITCHEN_ADMIN("厨房管理员", "cfgly"),

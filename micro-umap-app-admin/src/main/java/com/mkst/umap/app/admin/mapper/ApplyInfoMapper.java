@@ -104,4 +104,9 @@ public interface ApplyInfoMapper
 	 */
 	int countApplyNumberByDay(Date date);
 	List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo);
+
+	/**
+	 * 获取指定日期使用过的房间
+	 */
+	List<String> selectApplyUseRoomList(Date date);
 }

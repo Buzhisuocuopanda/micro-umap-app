@@ -257,7 +257,15 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 	public int countApplyNumberByDay(Date date) {
 		return applyInfoMapper.countApplyNumberByDay(date);
 	}
-	
+
+	/**
+	 * 获取指定日期使用过的房间
+	 */
+	@Override
+	public List<String> selectApplyUseRoomList(Date date) {
+		return applyInfoMapper.selectApplyUseRoomList(date);
+	}
+
 	@Override
 	public List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo) {
 		return applyInfoMapper.countApplyNumberByUserAndDate(applyInfo);
