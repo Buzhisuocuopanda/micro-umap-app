@@ -325,7 +325,7 @@ public class BackUpApplyInfoApi extends BaseApi {
     private void sendAppMsg(Long id) {
         AppMsgContent msgContent = new AppMsgContent();
         msgContent.setTitle("备勤间预约待审核");
-        msgContent.setContent("有人提交新的备勤间预约请求，请您及时审批！");
+        msgContent.setContent("您有新的门禁预约申请待审批，进入APP查看预约详情");
 
         Map<String ,String> params =new HashMap<>();
         params.put("bizType",id.toString());
