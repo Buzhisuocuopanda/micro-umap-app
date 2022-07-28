@@ -23,6 +23,7 @@
         <result property="deptName" column="dept_name"/>
         <result property="applicant" column="applicant"/>
         <result property="applicantSex" column="applicant_sex"/>
+        <result property="applicantPhoneNumber" column="applicant_phone_number"/>
         <result property="roomNum" column="room_num"/>
         <result property="progress" column="progress"/>
         <result property="approvalUserId" column="approval_user_id"/>
@@ -57,7 +58,8 @@
         d.dept_name,
         r.room_num,
         u2.user_name as applicant,
-        u2.sex as applicant_sex
+        u2.sex as applicant_sex,
+        u2.phonenumber as applicant_phone_number
         from umap_apply_info a
         left join sys_user u2 on a.applicant_id = u2.user_id
         left join sys_dept d on a.dept_id = d.dept_id

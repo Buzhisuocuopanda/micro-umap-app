@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.mkst.mini.systemplus.basic.domain.content.SmsMsgContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -344,6 +345,17 @@ public class BackUpApplyInfoApi extends BaseApi {
         MsgPushUtils.getMsgPushTask().execute();
     }
 
+    /**
+     * 备勤间预约成功发送短信
+     */
+    private void sendReserveSuccessSmsMsg(ApplyInfo info) {
+        SmsMsgContent msgContent = new SmsMsgContent();
+        msgContent.setTitle("备勤间预约成功通知");
+        msgContent.setContent("您的备勤间（房号：xxxx）预约已通过，预约时间xxxx，结束时间xxx，请注意卫生");
+        MsgPushUtils.push(msgContent, info.getApplyId().toString(), "umap_backup_success", "[CODE]"+info.getApplicantPhoneNumber());
+        MsgPushUtils.getMsgPushTask().execute();
+    }
+
     private SysRole getSysRole(){
         return sysRoleMapper.checkRoleKeyUnique(RoleKeyEnum.ROLE_ADMIN.getValue());
     }
@@ -381,6 +393,9 @@ public class BackUpApplyInfoApi extends BaseApi {
 
         if(AuditStatusEnum.EVENT_AUDIT_STATUS_PASS.getValue().toString().equals(applyInfoDto.getApproverStatus())){
         	ai.setApplyStatus(ApplyStatusEnum.Approval.getValue());
+            new Thread(() ->{
+                sendReserveSuccessSmsMsg(ai);
+            }).start();
 		}else {
 			ai.setApplyStatus(ApplyStatusEnum.Fail.getValue());
 		}
