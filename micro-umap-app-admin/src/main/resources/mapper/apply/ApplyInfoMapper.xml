@@ -165,7 +165,7 @@
     </select>
     <!-- 查询当日非该性别预约房间的总位数 -->
     <select id="countApplySexRoomNumByDay" resultType="java.lang.Integer">
-        select sum(room_type) from umap_back_up_room
+        select COALESCE(sum(room_type),0) from umap_back_up_room
         where room_id in
         (select r.room_id from umap_apply_info r
         LEFT JOIN sys_user u on r.applicant_id = u.user_id
