@@ -184,7 +184,7 @@
     <!-- 查询指定日期使用过的房间 -->
     <select id="selectApplyUseRoomList" resultType="java.lang.String">
         select u2.room_num
-        from (select room_id from umap_apply_info where start_time = #{startTime} GROUP BY room_id) a
+        from (select room_id from umap_apply_info where start_time = #{startTime} and del_flag = '0' and apply_status in (0, 1) GROUP BY room_id) a
         left join umap_back_up_room u2 on a.room_id = u2.room_id
     </select>
 
