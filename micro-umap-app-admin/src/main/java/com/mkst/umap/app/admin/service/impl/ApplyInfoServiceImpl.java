@@ -234,7 +234,6 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 	}
 
 	public List<ApplyInfo> selectApplyInfoListByMap(Map<String , Object> params ){
-
 		return applyInfoMapper.selectApplyInfoListByMap(params);
 	}
 	
@@ -256,6 +255,22 @@ public class ApplyInfoServiceImpl implements IApplyInfoService
 	@Override
 	public int countApplyNumberByDay(Date date) {
 		return applyInfoMapper.countApplyNumberByDay(date);
+	}
+
+	/**
+	 * 获取今日预约数量
+	 */
+	@Override
+	public int countApplySexNumberByDay(Date date, String userSex) {
+		return applyInfoMapper.countApplySexNumberByDay(date, userSex);
+	}
+
+	/**
+	 * 查询当日非该性别预约房间的总位数
+	 */
+	@Override
+	public int countApplySexRoomNumByDay(Date date, String userSex) {
+		return applyInfoMapper.countApplySexRoomNumByDay(date, userSex);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import com.mkst.umap.app.admin.domain.ApplyInfo;
 import com.mkst.umap.app.admin.domain.vo.ApplyInfoVo;
 import com.mkst.umap.app.admin.dto.apply.ApplyInfoDto;
 import com.mkst.umap.app.admin.dto.apply.ApplyNumberDto;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 备勤间申请 数据层
@@ -103,6 +104,14 @@ public interface ApplyInfoMapper
 	 * 获取今日预约数量
 	 */
 	int countApplyNumberByDay(Date date);
+	/**
+	 * 获取今日该性别预约数量
+	 */
+	int countApplySexNumberByDay(@Param("startTime")Date startTime, @Param("userSex")String userSex);
+	/**
+	 * 查询当日非该性别预约房间的总位数
+	 */
+	int countApplySexRoomNumByDay(@Param("startTime")Date startTime, @Param("userSex")String userSex);
 	List<BackUpApplyCount> countApplyNumberByUserAndDate(ApplyInfo applyInfo);
 
 	/**

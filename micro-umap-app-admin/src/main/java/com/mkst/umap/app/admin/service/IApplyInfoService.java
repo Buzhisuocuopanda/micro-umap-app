@@ -123,6 +123,14 @@ public interface IApplyInfoService
 	int countApplyNumberByDay(Date date);
 
 	/**
+	 * 获取该性别今日预约数量
+	 */
+	int countApplySexNumberByDay(Date date,String userSex);
+	/**
+	 * 查询当日非该性别预约房间的总位数
+	 */
+	int countApplySexRoomNumByDay(Date date,String userSex);
+	/**
 	 * 获取指定日期使用过的房间
 	 * @param date
 	 * @return

@@ -156,6 +156,21 @@
         select count(1) as 'applyNumber' from umap_apply_info a
         where a.del_flag = '0' and a.apply_status in (0, 1) and a.start_time = #{startTime}
     </select>
+    <!-- 查询当日该性别申请总次数 -->
+    <select id="countApplySexNumberByDay" resultType="java.lang.Integer">
+        select count(1) as 'applyNumber' from umap_apply_info a
+        left join sys_user u on a.applicant_id = u.user_id
+        where a.del_flag = '0' and a.apply_status in (0, 1) and a.start_time = #{startTime}
+        and u.sex = #{userSex}
+    </select>
+    <!-- 查询当日非该性别预约房间的总位数 -->
+    <select id="countApplySexRoomNumByDay" resultType="java.lang.Integer">
+        select sum(room_type) from umap_back_up_room
+        where room_id in
+        (select r.room_id from umap_apply_info r
+        LEFT JOIN sys_user u on r.applicant_id = u.user_id
+        where r.start_time = #{startTime} and u.sex != #{userSex})
+    </select>
     <!-- 根据用户和日期查询申请次数 -->
     <select id="countApplyNumberByUserAndDate" resultType="com.mkst.umap.app.admin.api.bean.result.BackUpApplyCount">
         select a.applicant_id, u.user_name as userName, d.dept_name as deptName, count(1) as applyNumber from umap_apply_info a 

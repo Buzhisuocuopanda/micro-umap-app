@@ -597,15 +597,17 @@ public class BackUpApplyInfoApi extends BaseApi {
     @ApiLog(title = "获取备勤间预约日历", ApiOperatorType = ApiOperatorType.GET)
     @GetMapping("/calendarList")
     @ApiOperation("获取备勤间预约日历")
-    public Result calendarList() {
-    	// 每个房间可住人数
+    public Result calendarList(HttpServletRequest request) {
+        SysUser applyUser = getSysUser(request);
+        String sex = applyUser.getSex();
+        // 每个房间可住人数
     	BackUpRoom room = new BackUpRoom();
     	room.setStatus(KeyConstant.RESOURCES_STATUS_AVAILABLE);
     	List<BackUpRoom> roomList = backUpRoomService.selectBackUpRoomList(room);
     	// 所有房间每天可预约人数
     	int totalApplyNum = 0;
     	for (BackUpRoom backUpRoom : roomList) {
-    		totalApplyNum += backUpRoom.getRoomType();
+            totalApplyNum += backUpRoom.getRoomType();
 		}
     	
     	int limitDayCount = Integer.parseInt(SysConfigUtil.getKey(KeyConstant.BACKUPROOM_APPOINTMENT_LIMIT_DAY));
@@ -635,9 +637,11 @@ public class BackUpApplyInfoApi extends BaseApi {
 			}
 			
 			boolean available = false;
-			// 当前日期的预约人数
-			int todayApplyNum = applyInfoService.countApplyNumberByDay(date);
-			if(todayApplyNum < totalApplyNum) {
+			// 当前日期的该用户性别预约人数
+			int todayApplySexNum = applyInfoService.countApplySexNumberByDay(date, sex);
+            //当前日期不是该用户性别预约房间的总位数
+            int todayApplyOrderSexRoomNum = applyInfoService.countApplySexRoomNumByDay(date,sex);
+			if(todayApplySexNum + todayApplyOrderSexRoomNum < totalApplyNum) {
 				available = true;
 			}
 			
