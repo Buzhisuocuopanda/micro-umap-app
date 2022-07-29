@@ -324,8 +324,8 @@ public class BackUpApplyInfoApi extends BaseApi {
     // todo 信息有待完善
     private void sendAppMsg(Long id) {
         AppMsgContent msgContent = new AppMsgContent();
-        msgContent.setTitle("备勤间预约待审核");
-        msgContent.setContent("您有新的门禁预约申请待审批，进入APP查看预约详情");
+        msgContent.setTitle("门禁预约待审核");
+        msgContent.setContent("您有新的门禁预约申请待审批，进入APP查看");
 
         Map<String ,String> params =new HashMap<>();
         params.put("bizType",id.toString());
@@ -350,8 +350,8 @@ public class BackUpApplyInfoApi extends BaseApi {
      */
     private void sendReserveSuccessSmsMsg(ApplyInfo info) {
         SmsMsgContent msgContent = new SmsMsgContent();
-        msgContent.setTitle("备勤间预约成功通知");
-        msgContent.setContent(StrUtil.format("【龙华区人民检察院】【门禁预约】{}您好，您的门禁预约已通过，入住信息如下：入住时间：{}，房号【{}】,注意保管好个人物品，以免丢失。开门权限于明早九点自动失效，请您按时离开房间，多谢合作。"
+        msgContent.setTitle("门禁预约成功通知");
+        msgContent.setContent(StrUtil.format("【门禁预约】{}您好，您的门禁预约已通过，时间：{}，房号【{}】,请进入智慧龙检APP，在政务管理-门禁预约下找到开门按键，靠近房门按键开门，手机注意打开蓝牙。开门权限于明早九点自动失效，请您注意保持房间卫生，及时收拾好室内物品，谢谢！"
                 , info.getApplicant(), DateUtil.format(info.getStartTime(),"yyyy年MM月dd日"), info.getRoomNum()));
         MsgPushUtils.push(msgContent, info.getApplyId().toString(), "umap_backup_success", "[CODE]"+info.getApplicantPhoneNumber());
         MsgPushUtils.getMsgPushTask().execute();

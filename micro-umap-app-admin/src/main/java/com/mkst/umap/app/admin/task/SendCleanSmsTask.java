@@ -37,7 +37,7 @@ public class SendCleanSmsTask {
     public void sendCleanMsg() {
         Date date = new Date();
         StringBuilder msg = new StringBuilder();
-        msg.append("【龙华区人民检察院】【门禁预约】您好，昨晚");
+        msg.append("【门禁预约】您好，昨晚");
         date = DateUtil.offsetDay(date, -1);
         date = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd"),"yyyy-MM-dd");
 
@@ -49,7 +49,7 @@ public class SendCleanSmsTask {
         List<String> roomStrs = applyInfoService.selectApplyUseRoomList(date);
         if (CollectionUtil.isNotEmpty(roomStrs)) {
             SmsMsgContent msgContent = new SmsMsgContent();
-            msgContent.setTitle("备勤间预约成功通知");
+            msgContent.setTitle("房间清洁通知");
             roomStrs.forEach(str ->{
                 msg.append("【" + str + "】");
             });
