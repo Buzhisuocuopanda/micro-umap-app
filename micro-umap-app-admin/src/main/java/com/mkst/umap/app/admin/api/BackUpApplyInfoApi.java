@@ -624,9 +624,15 @@ public class BackUpApplyInfoApi extends BaseApi {
         }
 		for(int i = 1 ; i <= limitDayCount ; date = DateUtil.offsetDay(date , 1)){
 			//如果是最后一天 校验是否到了开放时间
-			date = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd"),"yyyy-MM-dd");
-			if(i == limitDayCount && !checkOpen(openTime)){
-				break;
+            NameCountResult c = new NameCountResult();
+            c.setName(DateUtil.format(date,"yyyy-MM-dd"));
+            date = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd"),"yyyy-MM-dd");
+            boolean b = checkOpen(date, openTime);
+            if(i == limitDayCount && !checkOpen(date, openTime)){
+                c.setInfo("不可预约");
+                c.setStatus(false);
+                result.add(c);
+                break;
 			}
 			if(HolidayUtil.isHoliday(date)){
 				//如果预约提前天数不用忽略假日 则累计
@@ -644,15 +650,13 @@ public class BackUpApplyInfoApi extends BaseApi {
 			if(todayApplySexNum + todayApplyOrderSexRoomNum < totalApplyNum) {
 				available = true;
 			}
-			
-			NameCountResult c = new NameCountResult();
-			c.setName(DateUtil.format(date,"yyyy-MM-dd"));
+
 			if(available){
 				c.setInfo("可预约");
 				c.setStatus(true);
 			}else{
 				c.setInfo("已约满");
-				c.setStatus(false);
+                c.setStatus(false);
 			}
 			result.add(c);
 			i++;
@@ -665,8 +669,8 @@ public class BackUpApplyInfoApi extends BaseApi {
 	 * @param openTimeStr
 	 * @return
 	 */
-	private boolean checkOpen(String openTimeStr){
-		Date openTime = DateUtil.parse(DateUtil.format(new Date(),"yyyy-MM-dd ")+ openTimeStr , "yyyy-MM-dd HH:mm");
+	private boolean checkOpen(Date date, String openTimeStr){
+		Date openTime = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd ")+ openTimeStr , "yyyy-MM-dd HH:mm");
 		return new Date().getTime() > openTime.getTime();
 	}
 
