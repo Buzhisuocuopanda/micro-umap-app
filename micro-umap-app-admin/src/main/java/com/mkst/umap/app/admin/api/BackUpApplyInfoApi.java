@@ -1,36 +1,15 @@
 package com.mkst.umap.app.admin.api;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.mkst.mini.systemplus.basic.domain.content.SmsMsgContent;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.mkst.mini.systemplus.api.common.annotation.ApiLog;
 import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.common.enums.ApiOperatorType;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
 import com.mkst.mini.systemplus.basic.domain.content.AppMsgContent;
+import com.mkst.mini.systemplus.basic.domain.content.SmsMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.base.Result;
 import com.mkst.mini.systemplus.common.base.ResultGenerator;
@@ -66,13 +45,31 @@ import com.mkst.umap.app.common.enums.AuditRecordTypeEnum;
 import com.mkst.umap.app.common.enums.AuditStatusEnum;
 import com.mkst.umap.app.common.enums.BusinessTypeEnum;
 import com.mkst.umap.app.common.enums.RoleKeyEnum;
-
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName ApplyInfoApi
@@ -627,7 +624,6 @@ public class BackUpApplyInfoApi extends BaseApi {
             NameCountResult c = new NameCountResult();
             c.setName(DateUtil.format(date,"yyyy-MM-dd"));
             date = DateUtil.parse(DateUtil.format(date,"yyyy-MM-dd"),"yyyy-MM-dd");
-            boolean b = checkOpen(date, openTime);
             if(i == limitDayCount && !checkOpen(date, openTime)){
                 c.setInfo("不可预约");
                 c.setStatus(false);
