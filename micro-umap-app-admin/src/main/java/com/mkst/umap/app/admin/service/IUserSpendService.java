@@ -58,7 +58,7 @@ public interface IUserSpendService
 
 	public String importFromLog(List<UserSpendLog> logList);
 
-    BigDecimal getUserLastBalance(Integer userId);
+    BigDecimal getUserLastBalance(Long userId);
 
 	List<SpentStatisticsResult> selectStatistics(SpendParam param);
 }

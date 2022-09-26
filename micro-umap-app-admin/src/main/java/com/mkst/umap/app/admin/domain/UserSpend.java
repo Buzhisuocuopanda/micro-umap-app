@@ -1,11 +1,13 @@
 package com.mkst.umap.app.admin.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.mkst.mini.systemplus.common.base.BaseEntity;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.mkst.mini.systemplus.common.base.BaseEntity;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 我的消费表 umap_user_spend
@@ -14,6 +16,7 @@ import java.util.Date;
  * @date 2020-11-03
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class UserSpend extends BaseEntity
 {
 	private static final long serialVersionUID = 1L;
@@ -21,7 +24,7 @@ public class UserSpend extends BaseEntity
 	/** 主键 */
 	private Long id;
 	/** 交易用户 */
-	private Integer userId;
+	private Long userId;
 	/** 交易类型（1：充值、2：食堂） */
 	private String type;
 	/** 消费小类（1：早餐、2：中餐、3：晚餐） */

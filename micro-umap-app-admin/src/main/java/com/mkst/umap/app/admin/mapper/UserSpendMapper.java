@@ -70,7 +70,7 @@ public interface UserSpendMapper
 	 * @Param [userId]
 	 * @return java.math.BigDecimal
 	 */
-    BigDecimal getUserLastBalance(Integer userId);
+    BigDecimal getUserLastBalance(Long userId);
 
     /**
      * @Author wangyong

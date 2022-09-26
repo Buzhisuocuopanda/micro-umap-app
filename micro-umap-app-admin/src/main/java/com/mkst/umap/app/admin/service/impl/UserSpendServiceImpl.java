@@ -1,10 +1,22 @@
 package com.mkst.umap.app.admin.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mkst.mini.systemplus.basic.domain.content.SmsMsgContent;
+import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
 import com.mkst.mini.systemplus.common.support.Convert;
 import com.mkst.mini.systemplus.common.utils.StringUtils;
 import com.mkst.mini.systemplus.system.domain.SysUser;
 import com.mkst.mini.systemplus.system.service.ISysUserService;
+import com.mkst.mini.systemplus.util.SysConfigUtil;
 import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult;
 import com.mkst.umap.app.admin.domain.UserSpend;
@@ -13,13 +25,9 @@ import com.mkst.umap.app.admin.mapper.UserSpendMapper;
 import com.mkst.umap.app.admin.service.IUserSpendService;
 import com.mkst.umap.app.common.constant.KeyConstant;
 import com.mkst.umap.base.core.util.UmapDateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 我的消费 服务层实现
@@ -109,42 +117,51 @@ public class UserSpendServiceImpl implements IUserSpendService
 			throw new RuntimeException("导入日志数据不能为空！");
 		}
 		//成功数量
-		int successNum = 0;
+//		int successNum = 0;
 		//失败数量
 		int failureNum = 0;
 		StringBuilder successMsg = new StringBuilder();
 		StringBuilder failureMsg = new StringBuilder();
 
+		// 缓存所有用户列表
+		Map<String, SysUser> mobileMap = new HashMap<String, SysUser>();
+		Map<String, SysUser> nameMap = new HashMap<String, SysUser>();
+		List<SysUser> userList = sysUserService.selectUserList(null);
+		for (SysUser sysUser : userList) {
+			mobileMap.put(sysUser.getPhonenumber(), sysUser);
+			nameMap.put(sysUser.getUserName(), sysUser);
+		}
 		for (UserSpendLog log : logList){
-			if(StringUtils.isBlank(log.getName())){
+			if(StringUtils.isBlank(log.getUserName())){
 				continue;
 			}
-			SysUser sysUser = new SysUser();
-			try {
-				String userName = log.getName().replaceAll(" ", "");
-				sysUser = sysUserService.selectUserByUserName(userName);
-			}catch (Exception e){
-				e.printStackTrace();
+			SysUser sysUser = mobileMap.get(log.getPhonenumber());
+			if(sysUser == null) {
+				sysUser = nameMap.get(log.getUserName());
 			}
 			if(sysUser == null || StringUtils.isEmpty(sysUser.getLoginName())){
 				failureNum++;
-				failureMsg.append("<br/>" + failureNum + "、用户 " + log.getName() + " 不存在");
+				failureMsg.append("<br/>" + failureNum + "：用户 [" + log.getUserName() + "]["+log.getPhonenumber()+"] 不存在");
 				continue;
 			}
 
 			UserSpend insertUserSpend = new UserSpend();
-			insertUserSpend.setUserId(Integer.parseInt(String.valueOf(sysUser.getUserId())));
-			insertUserSpend.setType("2");
-			insertUserSpend.setSubType(checkSubType(log.getPayTime()));
-			insertUserSpend.setAmount(log.getAmount());
+			insertUserSpend.setUserId(sysUser.getUserId());
+			insertUserSpend.setType(log.getTransactionType());
+			insertUserSpend.setAmount(log.getTransactionAmount());
+			insertUserSpend.setPayTime(log.getTransactionTime());
 			insertUserSpend.setBalance(log.getBalance());
-			insertUserSpend.setPayTime(log.getPayTime());
 			insertUserSpend.setCreateTime(new Date());
 
 			userSpendMapper.insertUserSpend(insertUserSpend);
-			successNum++;
-			successMsg.append("<br/>" + successNum + "用户："  + log.getName()+" 日志导入成功");
-
+			
+			// 余额小于100，短信提醒通知充值
+			SmsMsgContent msgContent = new SmsMsgContent();
+	        msgContent.setTitle("食堂余额不足提醒");
+	        msgContent.setContent(StrUtil.format("您的食堂余额为%s元，为不影响您的正常就餐，请留意余额情况并在本月%s日及时向财务充值"
+	                , log.getBalance().toString(), SysConfigUtil.getKey("umap_canteen_recharge_date")));
+	        MsgPushUtils.push(msgContent, insertUserSpend.getId().toString(), "umap_backup_success", "[CODE]"+log.getPhonenumber());
+	        MsgPushUtils.getMsgPushTask().execute();
 		}
 
 		if (failureNum > 0)
@@ -154,29 +171,11 @@ public class UserSpendServiceImpl implements IUserSpendService
 		}
 		else
 		{
-			successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+			successMsg.append("全部导入成功！共 " + logList.size() + " 条。");
 		}
 		return successMsg.toString();
 	}
-
-	private String checkSubType(Date payTime) {
-		Date date1 = new Date(payTime.getTime());
-		date1.setHours(10);
-		date1.setMinutes(0);
-		date1.setSeconds(0);
-		Date date2 = new Date(payTime.getTime());
-		date2.setHours(15);
-		date2.setMinutes(0);
-		date2.setSeconds(0);
-
-		if (payTime.before(date1)){
-			return "1";
-		}else if (payTime.before(date2)){
-			return "2";
-		}
-		return "3";
-	}
-
+	
 	/**
 	 * @author wangyong
 	 * @description 获取用户约
@@ -185,7 +184,7 @@ public class UserSpendServiceImpl implements IUserSpendService
 	 * @return java.math.BigDecimal
 	 */
 	@Override
-	public BigDecimal getUserLastBalance(Integer userId) {
+	public BigDecimal getUserLastBalance(Long userId) {
 		UserSpend selectSpend = new UserSpend();
 		selectSpend.setUserId(userId);
 		return userSpendMapper.getUserLastBalance(userId);

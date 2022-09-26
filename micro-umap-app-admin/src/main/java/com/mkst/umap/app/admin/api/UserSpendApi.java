@@ -42,7 +42,7 @@ public class UserSpendApi extends BaseApi {
     @PostMapping(value = "/checkBalance")
     @Log(title = "查询我的饭卡余额", businessType = BusinessType.OTHER)
     public Result checkBalance(HttpServletRequest request){
-        BigDecimal userLastBalance = spendService.getUserLastBalance(Math.toIntExact(getUserId(request)));
+        BigDecimal userLastBalance = spendService.getUserLastBalance(getUserId(request));
         BigDecimal result = BeanUtil.isEmpty(userLastBalance) ? new BigDecimal(0) : userLastBalance;
         return ResultGenerator.genSuccessResult("success",result);
     }
@@ -52,7 +52,7 @@ public class UserSpendApi extends BaseApi {
     @PostMapping(value = "/myList")
     @Log(title = "查询我的消费记录", businessType = BusinessType.OTHER)
     public Result myList(HttpServletRequest request,@ApiParam @RequestBody UserSpend userSpend){
-        userSpend.setUserId(Math.toIntExact(getUserId(request)));
+        userSpend.setUserId(getUserId(request));
         startPage();
         return ResultGenerator.genSuccessResult("success",spendService.selectUserSpendList(userSpend));
     }
