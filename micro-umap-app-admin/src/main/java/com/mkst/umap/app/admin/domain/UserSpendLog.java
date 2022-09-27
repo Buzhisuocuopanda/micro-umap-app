@@ -27,6 +27,8 @@ public class UserSpendLog {
     private String phonenumber;
     @Excel(name = "交易类型")
     private String transactionType;
+    @Excel(name = "交易类型名称")
+    private String transactionTypeName;
     @Excel(name = "交易金额")
     private BigDecimal transactionAmount;
     @Excel(name = "当前余额")

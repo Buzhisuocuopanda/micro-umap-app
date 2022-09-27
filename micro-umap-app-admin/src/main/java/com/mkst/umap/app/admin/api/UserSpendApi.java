@@ -1,6 +1,13 @@
 package com.mkst.umap.app.admin.api;
 
-import cn.hutool.core.bean.BeanUtil;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
 import com.mkst.mini.systemplus.common.annotation.Log;
@@ -10,17 +17,10 @@ import com.mkst.mini.systemplus.common.enums.BusinessType;
 import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.domain.UserSpend;
 import com.mkst.umap.app.admin.service.IUserSpendService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 
 /**
  * @ClassName UserSpendApi
@@ -42,9 +42,8 @@ public class UserSpendApi extends BaseApi {
     @PostMapping(value = "/checkBalance")
     @Log(title = "查询我的饭卡余额", businessType = BusinessType.OTHER)
     public Result checkBalance(HttpServletRequest request){
-        BigDecimal userLastBalance = spendService.getUserLastBalance(getUserId(request));
-        BigDecimal result = BeanUtil.isEmpty(userLastBalance) ? new BigDecimal(0) : userLastBalance;
-        return ResultGenerator.genSuccessResult("success",result);
+    	UserSpend userLastBalance = spendService.getUserLastBalance(getUserId(request));
+        return ResultGenerator.genSuccessResult("success", userLastBalance);
     }
 
     @Login
@@ -55,6 +54,15 @@ public class UserSpendApi extends BaseApi {
         userSpend.setUserId(getUserId(request));
         startPage();
         return ResultGenerator.genSuccessResult("success",spendService.selectUserSpendList(userSpend));
+    }
+    
+    @Login
+    @ApiOperation(value = "获取所有用户余额")
+    @PostMapping(value = "/allUserBalance")
+    @Log(title = "获取所有用户余额", businessType = BusinessType.OTHER)
+    public Result allUserBalance(HttpServletRequest request){
+    	startPage();
+    	return ResultGenerator.genSuccessResult("success",spendService.getAllUserBalance());
     }
 
     @Login

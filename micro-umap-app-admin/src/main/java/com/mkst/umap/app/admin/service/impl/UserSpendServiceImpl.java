@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,7 +127,8 @@ public class UserSpendServiceImpl implements IUserSpendService
 		// 缓存所有用户列表
 		Map<String, SysUser> mobileMap = new HashMap<String, SysUser>();
 		Map<String, SysUser> nameMap = new HashMap<String, SysUser>();
-		List<SysUser> userList = sysUserService.selectUserList(null);
+		Map<String, UserSpend> userMap = new HashMap<String, UserSpend>();
+		List<SysUser> userList = sysUserService.selectUserList(new SysUser());
 		for (SysUser sysUser : userList) {
 			mobileMap.put(sysUser.getPhonenumber(), sysUser);
 			nameMap.put(sysUser.getUserName(), sysUser);
@@ -147,21 +149,31 @@ public class UserSpendServiceImpl implements IUserSpendService
 
 			UserSpend insertUserSpend = new UserSpend();
 			insertUserSpend.setUserId(sysUser.getUserId());
+			insertUserSpend.setUserName(sysUser.getUserName());
 			insertUserSpend.setType(log.getTransactionType());
 			insertUserSpend.setAmount(log.getTransactionAmount());
 			insertUserSpend.setPayTime(log.getTransactionTime());
 			insertUserSpend.setBalance(log.getBalance());
 			insertUserSpend.setCreateTime(new Date());
+			insertUserSpend.setPhonenumber(sysUser.getPhonenumber());
 
 			userSpendMapper.insertUserSpend(insertUserSpend);
 			
+			// 记录每个用户最后的余额
+			userMap.put(sysUser.getUserId().toString(), insertUserSpend);
+		}
+		// 多少余额短信提醒配置
+		int minAmount = Integer.valueOf(SysConfigUtil.getKey("umap_canteen_remind_min_amount"));
+		for (Entry<String, UserSpend> userSpend : userMap.entrySet()) {
 			// 余额小于100，短信提醒通知充值
-			SmsMsgContent msgContent = new SmsMsgContent();
-	        msgContent.setTitle("食堂余额不足提醒");
-	        msgContent.setContent(StrUtil.format("您的食堂余额为%s元，为不影响您的正常就餐，请留意余额情况并在本月%s日及时向财务充值"
-	                , log.getBalance().toString(), SysConfigUtil.getKey("umap_canteen_recharge_date")));
-	        MsgPushUtils.push(msgContent, insertUserSpend.getId().toString(), "umap_backup_success", "[CODE]"+log.getPhonenumber());
-	        MsgPushUtils.getMsgPushTask().execute();
+			if(userSpend.getValue().getBalance().intValue() < minAmount) {
+				SmsMsgContent msgContent = new SmsMsgContent();
+				msgContent.setTitle("食堂余额不足提醒");
+				msgContent.setContent(StrUtil.format("您的食堂余额为%s元，为不影响您的正常就餐，请留意余额情况并在本月%s日及时向财务充值"
+						, userSpend.getValue().getBalance().toString(), SysConfigUtil.getKey("umap_canteen_recharge_date")));
+				MsgPushUtils.push(msgContent, userSpend.getValue().getId().toString(), "umap_backup_success", "[CODE]"+userSpend.getValue().getPhonenumber());
+				MsgPushUtils.getMsgPushTask().execute();
+			}
 		}
 
 		if (failureNum > 0)
@@ -184,10 +196,18 @@ public class UserSpendServiceImpl implements IUserSpendService
 	 * @return java.math.BigDecimal
 	 */
 	@Override
-	public BigDecimal getUserLastBalance(Long userId) {
+	public UserSpend getUserLastBalance(Long userId) {
 		UserSpend selectSpend = new UserSpend();
 		selectSpend.setUserId(userId);
 		return userSpendMapper.getUserLastBalance(userId);
+	}
+	
+	/**
+	 * 获取所有用户余额
+	 */
+	@Override
+	public List<UserSpend> getAllUserBalance() {
+		return userSpendMapper.getAllUserBalance();
 	}
 
 	@Override

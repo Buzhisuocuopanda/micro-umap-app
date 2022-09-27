@@ -25,6 +25,8 @@ public class UserSpend extends BaseEntity
 	private Long id;
 	/** 交易用户 */
 	private Long userId;
+	private String userName;
+	private String deptName;
 	/** 交易类型（1：充值、2：食堂） */
 	private String type;
 	/** 消费小类（1：早餐、2：中餐、3：晚餐） */
@@ -45,5 +47,7 @@ public class UserSpend extends BaseEntity
     /** 结束 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date checkEndTime;
+	
+	private String phonenumber;
 
 }

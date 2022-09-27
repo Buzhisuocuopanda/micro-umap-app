@@ -1,4 +1,6 @@
 INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('食堂充值日', 'umap_canteen_recharge_date', '5', 'N', 'admin', '2022-09-26 20:04:49', '', NULL, '');
+INSERT INTO `sys_config`(`config_name`, `config_key`, `config_value`, `config_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('余额短信提醒阈值', 'umap_canteen_remind_min_amount', '100', 'N', 'admin', '2022-09-27 15:57:36', '', NULL, '');
+
 
 INSERT INTO `sys_dict_type`(`dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('交易类型', 'ecard_transaction_type', '0', 'msa', '2022-09-23 18:54:48', '', NULL, '0：充值、1：退费、2：早餐、3：中餐、4：晚餐');
 INSERT INTO `sys_dict_data`(`dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (0, '充值', '0', 'ecard_transaction_type', '', 'gray', 'Y', '0', 'msa', '2022-09-23 18:55:11', '', NULL, '');

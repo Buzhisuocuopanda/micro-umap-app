@@ -7,6 +7,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="com.mkst.umap.app.admin.domain.UserSpend" id="UserSpendResult">
         <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="deptName"    column="dept_name"    />
         <result property="type"    column="type"    />
         <result property="subType"    column="sub_type"    />
         <result property="amount"    column="amount"    />
@@ -16,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectUserSpendVo">
-        select id, user_id, type, sub_type, amount, balance, pay_time, create_time from umap_user_spend
+        select id, user_id, user_name, type, sub_type, amount, balance, pay_time, create_time from umap_user_spend
     </sql>
 	
     <select id="selectUserSpendList" parameterType="com.mkst.umap.app.admin.domain.UserSpend" resultMap="UserSpendResult">
@@ -24,6 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="id != null "> and id = #{id}</if>
              <if test="userId != null "> and user_id = #{userId}</if>
+             <if test="userName != null "> and user_name = #{userName}</if>
              <if test="type != null  and type != '' "> and type = #{type}</if>
              <if test="subType != null  and subType != '' "> and sub_type = #{subType}</if>
              <if test="amount != null "> and amount = #{amount}</if>
@@ -40,16 +43,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectUserSpendVo"/>
         where id = #{id}
     </select>
-    <select id="getUserLastBalance" resultType="java.math.BigDecimal">
-        SELECT
-            s.balance
-        FROM
-            umap_user_spend s
+    <select id="getUserLastBalance" parameterType="Long" resultMap="UserSpendResult">
+        SELECT user_id, user_name, balance, create_time FROM umap_user_spend
         WHERE
-            s.user_id = #{userId}
+            user_id = #{userId}
         ORDER BY
-            s.pay_time DESC
+            pay_time DESC
         LIMIT 1
+    </select>
+    <select id="getAllUserBalance" resultMap="UserSpendResult">
+        SELECT
+			a.*,
+			u.user_name,
+			d.dept_name,
+			b.balance 
+		FROM
+			( SELECT max( pay_time ) AS pay_time, user_id FROM umap_user_spend GROUP BY user_id ) a
+			LEFT JOIN umap_user_spend b ON a.user_id = b.user_id 
+			AND a.pay_time = b.pay_time
+			LEFT JOIN sys_user u ON a.user_id = u.user_id
+			LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
     </select>
     <!-- 有坑，但是我没有时间改了——————不能直接按月分组，因为那样会导致查出来的数据是全部的数据，
     需要在这个基础上添加数据开始计算的时间，
@@ -78,11 +91,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </select>
 
-    <insert id="insertUserSpend" parameterType="com.mkst.umap.app.admin.domain.UserSpend">
+    <insert id="insertUserSpend" parameterType="com.mkst.umap.app.admin.domain.UserSpend" useGeneratedKeys="true" keyProperty="id">
         insert into umap_user_spend
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="id != null  ">id,</if>
 			<if test="userId != null  ">user_id,</if>
+			<if test="userName != null  ">user_name,</if>
 			<if test="type != null  and type != ''  ">type,</if>
 			<if test="subType != null  and subType != ''  ">sub_type,</if>
 			<if test="amount != null  ">amount,</if>
@@ -93,6 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null  ">#{id},</if>
 			<if test="userId != null  ">#{userId},</if>
+			<if test="userName != null  ">#{userName},</if>
 			<if test="type != null  and type != ''  ">#{type},</if>
 			<if test="subType != null  and subType != ''  ">#{subType},</if>
 			<if test="amount != null  ">#{amount},</if>
@@ -106,6 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update umap_user_spend
         <trim prefix="SET" suffixOverrides=",">
             <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="userName != null  ">user_name = #{userName},</if>
             <if test="type != null  and type != ''  ">type = #{type},</if>
             <if test="subType != null  and subType != ''  ">sub_type = #{subType},</if>
             <if test="amount != null  ">amount = #{amount},</if>

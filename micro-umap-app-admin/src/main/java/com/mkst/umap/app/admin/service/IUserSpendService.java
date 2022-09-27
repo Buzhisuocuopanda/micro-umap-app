@@ -1,12 +1,11 @@
 package com.mkst.umap.app.admin.service;
 
+import java.util.List;
+
 import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult;
 import com.mkst.umap.app.admin.domain.UserSpend;
 import com.mkst.umap.app.admin.domain.UserSpendLog;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * 我的消费 服务层
@@ -58,7 +57,11 @@ public interface IUserSpendService
 
 	public String importFromLog(List<UserSpendLog> logList);
 
-    BigDecimal getUserLastBalance(Long userId);
+	UserSpend getUserLastBalance(Long userId);
+	/**
+	 * 获取所有用户余额
+	 */
+	List<UserSpend> getAllUserBalance();
 
 	List<SpentStatisticsResult> selectStatistics(SpendParam param);
 }
