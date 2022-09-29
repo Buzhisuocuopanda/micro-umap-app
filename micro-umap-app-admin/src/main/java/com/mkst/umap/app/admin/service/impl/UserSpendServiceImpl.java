@@ -24,6 +24,7 @@ import com.mkst.umap.app.admin.domain.UserSpend;
 import com.mkst.umap.app.admin.domain.UserSpendLog;
 import com.mkst.umap.app.admin.dto.userspend.TransactionAmount;
 import com.mkst.umap.app.admin.dto.userspend.UserSpendQrery;
+import com.mkst.umap.app.admin.dto.userspend.UserTransactionAmount;
 import com.mkst.umap.app.admin.mapper.UserSpendMapper;
 import com.mkst.umap.app.admin.service.IUserSpendService;
 import com.mkst.umap.app.common.constant.KeyConstant;
@@ -208,7 +209,7 @@ public class UserSpendServiceImpl implements IUserSpendService
 	 * 获取所有用户余额
 	 */
 	@Override
-	public List<UserSpend> getAllUserBalance(UserSpendQrery userSpendQrery) {
+	public List<UserTransactionAmount> getAllUserBalance(UserSpendQrery userSpendQrery) {
 		return userSpendMapper.getAllUserBalance(userSpendQrery);
 	}
 	/**

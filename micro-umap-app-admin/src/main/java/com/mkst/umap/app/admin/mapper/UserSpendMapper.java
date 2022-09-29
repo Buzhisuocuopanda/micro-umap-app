@@ -7,6 +7,7 @@ import com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult;
 import com.mkst.umap.app.admin.domain.UserSpend;
 import com.mkst.umap.app.admin.dto.userspend.TransactionAmount;
 import com.mkst.umap.app.admin.dto.userspend.UserSpendQrery;
+import com.mkst.umap.app.admin.dto.userspend.UserTransactionAmount;
 
 /**
  * 我的消费 数据层
@@ -75,7 +76,7 @@ public interface UserSpendMapper
 	/**
 	 * 获取所有用户余额
 	 */
-	List<UserSpend> getAllUserBalance(UserSpendQrery userSpendQrery);
+	List<UserTransactionAmount> getAllUserBalance(UserSpendQrery userSpendQrery);
 	/**
 	 * 获取指定月份的交易流水总金额
 	 */

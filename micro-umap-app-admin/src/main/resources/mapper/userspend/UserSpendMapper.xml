@@ -51,14 +51,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             pay_time DESC
         LIMIT 1
     </select>
-    <select id="getAllUserBalance" parameterType="com.mkst.umap.app.admin.dto.userspend.UserSpendQrery" resultMap="UserSpendResult">
+    <select id="getAllUserBalance" parameterType="com.mkst.umap.app.admin.dto.userspend.UserSpendQrery" resultType="com.mkst.umap.app.admin.dto.userspend.UserTransactionAmount">
 		SELECT
-			a.*,
-			u.user_name,
-			d.dept_name,
+			a.pay_time as payTime,
+			a.user_id as userId,
+			a.rechargeAmount,
+			a.consumeAmount,
+			u.user_name as userName,
+			d.dept_name as deptName,
 			b.balance 
 		FROM
-			( SELECT max( pay_time ) AS pay_time, user_id FROM umap_user_spend 
+			( SELECT max( pay_time ) AS pay_time, sum( CASE WHEN type = 0 THEN amount ELSE 0 END ) AS rechargeAmount, sum( CASE WHEN type = 0 THEN 0 ELSE amount END ) AS consumeAmount, user_id FROM umap_user_spend 
 			<where>
 				<if test="transactionMonth != null  and transactionMonth != ''">
 					DATE_FORMAT( pay_time, '%Y-%m' ) = #{transactionMonth} 
