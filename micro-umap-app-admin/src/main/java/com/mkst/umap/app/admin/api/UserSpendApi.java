@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gexin.rp.sdk.base.uitls.StringUtils;
 import com.mkst.mini.systemplus.api.common.annotation.Login;
 import com.mkst.mini.systemplus.api.web.base.BaseApi;
 import com.mkst.mini.systemplus.common.annotation.Log;
@@ -16,6 +17,7 @@ import com.mkst.mini.systemplus.common.base.ResultGenerator;
 import com.mkst.mini.systemplus.common.enums.BusinessType;
 import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.domain.UserSpend;
+import com.mkst.umap.app.admin.dto.userspend.UserSpendQrery;
 import com.mkst.umap.app.admin.service.IUserSpendService;
 
 import io.swagger.annotations.Api;
@@ -57,12 +59,23 @@ public class UserSpendApi extends BaseApi {
     }
     
     @Login
+    @ApiOperation(value = "获取月度交易流水总金额")
+    @PostMapping(value = "/totalTransactionAmount")
+    @Log(title = "获取月度交易流水总金额", businessType = BusinessType.OTHER)
+    public Result totalTransactionAmount(HttpServletRequest request, @ApiParam @RequestBody UserSpendQrery userSpendQrery){
+    	if(StringUtils.isBlank(userSpendQrery.getTransactionMonth())) {
+    		return ResultGenerator.genFailResult("请选择月份");
+    	}
+    	return ResultGenerator.genSuccessResult("success",spendService.getTotalTransactionAmount(userSpendQrery.getTransactionMonth()));
+    }
+    
+    @Login
     @ApiOperation(value = "获取所有用户余额")
     @PostMapping(value = "/allUserBalance")
     @Log(title = "获取所有用户余额", businessType = BusinessType.OTHER)
-    public Result allUserBalance(HttpServletRequest request){
+    public Result allUserBalance(HttpServletRequest request, @ApiParam @RequestBody UserSpendQrery userSpendQrery){
     	startPage();
-    	return ResultGenerator.genSuccessResult("success",spendService.getAllUserBalance());
+    	return ResultGenerator.genSuccessResult("success",spendService.getAllUserBalance(userSpendQrery));
     }
 
     @Login

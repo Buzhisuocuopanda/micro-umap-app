@@ -51,18 +51,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             pay_time DESC
         LIMIT 1
     </select>
-    <select id="getAllUserBalance" resultMap="UserSpendResult">
-        SELECT
+    <select id="getAllUserBalance" parameterType="com.mkst.umap.app.admin.dto.userspend.UserSpendQrery" resultMap="UserSpendResult">
+		SELECT
 			a.*,
 			u.user_name,
 			d.dept_name,
 			b.balance 
 		FROM
-			( SELECT max( pay_time ) AS pay_time, user_id FROM umap_user_spend GROUP BY user_id ) a
+			( SELECT max( pay_time ) AS pay_time, user_id FROM umap_user_spend 
+			<where>
+				<if test="transactionMonth != null  and transactionMonth != ''">
+					DATE_FORMAT( pay_time, '%Y-%m' ) = #{transactionMonth} 
+				</if>
+			</where>	
+			GROUP BY user_id ) a
 			LEFT JOIN umap_user_spend b ON a.user_id = b.user_id 
 			AND a.pay_time = b.pay_time
 			LEFT JOIN sys_user u ON a.user_id = u.user_id
-			LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+			LEFT JOIN sys_dept d ON u.dept_id = d.dept_id 
+		<where>
+			<if test="userId != null">
+				and u.user_id = #{userId}
+			</if>
+			<if test="deptId != null">
+				and u.dept_id = #{deptId}
+			</if>
+		</where>
+    </select>
+    <select id="getTotalTransactionAmount" resultType="com.mkst.umap.app.admin.dto.userspend.TransactionAmount">
+        SELECT
+			sum( amount ) AS flowAmount,
+			sum( CASE WHEN type = 0 THEN amount ELSE 0 END ) AS rechargeAmount,
+			sum( CASE WHEN type = 0 THEN 0 ELSE amount END ) AS consumeAmount 
+		FROM
+			umap_user_spend 
+		WHERE
+			DATE_FORMAT( pay_time, '%Y-%m' ) = #{transactionMonth}
+		<!-- 解决空行问题 -->
+		GROUP BY DATE_FORMAT( pay_time, '%Y-%m' )
     </select>
     <!-- 有坑，但是我没有时间改了——————不能直接按月分组，因为那样会导致查出来的数据是全部的数据，
     需要在这个基础上添加数据开始计算的时间，

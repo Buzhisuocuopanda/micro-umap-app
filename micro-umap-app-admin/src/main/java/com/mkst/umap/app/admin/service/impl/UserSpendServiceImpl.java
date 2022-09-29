@@ -22,6 +22,8 @@ import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult;
 import com.mkst.umap.app.admin.domain.UserSpend;
 import com.mkst.umap.app.admin.domain.UserSpendLog;
+import com.mkst.umap.app.admin.dto.userspend.TransactionAmount;
+import com.mkst.umap.app.admin.dto.userspend.UserSpendQrery;
 import com.mkst.umap.app.admin.mapper.UserSpendMapper;
 import com.mkst.umap.app.admin.service.IUserSpendService;
 import com.mkst.umap.app.common.constant.KeyConstant;
@@ -206,8 +208,15 @@ public class UserSpendServiceImpl implements IUserSpendService
 	 * 获取所有用户余额
 	 */
 	@Override
-	public List<UserSpend> getAllUserBalance() {
-		return userSpendMapper.getAllUserBalance();
+	public List<UserSpend> getAllUserBalance(UserSpendQrery userSpendQrery) {
+		return userSpendMapper.getAllUserBalance(userSpendQrery);
+	}
+	/**
+	 * 获取指定月份的交易流水总金额
+	 */
+	@Override
+	public TransactionAmount getTotalTransactionAmount(String transactionMonth) {
+		return userSpendMapper.getTotalTransactionAmount(transactionMonth);
 	}
 
 	@Override

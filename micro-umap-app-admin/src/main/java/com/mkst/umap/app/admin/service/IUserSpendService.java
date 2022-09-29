@@ -6,6 +6,8 @@ import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult;
 import com.mkst.umap.app.admin.domain.UserSpend;
 import com.mkst.umap.app.admin.domain.UserSpendLog;
+import com.mkst.umap.app.admin.dto.userspend.TransactionAmount;
+import com.mkst.umap.app.admin.dto.userspend.UserSpendQrery;
 
 /**
  * 我的消费 服务层
@@ -61,7 +63,11 @@ public interface IUserSpendService
 	/**
 	 * 获取所有用户余额
 	 */
-	List<UserSpend> getAllUserBalance();
+	List<UserSpend> getAllUserBalance(UserSpendQrery userSpendQrery);
+	/**
+	 * 获取指定月份的交易流水总金额
+	 */
+	TransactionAmount getTotalTransactionAmount(String transactionMonth);
 
 	List<SpentStatisticsResult> selectStatistics(SpendParam param);
 }
