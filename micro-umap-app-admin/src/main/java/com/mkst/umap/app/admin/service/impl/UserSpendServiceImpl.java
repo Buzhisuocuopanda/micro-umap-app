@@ -10,9 +10,11 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mkst.mini.systemplus.basic.domain.content.SmsMsgContent;
 import com.mkst.mini.systemplus.basic.utils.MsgPushUtils;
+import com.mkst.mini.systemplus.common.base.AjaxResult;
 import com.mkst.mini.systemplus.common.support.Convert;
 import com.mkst.mini.systemplus.common.utils.StringUtils;
 import com.mkst.mini.systemplus.system.domain.SysUser;
@@ -31,7 +33,7 @@ import com.mkst.umap.app.common.constant.KeyConstant;
 import com.mkst.umap.base.core.util.UmapDateUtils;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 我的消费 服务层实现
@@ -39,6 +41,7 @@ import cn.hutool.core.util.StrUtil;
  * @author wangyong
  * @date 2020-11-03
  */
+@Slf4j
 @Service
 public class UserSpendServiceImpl implements IUserSpendService 
 {
@@ -115,7 +118,8 @@ public class UserSpendServiceImpl implements IUserSpendService
 	 * @return java.lang.String
 	 */
 	@Override
-	public String importFromLog(List<UserSpendLog> logList) {
+	@Transactional
+	public AjaxResult importFromLog(List<UserSpendLog> logList) {
 
 		if (CollectionUtil.isEmpty(logList)){
 			throw new RuntimeException("导入日志数据不能为空！");
@@ -144,51 +148,58 @@ public class UserSpendServiceImpl implements IUserSpendService
 			if(sysUser == null) {
 				sysUser = nameMap.get(log.getUserName());
 			}
-			if(sysUser == null || StringUtils.isEmpty(sysUser.getLoginName())){
-				failureNum++;
-				failureMsg.append("<br/>" + failureNum + "：用户 [" + log.getUserName() + "]["+log.getPhonenumber()+"] 不存在");
-				continue;
-			}
-
 			UserSpend insertUserSpend = new UserSpend();
-			insertUserSpend.setUserId(sysUser.getUserId());
-			insertUserSpend.setUserName(sysUser.getUserName());
 			insertUserSpend.setType(log.getTransactionType());
 			insertUserSpend.setAmount(log.getTransactionAmount());
 			insertUserSpend.setPayTime(log.getTransactionTime());
 			insertUserSpend.setBalance(log.getBalance());
 			insertUserSpend.setCreateTime(new Date());
-			insertUserSpend.setPhonenumber(sysUser.getPhonenumber());
+			if(sysUser == null){
+				failureNum++;
+				failureMsg.append("<br/>" + failureNum + "：用户 [" + log.getUserName() + "]["+log.getPhonenumber()+"] 不存在");
+				// 固定一个异常用户ID
+				insertUserSpend.setUserId(999999l);
+				insertUserSpend.setUserName(log.getUserId() + "-" + log.getUserName());
+				insertUserSpend.setPhonenumber(log.getPhonenumber());
+			}else {
+				insertUserSpend.setUserId(sysUser.getUserId());
+				insertUserSpend.setUserName(sysUser.getUserName());
+				insertUserSpend.setPhonenumber(sysUser.getPhonenumber());
+				// 记录每个用户最后的余额
+				userMap.put(sysUser.getUserId().toString(), insertUserSpend);
+			}
 
 			userSpendMapper.insertUserSpend(insertUserSpend);
-			
-			// 记录每个用户最后的余额
-			userMap.put(sysUser.getUserId().toString(), insertUserSpend);
 		}
-		// 多少余额短信提醒配置
-		int minAmount = Integer.valueOf(SysConfigUtil.getKey("umap_canteen_remind_min_amount"));
-		for (Entry<String, UserSpend> userSpend : userMap.entrySet()) {
-			// 余额小于100，短信提醒通知充值
-			if(userSpend.getValue().getBalance().intValue() < minAmount) {
-				SmsMsgContent msgContent = new SmsMsgContent();
-				msgContent.setTitle("食堂余额不足提醒");
-				msgContent.setContent(StrUtil.format("您的食堂余额为%s元，为不影响您的正常就餐，请留意余额情况并在本月%s日及时向财务充值"
-						, userSpend.getValue().getBalance().toString(), SysConfigUtil.getKey("umap_canteen_recharge_date")));
-				MsgPushUtils.push(msgContent, userSpend.getValue().getId().toString(), "umap_backup_success", "[CODE]"+userSpend.getValue().getPhonenumber());
-				MsgPushUtils.getMsgPushTask().execute();
+		// 短信通知开关
+		String remindSwitch = SysConfigUtil.getKey("umap_canteen_remind_switch");
+		if("Y".equalsIgnoreCase(remindSwitch)) {
+			// 多少余额短信提醒配置
+			int minAmount = Integer.valueOf(SysConfigUtil.getKey("umap_canteen_remind_min_amount"));
+			for (Entry<String, UserSpend> userSpend : userMap.entrySet()) {
+				// 余额小于100，短信提醒通知充值
+				if(userSpend.getValue().getBalance().intValue() < minAmount) {
+					SmsMsgContent msgContent = new SmsMsgContent();
+					msgContent.setTitle("食堂余额不足提醒");
+					msgContent.setContent(String.format("您的食堂余额为%s元，为不影响您的正常就餐，请留意余额情况并在本月%s日及时向财务充值"
+							, userSpend.getValue().getBalance().toString(), SysConfigUtil.getKey("umap_canteen_recharge_date")));
+					MsgPushUtils.push(msgContent, userSpend.getValue().getId().toString(), "umap_backup_success", "[CODE]"+userSpend.getValue().getPhonenumber());
+					MsgPushUtils.getMsgPushTask().execute();
+				}
 			}
 		}
 
 		if (failureNum > 0)
 		{
 			failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
-			throw new RuntimeException(failureMsg.toString());
+			log.error(failureMsg.toString());
+			return AjaxResult.error("导入失败！共 " + failureNum + " 条数据格式不正确，请联系管理员。");
 		}
 		else
 		{
 			successMsg.append("全部导入成功！共 " + logList.size() + " 条。");
 		}
-		return successMsg.toString();
+		return AjaxResult.success(successMsg.toString());
 	}
 	
 	/**

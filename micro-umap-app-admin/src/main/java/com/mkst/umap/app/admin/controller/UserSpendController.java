@@ -130,7 +130,7 @@ public class UserSpendController extends BaseController
 		List<UserSpendLog> logList = new ArrayList<>();
 		ExcelUtil<UserSpendLog> logUtil = new ExcelUtil<>(UserSpendLog.class);
 		logList = logUtil.importExcel(file.getInputStream());
-		return success(userSpendService.importFromLog(logList));
+		return userSpendService.importFromLog(logList);
 	}
 	
 }

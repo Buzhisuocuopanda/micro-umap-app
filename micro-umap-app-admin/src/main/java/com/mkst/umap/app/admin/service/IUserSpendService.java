@@ -2,6 +2,7 @@ package com.mkst.umap.app.admin.service;
 
 import java.util.List;
 
+import com.mkst.mini.systemplus.common.base.AjaxResult;
 import com.mkst.umap.app.admin.api.bean.param.SpendParam;
 import com.mkst.umap.app.admin.api.bean.result.SpentStatisticsResult;
 import com.mkst.umap.app.admin.domain.UserSpend;
@@ -58,7 +59,7 @@ public interface IUserSpendService
      */
 	public int deleteUserSpendByIds(String ids);
 
-	public String importFromLog(List<UserSpendLog> logList);
+	public AjaxResult importFromLog(List<UserSpendLog> logList);
 
 	UserSpend getUserLastBalance(Long userId);
 	/**

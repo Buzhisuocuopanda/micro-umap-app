@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mkst.mini.systemplus.common.base.BaseEntity;
+import com.mkst.mini.systemplus.common.support.Convert;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,4 +51,11 @@ public class UserSpend extends BaseEntity
 	
 	private String phonenumber;
 
+	
+	public static void main(String[] args) {
+		String a = "\t-10";
+		a = a.replaceAll("\\s*|\r|\n|\t","");
+		System.out.println(a);
+		System.out.println(Convert.toBigDecimal(a));
+	}
 }
