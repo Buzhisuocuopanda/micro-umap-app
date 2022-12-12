@@ -47,10 +47,12 @@ public class SmsApi {
             ,@RequestParam("uuid") String uuid ,@RequestParam("imgCode") String imgCode) throws IOException {
         SysUser sysUser = sysUserService.selectUserByPhoneNumber(phone);
         if(KeyConstant.SMS_SEND_REGISTERED.equals(type)&&sysUser!=null){
-            return ResultGenerator.genFailResult("手机号已注册");
+        	log.warn("【账号注册】发送短信验证码警告，手机号已注册：{}", phone);
+            return ResultGenerator.genFailResult("发送成功");
         }
         if(KeyConstant.SMS_SEND_RESET_PASSWORD.equals(type)&&sysUser==null){
-            return ResultGenerator.genFailResult("手机号未注册");
+        	log.warn("【重置密码】发送短信验证码警告，手机号未注册：{}", phone);
+            return ResultGenerator.genFailResult("发送成功");
         }
         if(!checkSendNum(phone)){
             return ResultGenerator.genFailResult("您的手机号发送已到上限");
