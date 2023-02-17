@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header2('新增购物车')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-cart-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户编号：</label>
+                <div class="col-sm-8">
+                    <input name="userId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商品SPU：</label>
+                <div class="col-sm-8">
+                    <input name="spuId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商品SKU：</label>
+                <div class="col-sm-8">
+                    <input name="skuId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">数量：</label>
+                <div class="col-sm-8">
+                    <input name="quantity" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">加入时的spu名字：</label>
+                <div class="col-sm-8">
+                    <input name="spuName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">加入时价格：</label>
+                <div class="col-sm-8">
+                    <input name="addPrice" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">加入时的规格信息：</label>
+                <div class="col-sm-8">
+                    <input name="specInfo" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">图片：</label>
+                <div class="col-sm-8">
+                    <textarea name="picUrl" class="form-control"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer2" />
+    <script th:inline="javascript">
+        var prefix = ctx + "mall/cart"
+        $("#form-cart-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-cart-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header2('订单列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>所属租户：</label>
+                                <input type="text" name="tenantId"/>
+                            </li>
+                            <li>
+                                <label>应用类型1、小程序：</label>
+                                <select name="appType">
+                                    <option value="">所有</option>
+                                    <option value="-1">代码生成请选择字典属性</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>应用ID：</label>
+                                <input type="text" name="appId"/>
+                            </li>
+                            <li>
+                                <label>用户id：</label>
+                                <input type="text" name="userId"/>
+                            </li>
+                            <li>
+                                <label>订单单号：</label>
+                                <input type="text" name="orderNo"/>
+                            </li>
+                            <li>
+                                <label>支付方式1、货到付款；2、在线支付：</label>
+                                <input type="text" name="paymentWay"/>
+                            </li>
+                            <li>
+                                <label>配送方式1、普通快递；2、上门自提：</label>
+                                <input type="text" name="deliveryWay"/>
+                            </li>
+                            <li>
+                                <label>支付类型1、微信支付；2、支付宝支付：</label>
+                                <select name="paymentType">
+                                    <option value="">所有</option>
+                                    <option value="-1">代码生成请选择字典属性</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>是否支付0、未支付 1、已支付：</label>
+                                <input type="text" name="isPay"/>
+                            </li>
+                            <li>
+                                <label>订单名：</label>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <label>订单状态1、待发货 2、待收货 3、确认收货/已完成 5、已关闭 10、拼团中：</label>
+                                <select name="status">
+                                    <option value="">所有</option>
+                                    <option value="-1">代码生成请选择字典属性</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>评价状态0、未评；1、已评；2、已追评：</label>
+                                <select name="appraisesStatus">
+                                    <option value="">所有</option>
+                                    <option value="-1">代码生成请选择字典属性</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>运费金额：</label>
+                                <input type="text" name="freightPrice"/>
+                            </li>
+                            <li>
+                                <label>销售金额：</label>
+                                <input type="text" name="salesPrice"/>
+                            </li>
+                            <li>
+                                <label>积分抵扣金额：</label>
+                                <input type="text" name="paymentPointsPrice"/>
+                            </li>
+                            <li>
+                                <label>电子券抵扣金额：</label>
+                                <input type="text" name="paymentCouponPrice"/>
+                            </li>
+                            <li>
+                                <label>支付金额：</label>
+                                <input type="text" name="paymentPrice"/>
+                            </li>
+                            <li>
+                                <label>支付积分：</label>
+                                <input type="text" name="paymentPoints"/>
+                            </li>
+                            <li>
+                                <label>付款时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择付款时间" name="paymentTime"/>
+                            </li>
+                            <li>
+                                <label>发货时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择发货时间" name="deliveryTime"/>
+                            </li>
+                            <li>
+                                <label>收货时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择收货时间" name="receiverTime"/>
+                            </li>
+                            <li>
+                                <label>成交时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择成交时间" name="closingTime"/>
+                            </li>
+                            <li>
+                                <label>买家留言：</label>
+                                <input type="text" name="userMessage"/>
+                            </li>
+                            <li>
+                                <label>物流id：</label>
+                                <input type="text" name="logisticsId"/>
+                            </li>
+                            <li>
+                                <label>支付交易ID：</label>
+                                <input type="text" name="transactionId"/>
+                            </li>
+                            <li>
+                                <label>订单类型：</label>
+                                <select name="orderType">
+                                    <option value="">所有</option>
+                                    <option value="-1">代码生成请选择字典属性</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>营销ID：</label>
+                                <input type="text" name="marketId"/>
+                            </li>
+                            <li>
+                                <label>营销记录ID：</label>
+                                <input type="text" name="relationId"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="mall:orderinfo:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="mall:orderinfo:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="mall:orderinfo:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="mall:orderinfo:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer2" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('mall:orderinfo:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('mall:orderinfo:remove')}]];
+        var prefix = ctx + "mall/orderinfo";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "订单",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: 'PK',
+                    visible: false
+                },
+                {
+                    field: 'tenantId',
+                    title: '所属租户'
+                },
+                {
+                    field: 'appType',
+                    title: '应用类型1、小程序'
+                },
+                {
+                    field: 'appId',
+                    title: '应用ID'
+                },
+                {
+                    field: 'userId',
+                    title: '用户id'
+                },
+                {
+                    field: 'orderNo',
+                    title: '订单单号'
+                },
+                {
+                    field: 'paymentWay',
+                    title: '支付方式1、货到付款；2、在线支付'
+                },
+                {
+                    field: 'deliveryWay',
+                    title: '配送方式1、普通快递；2、上门自提'
+                },
+                {
+                    field: 'paymentType',
+                    title: '支付类型1、微信支付；2、支付宝支付'
+                },
+                {
+                    field: 'isPay',
+                    title: '是否支付0、未支付 1、已支付'
+                },
+                {
+                    field: 'name',
+                    title: '订单名'
+                },
+                {
+                    field: 'status',
+                    title: '订单状态1、待发货 2、待收货 3、确认收货/已完成 5、已关闭 10、拼团中'
+                },
+                {
+                    field: 'appraisesStatus',
+                    title: '评价状态0、未评；1、已评；2、已追评'
+                },
+                {
+                    field: 'freightPrice',
+                    title: '运费金额'
+                },
+                {
+                    field: 'salesPrice',
+                    title: '销售金额'
+                },
+                {
+                    field: 'paymentPointsPrice',
+                    title: '积分抵扣金额'
+                },
+                {
+                    field: 'paymentCouponPrice',
+                    title: '电子券抵扣金额'
+                },
+                {
+                    field: 'paymentPrice',
+                    title: '支付金额'
+                },
+                {
+                    field: 'paymentPoints',
+                    title: '支付积分'
+                },
+                {
+                    field: 'paymentTime',
+                    title: '付款时间'
+                },
+                {
+                    field: 'deliveryTime',
+                    title: '发货时间'
+                },
+                {
+                    field: 'receiverTime',
+                    title: '收货时间'
+                },
+                {
+                    field: 'closingTime',
+                    title: '成交时间'
+                },
+                {
+                    field: 'userMessage',
+                    title: '买家留言'
+                },
+                {
+                    field: 'logisticsId',
+                    title: '物流id'
+                },
+                {
+                    field: 'transactionId',
+                    title: '支付交易ID'
+                },
+                {
+                    field: 'orderType',
+                    title: '订单类型'
+                },
+                {
+                    field: 'marketId',
+                    title: '营销ID'
+                },
+                {
+                    field: 'relationId',
+                    title: '营销记录ID'
+                },
+                {
+                    field: 'remark',
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

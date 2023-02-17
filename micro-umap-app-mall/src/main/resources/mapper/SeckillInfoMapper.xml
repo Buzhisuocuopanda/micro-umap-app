@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2018-2019
+  ~ All rights reserved, Designed By www.joolun.com
+  ~ 注意：
+  ~ 本软件为www.joolun.com开发研制，未经购买不得使用
+  ~ 购买后可获得全部源代码（禁止转卖、分享、上传到码云、github等开源平台）
+  ~ 一经发现盗用、分享等行为，将追究法律责任，后果自负
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mkst.umap.app.mall.mapper.SeckillInfoMapper">
+
+    <resultMap id="seckillInfoMap" type="com.mkst.umap.app.mall.common.entity.SeckillInfo">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="sort" column="sort"/>
+        <result property="enable" column="enable"/>
+        <result property="spuId" column="spu_id"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="name" column="name"/>
+        <result property="seckillPrice" column="seckill_price"/>
+        <result property="seckillNum" column="seckill_num"/>
+        <result property="eachLimitNum" column="each_limit_num"/>
+        <result property="limitNum" column="limit_num"/>
+        <result property="picUrl" column="pic_url"/>
+        <result property="seckillRule" column="seckill_rule"/>
+        <result property="shareTitle" column="share_title"/>
+		<result property="version" column="version"/>
+    </resultMap>
+
+	<resultMap id="seckillInfoMap1" extends="seckillInfoMap" type="com.mkst.umap.app.mall.common.entity.SeckillInfo">
+		<result property="seckillHallInfo.id" column="seckill_hall_info_id"/>
+		<collection property="goodsSku" ofType="com.mkst.umap.app.mall.common.entity.GoodsSku"
+					select="com.mkst.umap.app.mall.mapper.GoodsSkuMapper.selectById"
+					column="{id=sku_id}">
+		</collection>
+	</resultMap>
+
+	<resultMap id="seckillInfoMap2" extends="seckillInfoMap" type="com.mkst.umap.app.mall.common.entity.SeckillInfo">
+		<collection property="goodsSpu" ofType="com.mkst.umap.app.mall.common.entity.GoodsSpu"
+					select="com.mkst.umap.app.mall.mapper.GoodsSpuMapper.selectById"
+					column="{id=spu_id}">
+		</collection>
+		<collection property="goodsSku" ofType="com.mkst.umap.app.mall.common.entity.GoodsSku"
+					select="com.mkst.umap.app.mall.mapper.GoodsSkuMapper.getGoodsSkuById"
+					column="{id=sku_id}">
+		</collection>
+	</resultMap>
+
+    <sql id="seckillInfoSql">
+        seckill_info.`id`,
+        seckill_info.`tenant_id`,
+        seckill_info.`del_flag`,
+        seckill_info.`create_time`,
+        seckill_info.`update_time`,
+        seckill_info.`create_id`,
+        seckill_info.`sort`,
+        seckill_info.`enable`,
+        seckill_info.`spu_id`,
+        seckill_info.`sku_id`,
+        seckill_info.`name`,
+        seckill_info.`seckill_price`,
+        seckill_info.`seckill_num`,
+        seckill_info.`each_limit_num`,
+        seckill_info.`limit_num`,
+        seckill_info.`pic_url`,
+        seckill_info.`seckill_rule`,
+        seckill_info.`share_title`,
+        seckill_info.`version`
+    </sql>
+
+	<select id="selectListBySeckillHallId" resultMap="seckillInfoMap">
+		SELECT
+		<include refid="seckillInfoSql"/>
+		FROM seckill_info seckill_info
+		LEFT JOIN seckill_hall_info seckill_hall_info
+		ON seckill_info.`id` = seckill_hall_info.`seckill_info_id`
+		WHERE seckill_hall_info.`seckill_hall_id` = #{seckillHallId}
+	</select>
+
+	<select id="selectPage2" resultMap="seckillInfoMap1">
+		SELECT
+		<include refid="seckillInfoSql"/>,
+		seckill_hall_info.`id` as seckill_hall_info_id
+		FROM seckill_info seckill_info
+		LEFT JOIN seckill_hall_info seckill_hall_info
+		ON seckill_hall_info.`seckill_info_id` = seckill_info.`id`
+		<where>
+			<if test="query.enable != null and query.enable != ''">
+				and seckill_info.`enable` = #{query.enable}
+			</if>
+			<if test="query2.seckillHallId != null and query2.seckillHallId != ''">
+				and seckill_hall_info.`seckill_hall_id` = #{query2.seckillHallId}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectById2" resultMap="seckillInfoMap2">
+		SELECT
+		<include refid="seckillInfoSql"/>
+		FROM seckill_info seckill_info
+		WHERE seckill_info.`id` = #{id}
+	</select>
+</mapper>

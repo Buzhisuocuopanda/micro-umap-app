@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2018-2019
+  ~ All rights reserved, Designed By www.joolun.com
+  ~ 注意：
+  ~ 本软件为www.joolun.com开发研制，未经购买不得使用
+  ~ 购买后可获得全部源代码（禁止转卖、分享、上传到码云、github等开源平台）
+  ~ 一经发现盗用、分享等行为，将追究法律责任，后果自负
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mkst.umap.app.mall.mapper.DeliveryPlaceMapper">
+
+    <resultMap id="deliveryPlaceMap" type="com.mkst.umap.app.mall.common.entity.DeliveryPlace">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="place" column="place"/>
+		<result property="address" column="address"/>
+		<result property="telNum" column="tel_num"/>
+    </resultMap>
+
+	<sql id="deliveryPlaceSql">
+		delivery_place.`id`,
+		delivery_place.`tenant_id`,
+		delivery_place.`del_flag`,
+		delivery_place.`create_time`,
+		delivery_place.`update_time`,
+		delivery_place.`create_id`,
+		delivery_place.`place`,
+		delivery_place.`address`,
+		delivery_place.`tel_num`
+	</sql>
+	<select id="getSpuDeliveryPlace" resultMap="deliveryPlaceMap">
+		SELECT
+		<include refid="deliveryPlaceSql"/>
+		FROM delivery_place delivery_place
+		LEFT JOIN goods_spu goods_spu
+		ON delivery_place.`id` = goods_spu.`delivery_place_id`
+		WHERE goods_spu.`id` = #{spuId}
+	</select>
+ </mapper>

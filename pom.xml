@@ -16,6 +16,7 @@
 		<module>micro-umap-app-common</module>
 		<module>micro-umap-app-admin</module>
 		<module>micro-umap-app-imclient</module>
+		<module>micro-umap-app-mall</module>
     </modules>
 
 	<properties>
@@ -138,6 +139,11 @@
 			<dependency>
 				<groupId>com.mkst.umap</groupId>
 				<artifactId>micro-umap-base-face</artifactId>
+				<version>${micro-umap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mkst.umap</groupId>
+				<artifactId>micro-umap-app-mall</artifactId>
 				<version>${micro-umap.version}</version>
 			</dependency>
 			<dependency>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2018-2019
+  ~ All rights reserved, Designed By www.joolun.com
+  ~ 注意：
+  ~ 本软件为www.joolun.com开发研制，未经购买不得使用
+  ~ 购买后可获得全部源代码（禁止转卖、分享、上传到码云、github等开源平台）
+  ~ 一经发现盗用、分享等行为，将追究法律责任，后果自负
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mkst.umap.app.mall.mapper.SeckillHallMapper">
+
+    <resultMap id="seckillHallMap" type="com.mkst.umap.app.mall.common.entity.SeckillHall">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="sort" column="sort"/>
+        <result property="hallDate" column="hall_date"/>
+        <result property="hallTime" column="hall_time"/>
+		<result property="enable" column="enable"/>
+    </resultMap>
+
+	<resultMap id="seckillHallMap2" extends="seckillHallMap" type="com.mkst.umap.app.mall.common.entity.SeckillHall">
+		<collection property="listSeckillInfo" ofType="com.mkst.umap.app.mall.common.entity.SeckillInfo"
+					select="com.mkst.umap.app.mall.mapper.SeckillInfoMapper.selectListBySeckillHallId"
+					column="{seckillHallId=id}">
+		</collection>
+	</resultMap>
+
+    <sql id="seckillHallSql">
+        seckill_hall.`id`,
+        seckill_hall.`tenant_id`,
+        seckill_hall.`del_flag`,
+        seckill_hall.`create_time`,
+        seckill_hall.`update_time`,
+        seckill_hall.`create_id`,
+        seckill_hall.`sort`,
+        seckill_hall.`hall_date`,
+        seckill_hall.`hall_time`,
+        seckill_hall.`enable`
+    </sql>
+
+	<select id="selectById2" resultMap="seckillHallMap2">
+		SELECT
+		<include refid="seckillHallSql"/>
+		FROM seckill_hall seckill_hall
+		WHERE seckill_hall.`id` = #{id}
+	</select>
+</mapper>

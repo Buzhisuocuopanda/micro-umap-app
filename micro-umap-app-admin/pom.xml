@@ -21,6 +21,10 @@
 			<artifactId>micro-umap-app-imclient</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.mkst.umap</groupId>
+			<artifactId>micro-umap-app-mall</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.micro-systemplus</groupId>
 			<artifactId>systemplus-spider</artifactId>
 		</dependency>

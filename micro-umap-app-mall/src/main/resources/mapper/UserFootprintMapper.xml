@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2018-2019
+  ~ All rights reserved, Designed By www.joolun.com
+  ~ 注意：
+  ~ 本软件为www.joolun.com开发研制，未经购买不得使用
+  ~ 购买后可获得全部源代码（禁止转卖、分享、上传到码云、github等开源平台）
+  ~ 一经发现盗用、分享等行为，将追究法律责任，后果自负
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mkst.umap.app.mall.mapper.UserFootprintMapper">
+
+    <resultMap id="userFootprintMap" type="com.mkst.umap.app.mall.common.entity.UserFootprint">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="relationId" column="relation_id"/>
+    </resultMap>
+
+	<resultMap id="userFootprintMap1" extends="userFootprintMap" type="com.mkst.umap.app.mall.common.entity.UserFootprint">
+		<collection property="userInfo" ofType="com.mkst.umap.app.mall.common.entity.UserInfo"
+					select="com.mkst.umap.app.mall.mapper.UserInfoMapper.selectById"
+					column="{id=user_id}">
+		</collection>
+		<collection property="goodsSpu" ofType="com.mkst.umap.app.mall.common.entity.GoodsSpu"
+					select="com.mkst.umap.app.mall.mapper.GoodsSpuMapper.selectById"
+					column="{id=relation_id}">
+		</collection>
+	</resultMap>
+
+	<resultMap id="userFootprintMap2" extends="userFootprintMap" type="com.mkst.umap.app.mall.common.entity.UserFootprint">
+		<collection property="goodsSpu" ofType="com.mkst.umap.app.mall.common.entity.GoodsSpu"
+					select="com.mkst.umap.app.mall.mapper.GoodsSpuMapper.selectById"
+					column="{id=relation_id}">
+		</collection>
+	</resultMap>
+
+    <sql id="userFootprintSql">
+        user_footprint.`id`,
+        user_footprint.`tenant_id`,
+        user_footprint.`del_flag`,
+        user_footprint.`create_time`,
+        user_footprint.`update_time`,
+        user_footprint.`user_id`,
+        user_footprint.`relation_id`
+    </sql>
+
+	<select id="selectPage1" resultMap="userFootprintMap1">
+		SELECT
+		<include refid="userFootprintSql"/>
+		FROM user_footprint user_footprint
+		<where>
+			<if test="query.userId != null">
+				AND user_footprint.`user_id` = #{query.userId}
+			</if>
+			<if test="query.relationId != null">
+				AND user_footprint.`relation_id` = #{query.relationId}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectPage2" resultMap="userFootprintMap2">
+		SELECT
+		<include refid="userFootprintSql"/>
+		FROM user_footprint user_footprint
+		<where>
+			<if test="query.userId != null">
+				AND user_footprint.`user_id` = #{query.userId}
+			</if>
+			<if test="query.relationId != null">
+				AND user_footprint.`relation_id` = #{query.relationId}
+			</if>
+		</where>
+	</select>
+</mapper>
