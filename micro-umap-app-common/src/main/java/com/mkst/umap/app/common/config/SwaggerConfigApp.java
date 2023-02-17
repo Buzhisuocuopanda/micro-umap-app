@@ -51,7 +51,7 @@ public class SwaggerConfigApp{
                 .select()
                 .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 // 指定当前包路径
-                .apis(RequestHandlerSelectors.basePackage("com.mkst.umap.app.mall.admin.api"))
+                .apis(RequestHandlerSelectors.basePackage("com.mkst.umap.app.mall.api"))
                 .paths(PathSelectors.any())
                 .build().globalOperationParameters(getParameterList());
     }
