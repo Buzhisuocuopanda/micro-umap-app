@@ -25,6 +25,10 @@ public class CommonFieldHandler implements MetaObjectHandler {
 			this.strictInsertFill(metaObject, "createTime", Date.class, new Date());
 		}
 
+		Object tenantId = metaObject.getValue("tenantId");
+		if (tenantId == null) {
+			this.strictInsertFill(metaObject, "tenantId", String.class, MallConstants.SYS_DEFAULT_TENANT_ID);
+		}
 		try {
 			SysUser user = ShiroUtils.getSysUser();
 			if (user != null) {
@@ -36,11 +40,6 @@ public class CommonFieldHandler implements MetaObjectHandler {
 				Object deptId = metaObject.getValue("deptId");
 				if (deptId == null) {
 					this.strictInsertFill(metaObject, "deptId", String.class, Convert.toStr(user.getDeptId()));
-				}
-
-				Object tenantId = metaObject.getValue("tenantId");
-				if (tenantId == null) {
-					this.strictInsertFill(metaObject, "tenantId", String.class, MallConstants.SYS_DEFAULT_TENANT_ID);
 				}
 			}
 		} catch (Exception e) {

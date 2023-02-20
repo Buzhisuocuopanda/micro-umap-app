@@ -7,17 +7,24 @@
  */
 package com.mkst.umap.app.mall.common.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import io.swagger.annotations.ApiModel;
 
 /**
  * 电子券
@@ -41,6 +48,7 @@ public class CouponInfo extends Model<CouponInfo> {
 	/**
 	 * 所属租户
 	 */
+	@TableField(fill = FieldFill.INSERT)
 	@ApiModelProperty(value = "所属租户")
 	private String tenantId;
 	/**
@@ -112,12 +120,14 @@ public class CouponInfo extends Model<CouponInfo> {
 	 * 有效开始时间（固定时间段特有）
 	 */
 	@ApiModelProperty(value = "有效开始时间")
-	private LocalDateTime validBeginTime;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date validBeginTime;
 	/**
 	 * 有效结束时间（固定时间段特有）
 	 */
 	@ApiModelProperty(value = "有效结束时间")
-	private LocalDateTime validEndTime;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date validEndTime;
 	/**
 	 * 适用类型1、全部商品；2、指定商品可用
 	 */
@@ -129,7 +139,7 @@ public class CouponInfo extends Model<CouponInfo> {
 	@ApiModelProperty(value = "备注")
 	private String remarks;
 	/**
-	 * （1：开启；0：关闭）
+	 * （0：开启；1：关闭）
 	 */
 	@ApiModelProperty(value = "1：开启；0：关闭")
 	private String enable;
