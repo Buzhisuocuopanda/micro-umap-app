@@ -3,7 +3,9 @@ package com.mkst.umap.app.mall.common.constant;
 /**
  * 全局返回码
  * 商城用7开头，例70001
- * @author JL
+ * @since JDK 1.8
+ * @author 李景辉
+ * @Email lijinghui@szmkst.com
  * 2019年7月25日
  */
 public enum MyReturnCode {

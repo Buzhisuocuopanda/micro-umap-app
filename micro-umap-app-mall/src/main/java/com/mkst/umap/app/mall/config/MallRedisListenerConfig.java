@@ -13,7 +13,9 @@ import com.mkst.umap.app.mall.listener.RedisKeyExpirationListener;
 import com.mkst.umap.app.mall.service.OrderInfoService;
 
 /**
- * @Author JL
+ * @since JDK 1.8
+ * @author 李景辉
+ * @Email lijinghui@szmkst.com
  */
 @Configuration
 @AllArgsConstructor

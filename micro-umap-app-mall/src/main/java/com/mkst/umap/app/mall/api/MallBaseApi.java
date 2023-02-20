@@ -10,7 +10,9 @@ import com.mkst.umap.app.mall.common.vo.R;
 
 /**
  * 小程序Configuration
- * @author JL
+ * @since JDK 1.8
+ * @author 李景辉
+ * @Email lijinghui@szmkst.com
  *
  */
 @Configuration
