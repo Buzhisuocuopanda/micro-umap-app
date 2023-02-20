@@ -10,6 +10,7 @@ package com.mkst.umap.app.mall.controller;
 import java.util.List;
 import java.util.Map;
 
+import cn.hutool.core.util.StrUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -117,6 +118,7 @@ public class GoodsCategoryController extends BaseController {
 		return prefix + "/add";
 	}
 
+
 	/**
 	 * 新增商品类目
 	 * 
@@ -195,5 +197,41 @@ public class GoodsCategoryController extends BaseController {
 		}
 		return toAjax(goodsCategoryService.removeById(id));
 	}
+
+	/**
+	 * 获取一级分类
+	 *
+	 * @return R
+	 */
+	@ResponseBody
+	@ApiOperation(value = "获取一级分类")
+	@GetMapping("/getCategoryFirst")
+	@RequiresPermissions("mall:goodscategory:index")
+	public AjaxResult getCategoryFirst() {
+		QueryWrapper<GoodsCategory> wrapper = Wrappers.query();
+		wrapper.eq("parent_id", "0");
+		return AjaxResult.success(goodsCategoryService.list(wrapper));
+	}
+
+
+	/**
+	 * 获取二级分类
+	 *
+	 * @return R
+	 */
+	@ResponseBody
+	@ApiOperation(value = "获取二级分类")
+	@GetMapping("/getCategorySecond")
+	@RequiresPermissions("mall:goodscategory:index")
+	public AjaxResult getCategorySecond(String parentId) {
+		if (StrUtil.isEmpty(parentId)) {
+			AjaxResult.success();
+		}
+		QueryWrapper<GoodsCategory> wrapper = Wrappers.query();
+		wrapper.eq("parent_id", parentId);
+		return AjaxResult.success(goodsCategoryService.list(wrapper));
+	}
+
+
 
 }
