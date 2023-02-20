@@ -8,20 +8,28 @@
 package com.mkst.umap.app.mall.controller;
 
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mkst.mini.systemplus.common.annotation.Log;
+import com.mkst.mini.systemplus.common.base.AjaxResult;
+import com.mkst.mini.systemplus.common.base.BaseController;
 import com.mkst.mini.systemplus.common.enums.BusinessType;
+import com.mkst.mini.systemplus.framework.web.page.TableDataInfo;
 import com.mkst.umap.app.mall.common.entity.GoodsSpu;
 import com.mkst.umap.app.mall.common.vo.R;
 import com.mkst.umap.app.mall.service.GoodsSpuService;
 
 import io.swagger.annotations.ApiOperation;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
+
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,13 +41,21 @@ import java.util.List;
  * @Date 2023-08-12 16:25:10
  */
 @Slf4j
-@RestController
-@AllArgsConstructor
+@Controller
 @RequestMapping("/goodsspu")
-@Api(value = "goodsspu", tags = "spu商品管理")
-public class GoodsSpuController {
+@Api(value = "goodsspu", tags = "商品管理")
+public class GoodsSpuController extends BaseController {
 
-    private final GoodsSpuService goodsSpuService;
+	@Autowired
+    private GoodsSpuService goodsSpuService;
+
+	private String prefix = "mall/goodsspu";
+
+	@RequiresPermissions("mall:goodsspu:index")
+	@GetMapping()
+	public String goodsspu() {
+		return prefix + "/goodsspu";
+	}
 
     /**
     * 分页查询
@@ -60,13 +76,17 @@ public class GoodsSpuController {
 	 * @return
 	 */
 	@ApiOperation(value = "list查询")
-	@GetMapping("/list")
+	@PostMapping("/list")
+	@ResponseBody
 	@RequiresPermissions("mall:goodsspu:index")
-	public List<GoodsSpu> getList(GoodsSpu goodsSpu) {
-		return goodsSpuService.list(Wrappers.query(goodsSpu).lambda()
-						.select(GoodsSpu::getId,
-								GoodsSpu::getName)
-				);
+	public TableDataInfo getList(GoodsSpu goodsSpu) {
+		startPage();
+
+		QueryWrapper<GoodsSpu> wrapper = Wrappers.query();
+		if(goodsSpu.getName() != null  && goodsSpu.getName().trim() != "") {wrapper.like("name", goodsSpu.getName());}
+
+		List<GoodsSpu> list = goodsSpuService.list(wrapper);
+		return getDataTable(list);
 	}
 
 	/**
@@ -92,6 +112,15 @@ public class GoodsSpuController {
         return R.ok(goodsSpuService.getById1(id));
     }
 
+	/**
+	 * 新增spu商品
+	 */
+	@GetMapping("/add")
+	public String add(ModelMap mmap) {
+//		mmap.put("group", goodsCategoryService.getById(parentId));
+		return prefix + "/add";
+	}
+
     /**
     * 新增spu商品
     * @param goodsSpu spu商品
@@ -99,11 +128,22 @@ public class GoodsSpuController {
     */
 	@ApiOperation(value = "新增spu商品")
     @Log(title = "spu商品", businessType = BusinessType.INSERT)
-    @PostMapping
+	@PostMapping("/add")
+	@ResponseBody
     @RequiresPermissions("mall:goodsspu:add")
-    public R save(@RequestBody GoodsSpu goodsSpu){
-        return R.ok(goodsSpuService.save1(goodsSpu));
+    public AjaxResult save(GoodsSpu goodsSpu){
+        return toAjax(goodsSpuService.save1(goodsSpu));
     }
+
+	/**
+	 * 修改分类
+	 */
+	@GetMapping("/edit/{id}")
+	public String edit(@PathVariable("id") String id, ModelMap mmap) {
+		GoodsSpu goodsSpu = goodsSpuService.getById(id);
+		mmap.put("goodsSpu", goodsSpu);
+		return prefix + "/edit";
+	}
 
     /**
     * 修改spu商品
@@ -112,10 +152,11 @@ public class GoodsSpuController {
     */
 	@ApiOperation(value = "修改spu商品")
     @Log(title = "spu商品", businessType = BusinessType.UPDATE)
-    @PutMapping
+	@PostMapping("/edit")
+	@ResponseBody
     @RequiresPermissions("mall:goodsspu:edit")
-    public R updateById(@RequestBody GoodsSpu goodsSpu){
-        return R.ok(goodsSpuService.updateById1(goodsSpu));
+    public AjaxResult edit(GoodsSpu goodsSpu){
+        return toAjax(goodsSpuService.updateById(goodsSpu));
     }
 
 	/**
@@ -126,26 +167,32 @@ public class GoodsSpuController {
 	 */
 	@ApiOperation(value = "商品上下架操作")
 	@Log(title = "商品上下架操作", businessType = BusinessType.UPDATE)
-	@PutMapping("/shelf")
+	@PostMapping("/shelf")
+	@ResponseBody
 	@RequiresPermissions("mall:goodsspu:edit")
-	public R updateById(@RequestParam(value = "shelf") String shelf, @RequestParam(value = "ids") String ids){
+	public AjaxResult updateById(@RequestParam(value = "shelf") String shelf, @RequestParam(value = "ids") String ids){
 		GoodsSpu goodsSpu = new GoodsSpu();
 		goodsSpu.setShelf(shelf);
-		return R.ok(goodsSpuService.update(goodsSpu,Wrappers.<GoodsSpu>lambdaQuery()
+		return toAjax(goodsSpuService.update(goodsSpu,Wrappers.<GoodsSpu>lambdaQuery()
 				.in(GoodsSpu::getId, Convert.toList(ids))));
 	}
 
     /**
     * 通过id删除spu商品
-    * @param id
-    * @return R
+    * @param ids
+    * @return AjaxResult
     */
 	@ApiOperation(value = "通过id删除spu商品")
     @Log(title = "删除spu商品", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{id}")
+    @PostMapping("/remove")
+	@ResponseBody
     @RequiresPermissions("mall:goodsspu:del")
-    public R removeById(@PathVariable String id){
-        return R.ok(goodsSpuService.removeById(id));
+    public AjaxResult removeById(String ids){
+		if(null == ids) {
+			return error("入参错误");
+		}
+		List<String> idlist = Arrays.asList(ids.split(","));
+		return toAjax(goodsSpuService.removeByIds(idlist));
     }
 
 }
