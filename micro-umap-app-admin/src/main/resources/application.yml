@@ -91,11 +91,17 @@ jwt:
 # MyBatis
 mybatis:
   # 搜索指定包别名
-  typeAliasesPackage: com.mkst
+  typeAliasesPackage: com.mkst.**.domain,com.mkst.**.entity
+  typeHandlersPackage: com.mkst.umap.app.mall.common.mybatis.typehandler
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 加载全局的配置文件
-  configLocation: classpath:mapper/mybatis-config.xml
+  configuration:
+    cache-enabled: true #全局映射器启用缓存
+    map-underscore-to-camel-case: true #驼峰式命名
+    use-generated-keys: true #允许 JDBC 支持自动生成主键
+    default-executor-type: reuse #配置默认的执行器
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #指定 MyBatis 所用日志的具体实现
   encrypt: true #是否启用字段加密
   decrypt: true #是否启用字段解密
   secretkey: 76C63180C2606ED1F47B852De5012156
