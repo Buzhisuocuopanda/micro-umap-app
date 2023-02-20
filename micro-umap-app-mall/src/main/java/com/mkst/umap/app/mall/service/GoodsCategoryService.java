@@ -7,11 +7,11 @@
  */
 package com.mkst.umap.app.mall.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mkst.umap.app.mall.common.entity.GoodsCategory;
-import com.mkst.umap.app.mall.common.entity.GoodsCategoryTree;
-
-import java.util.List;
 
 /**
  * 商品类目
@@ -28,5 +28,5 @@ public interface GoodsCategoryService extends IService<GoodsCategory> {
 	 *
 	 * @return 树
 	 */
-	List<GoodsCategoryTree> selectTree(GoodsCategory goodsCategory);
+	List<Map<String, Object>> selectTree(GoodsCategory goodsCategory);
 }

@@ -8,8 +8,11 @@
 package com.mkst.umap.app.mall.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -37,10 +40,37 @@ import cn.hutool.core.bean.BeanUtil;
 public class GoodsCategoryServiceImpl extends ServiceImpl<GoodsCategoryMapper, GoodsCategory> implements GoodsCategoryService {
 
 	@Override
-	public List<GoodsCategoryTree> selectTree(GoodsCategory goodsCategory) {
-		return getTree(this.list(Wrappers.lambdaQuery(goodsCategory)));
+	public List<Map<String, Object>> selectTree(GoodsCategory goodsCategory) {
+		return getTrees(this.list(Wrappers.lambdaQuery(goodsCategory)), false, null);
 	}
 
+	/**
+	 * 对象转树
+	 *
+	 * @param treeList 分组列表
+	 * @param isCheck   是否需要选中
+	 * @param checkList 已存在分组列表
+	 * @return
+	 */
+	public List<Map<String, Object>> getTrees(List<GoodsCategory> treeList, boolean isCheck, List<String> checkList) {
+
+		List<Map<String, Object>> trees = new ArrayList<Map<String, Object>>();
+		for (GoodsCategory tree : treeList) {
+			Map<String, Object> deptMap = new HashMap<String, Object>();
+			deptMap.put("id", tree.getId());
+			deptMap.put("pId", tree.getParentId());
+			deptMap.put("name", tree.getName());
+			deptMap.put("title", tree.getName());
+			if (isCheck) {
+				deptMap.put("checked", checkList.contains(tree.getId() + tree.getName()));
+			} else {
+				deptMap.put("checked", false);
+			}
+			trees.add(deptMap);
+		}
+		return trees;
+	}
+	
 	/**
 	 * 构建树
 	 *

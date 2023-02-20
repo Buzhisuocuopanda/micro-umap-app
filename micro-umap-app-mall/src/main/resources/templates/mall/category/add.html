@@ -3,64 +3,246 @@
 <head>
     <th:block th:include="include :: header" />
 </head>
+<style>
+    .removeBtn{
+        color: red;
+        position: absolute;
+        top: 0px;
+        left: 115px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .imgUploadWrapper>span {
+        float: left;
+    }
+    .imgUploadWrapper>span>.cwp-upload.cwp-upload-select-picture-card {
+        height: 69px!important;
+        width: 120px!important;
+    }
+    .cwp-upload.cwp-upload-select-picture-card {
+        border: 1px dashed #ddd;
+        width: 80px;
+        height: 80px;
+        border-radius: 2px;
+        background-color: #fff;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .3s ease;
+        vertical-align: top;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        display: table;
+    }
+    .cwp-upload.cwp-upload-select {
+        display: inline-block;
+    }
+    .cwp-upload {
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size: 14px;
+        font-feature-settings: "tnum";
+        font-variant: tabular-nums;
+        line-height: 1.5;
+        color: #333;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        outline: 0;
+    }
+    .cwp-upload.cwp-upload-select-picture-card>.cwp-upload {
+        padding: 0;
+    }
+    .cwp-upload.cwp-upload-select-picture-card>.cwp-upload {
+        width: 100%;
+        height: 100%;
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+        padding: 8px;
+    }
+    .cwp-upload.cwp-upload-select-picture-card {
+        border: 1px dashed #ddd;
+        width: 80px;
+        height: 80px;
+        border-radius: 2px;
+        background-color: #fff;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .3s ease;
+        vertical-align: top;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        display: table;
+    }
+    .cwp-upload.cwp-upload-select-picture-card i {
+        font-size: 24px;
+    }
+    .uploadButton i {
+        margin-top: 20px;
+        font-size: 32px;
+        color: #999;
+    }
+    .cwpicon {
+        display: inline-block;
+        font-style: normal;
+        vertical-align: baseline;
+        text-align: center;
+        text-transform: none;
+        line-height: 1;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .cwpicon:before {
+        display: block;
+        font-family: iconfont;
+    }
+    .cwpicon-plus:before {
+        content: "\E627";
+    }
+    .cwp-upload.cwp-upload-select-picture-card i {
+        font-size: 20px;
+    }
+    .style\.m_antUploadText__1T6Wz {
+        margin: -4px 0 12px;
+        background-color: transparent;
+        color: #b5b5b5;
+    }
+    .img-wrapper {
+        position: relative;
+    }
+    .changePic {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        color: #fff;
+        border: none;
+        font-size: 12px;
+        line-height: 24px;
+        height: 24px;
+        border-radius: 0;
+        padding: 0;
+        background-color: rgba(0,0,0,.6);
+        z-index: 1;
+        text-align: center;
+        width: 100%;
+    }
+    .cover_img_radio_box {
+        clear: both;
+        line-height: 36px;
+    }
+    .cover_img_default_list ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    cover_img_default_list ul li.on {
+        border: 2px solid #008dff;
+        position: relative;
+    }
+    .cover_img_default_list ul li {
+        list-style: none;
+        width: 100px;
+        float: left;
+        padding: 0;
+        margin: 0 10px 5px 0;
+        cursor: pointer;
+    }
+    .cover_img_default_list ul li img {
+        width: 100%;
+    }
+</style>
 <body class="white-bg">
     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
         <form class="form-horizontal m" id="form-category-add">
             <div class="form-group">    
-                <label class="col-sm-3 control-label is-required">所属租户：</label>
+                <label class="col-sm-3 control-label is-required">父级类目：</label>
                 <div class="col-sm-8">
-                    <input name="tenantId" class="form-control" type="text" required>
+                    <input class="form-control" type="text" onclick="selectTree()" id="treeName" readonly="true" th:value="${group!=null ? group.name : ''}" required/>
+					<input id="treeId" type="hidden" name="parentId" class="form-control" th:value="${group!=null ? group.id : '1'}">
+                </div>
+            </div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">状态：</label>
+				<div class="col-sm-8">
+					<div class="radio-box" th:each="dict : ${@dict.getType('sys_normal_disable')}">
+						<input type="radio" th:id="${dict.dictCode}" name="enable" th:value="${dict.dictValue}" th:checked="${dict.isDefault == 'Y' ? true : false}" required>
+						<label th:for="${dict.dictCode}" th:text="${dict.dictLabel}"></label>
+					</div>
+				</div>
+			</div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">类目名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" required>
                 </div>
             </div>
             <div class="form-group">    
-                <label class="col-sm-3 control-label is-required">：</label>
+                <label class="col-sm-3 control-label is-required">排序：</label>
                 <div class="col-sm-8">
-                    <input name="enable" class="form-control" type="text" required>
+                    <input name="sort" class="form-control" type="text" required>
                 </div>
             </div>
-            <div class="form-group">    
-                <label class="col-sm-3 control-label">父分类编号：</label>
-                <div class="col-sm-8">
-                    <input name="parentId" class="form-control" type="text">
-                </div>
-            </div>
-            <div class="form-group">    
-                <label class="col-sm-3 control-label">名称：</label>
-                <div class="col-sm-8">
-                    <input name="name" class="form-control" type="text">
-                </div>
-            </div>
+            <div class="form-group">
+	            <label class="col-sm-3 control-label">背景图：</label>
+	            <div class="col-sm-8">
+	                <div class="imgUploadWrapper">
+	                    <input type="hidden" value="" name="picUrl" id="picUrl">
+	                    <span class="">
+	                            <div class="cwp-upload cwp-upload-select cwp-upload-select-picture-card">
+	                                <span tabindex="0" class="cwp-upload" role="button">
+	                                    <input type="file" id="imageFile"  accept="image/jpg,image/jpeg,image/png,image/gif" style="display: none;">
+	                                    <div class="uploadButton" onclick="$('#imageFile').click();">
+	                                        <i class="cwpicon cwpicon-plus"></i>
+	                                        <div class="style.m_antUploadText__1T6Wz">上传</div>
+	                                    </div>
+	                                    <div class="img-wrapper" style="display: none;">
+	                                        <img id="iconSrc" alt="" style="width: 100%;">
+	                                        <span class="changePic" onclick="$('#imageFile').click();">更换图片</span>
+	                                    </div>
+	                                </span>
+	                                <span class="removeBtn" id="removeThumbnail">
+	                                    <span class=""><i class="fa fa-close"></i></span>
+	                                </span>
+	                            </div>
+	                        </span>
+	                    <div class="help-block m-b-none">
+	                        说明：<br>1.支持jpg,jpeg,png,gif格式的图片文件，大小100kb以内<br>2.尺寸比例建议16:10，建议尺寸不小于160px*100px
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
             <div class="form-group">    
                 <label class="col-sm-3 control-label">描述：</label>
                 <div class="col-sm-8">
-                    <input name="description" class="form-control" type="text">
-                </div>
-            </div>
-            <div class="form-group">    
-                <label class="col-sm-3 control-label">图片：</label>
-                <div class="col-sm-8">
-                    <input name="picUrl" class="form-control" type="text">
-                </div>
-            </div>
-            <div class="form-group">    
-                <label class="col-sm-3 control-label">排序：</label>
-                <div class="col-sm-8">
-                    <input name="sort" class="form-control" type="text">
-                </div>
-            </div>
-            <div class="form-group">    
-                <label class="col-sm-3 control-label">逻辑删除标记：</label>
-                <div class="col-sm-8">
-                    <input name="delFlag" class="form-control" type="text">
+                    <textarea name="description" class="form-control" type="text" > </textarea>
                 </div>
             </div>
         </form>
     </div>
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
-        var prefix = ctx + "mall/category"
+        var prefix = ctx + "goodscategory"
         $("#form-category-add").validate({
-            focusCleanup: true
+            focusCleanup: true,
+            rules:{
+				treeName:{
+					required:true,
+				},
+				name:{
+					required:true,
+				},
+				enable:{
+					required:true,
+				},
+				sort:{
+					required:true,
+				},
+				picUrl:{
+					required:true,
+				},
+			}
         });
 
         function submitHandler() {
@@ -68,6 +250,87 @@
                 $.operate.save(prefix + "/add", $('#form-category-add').serialize());
             }
         }
+        
+        function selectTree() {
+			var options = {
+				title: '选择父级类目',
+				width: "380",
+				url: prefix + "/selectTree/" + $("#treeId").val(),
+				callBack: doSubmit
+			};
+			$.modal.openOptions(options);
+		}
+		function doSubmit(index, layero){
+			var body = layer.getChildFrame('body', index);
+   			$("#treeId").val(body.find('#treeId').val());
+   			$("#treeName").val(body.find('#treeName').val());
+   			layer.close(index);
+		}
+		
+		$(function() {
+	        $("input[name='picUrl']").focus(function() {
+	            $(".icon-drop").show();
+	        });
+	        $("#form-category-add").click(function(event) {
+	            var obj = event.srcElement || event.target;
+	            if (!$(obj).is("input[name='picUrl']")) {
+	                $(".icon-drop").hide();
+	            }
+	        });
+	        $(".icon-drop").find(".ico-list i").on("click", function() {
+	            $('#picUrl').val($(this).attr('class'));
+	        });
+	    });
+
+	    $("#removeThumbnail").hide();
+	    $("#imageFile").change(function () {
+	        if($("#imageFile").val()==''){
+	            return;
+	            $("#imageFile").val('');//清空原有数据
+	        }
+	        var file = this.files[0];
+	        if (window.FileReader) {
+	            var reader = new FileReader();
+	            reader.readAsDataURL(file);
+	            //监听文件读取结束后事件
+	            reader.onloadend = function (e) {
+	                var formdata=new FormData();
+	                formdata.append("file",$('#imageFile')[0].files[0]);
+	                //请求数据
+	                $.ajax({
+	                    type: "post",
+	                    url: ctx+"common/uploadFile",
+	                    data: formdata,
+	                    processData: false,
+	                    contentType: false,
+	                    success: function(res){
+	                        if(res.code==0){
+	                            $.modal.msgSuccess(res.msg);
+	                            var path = res.data.filePath;
+	                            var url ="";
+	                            if(ctx!='/'){
+	                                url = ctx + path;
+	                            }
+	                            $("#iconSrc").attr("src",url );
+	                            $("#picUrl").val(path);
+	                            $(".uploadButton").hide();
+	                            $(".img-wrapper").show();
+	                            $("#removeThumbnail").show();
+	                        }else{
+	                            $.modal.alertError(res.msg);
+	                        }
+	                    }
+	                });
+	            };
+	        }
+	    });
+	    $("#removeThumbnail").on("click", function () {
+	        $("#coverImageSrc").attr("src", "");
+	        $("#coverImage").val("");
+	        $("#removeThumbnail").hide();
+	        $(".uploadButton").show();
+	        $(".img-wrapper").hide();
+	    })
     </script>
 </body>
 </html>

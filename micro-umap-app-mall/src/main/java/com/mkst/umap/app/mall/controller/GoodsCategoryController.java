@@ -8,6 +8,7 @@
 package com.mkst.umap.app.mall.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ import com.mkst.mini.systemplus.common.base.AjaxResult;
 import com.mkst.mini.systemplus.common.base.BaseController;
 import com.mkst.mini.systemplus.common.enums.BusinessType;
 import com.mkst.umap.app.mall.common.entity.GoodsCategory;
-import com.mkst.umap.app.mall.common.entity.GoodsCategoryTree;
 import com.mkst.umap.app.mall.common.vo.R;
 import com.mkst.umap.app.mall.service.GoodsCategoryService;
 
@@ -76,12 +76,12 @@ public class GoodsCategoryController extends BaseController {
 	 * 
 	 * @return
 	 */
-	@ResponseBody
 	@ApiOperation(value = "返回树形集合")
-	@GetMapping("/tree")
+	@GetMapping("/selectTree/{id}")
 	@RequiresPermissions("mall:goodscategory:index")
-	public R getGoodsCategoryTree() {
-		return R.ok(goodsCategoryService.selectTree(null));
+	public String getGoodsCategoryTree(@PathVariable("id") Long id, ModelMap mmap) {
+		mmap.put("group", goodsCategoryService.getById(id));
+		return prefix + "/selectTree";
 	}
 
 	/**
@@ -90,8 +90,8 @@ public class GoodsCategoryController extends BaseController {
 	@RequiresPermissions("mall:goodscategory:index")
 	@GetMapping("/treeData")
 	@ResponseBody
-	public List<GoodsCategoryTree> treeData() {
-		List<GoodsCategoryTree> tree = goodsCategoryService.selectTree(null);
+	public List<Map<String, Object>> treeData() {
+		List<Map<String, Object>> tree = goodsCategoryService.selectTree(null);
 		return tree;
 	}
 
@@ -151,7 +151,9 @@ public class GoodsCategoryController extends BaseController {
 	@GetMapping("/edit/{id}")
 	public String edit(@PathVariable("id") String id, ModelMap mmap) {
 		GoodsCategory goodsCategory = goodsCategoryService.getById(id);
+		GoodsCategory parentCategory = goodsCategoryService.getById(goodsCategory.getParentId());
 		mmap.put("goodsCategory", goodsCategory);
+		mmap.put("parentName", parentCategory.getName());
 		return prefix + "/edit";
 	}
 
