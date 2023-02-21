@@ -45,7 +45,7 @@ import io.swagger.annotations.Api;
 @Api(value = "couponinfo", tags = "电子券管理")
 public class CouponInfoController extends BaseController {
 
-	private String prefix = "mall/couponInfo";
+	private String prefix = "mall/couponinfo";
 	@Autowired
 	private CouponInfoService couponInfoService;
 
