@@ -16,11 +16,14 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig;
+import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 
 @Configuration
@@ -76,12 +79,17 @@ public class MybatisPlusConfig {
 	 * mybatis-plus分页插件<br>
 	 * 文档：http://mp.baomidou.com<br>
 	 */
-//	@Bean
-//	public PaginationInterceptor paginationInterceptor() {
-//		PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
-//		paginationInterceptor.setDbType(DbType.MYSQL);
-//		return paginationInterceptor;
-//	}
+	@Bean
+	public PaginationInterceptor paginationInterceptor() {
+		PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+		paginationInterceptor.setDbType(DbType.MYSQL);
+		return paginationInterceptor;
+	}
+	@Bean
+	public OptimisticLockerInterceptor optimisticLockerInnerInterceptor() {
+		OptimisticLockerInterceptor interceptor = new OptimisticLockerInterceptor();
+		return interceptor;
+	}
 	
 //	@Bean
 //	@ConditionalOnProperty(name = "systemplus.encrypt.enabled",havingValue="true")
@@ -119,6 +127,7 @@ public class MybatisPlusConfig {
 		if (!ObjectUtils.isEmpty(this.interceptors)) {
 			mybatisPlus.setPlugins(this.interceptors);
 		}
+		mybatisPlus.setPlugins(new Interceptor[] {optimisticLockerInnerInterceptor(), paginationInterceptor()});
 		// MP 全局配置，更多内容进入类看注释
 		GlobalConfig globalConfig = new GlobalConfig();
 		// 是否显示控制台Mybatis-plus banner
