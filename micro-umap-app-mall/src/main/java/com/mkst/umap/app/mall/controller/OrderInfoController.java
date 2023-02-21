@@ -7,21 +7,18 @@
  */
 package com.mkst.umap.app.mall.controller;
 
-import java.util.Map;
+import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.mkst.mini.systemplus.common.base.BaseController;
+import com.mkst.mini.systemplus.framework.web.page.TableDataInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.itextpdf.text.pdf.security.SecurityConstants;
 import com.mkst.mini.systemplus.common.annotation.Log;
 import com.mkst.mini.systemplus.common.enums.BusinessType;
 import com.mkst.umap.app.mall.common.constant.MallConstants;
@@ -37,7 +34,6 @@ import com.mkst.umap.app.mall.service.UserInfoService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,18 +45,32 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 2023-09-10 15:21:22
  */
 @Slf4j
-@RestController
-@AllArgsConstructor
+@Controller
 @RequestMapping("/orderinfo")
 @Api(value = "orderinfo", tags = "商城订单管理")
-public class OrderInfoController {
+public class OrderInfoController extends BaseController {
 
-    private final OrderInfoService orderInfoService;
-	private final UserInfoService userInfoService;
-//	private final FeignWxAppService feignWxAppService;
-	private final OrderLogisticsService orderLogisticsService;
+	@Autowired
+    private OrderInfoService orderInfoService;
 
-    /**
+	@Autowired
+	private UserInfoService userInfoService;
+//	private FeignWxAppService feignWxAppService;
+
+	@Autowired
+	private OrderLogisticsService orderLogisticsService;
+
+	private String prefix = "mall/orderinfo";
+
+
+	@RequiresPermissions("mall:orderinfo:index")
+	@GetMapping()
+	public String orderinfo() {
+		return prefix + "/orderinfo";
+	}
+
+
+	/**
     * 分页查询
     * @param page 分页对象
     * @param orderInfo 商城订单
@@ -72,6 +82,27 @@ public class OrderInfoController {
     public R getOrderInfoPage(Page page, OrderInfo orderInfo) {
         return R.ok(orderInfoService.page1(page, Wrappers.query(orderInfo)));
     }
+
+
+	/**
+	 * list查询
+	 * @param orderInfo
+	 * @return
+	 */
+	@ApiOperation(value = "list查询")
+	@PostMapping("/list")
+	@ResponseBody
+	@RequiresPermissions("mall:orderInfo:index")
+	public TableDataInfo getList(OrderInfo orderInfo) {
+		startPage();
+
+		QueryWrapper<OrderInfo> wrapper = Wrappers.query();
+//		if(orderInfo.getName() != null  && orderInfo.getName().trim() != "") {wrapper.like("name", orderInfo.getName());}
+
+		List<OrderInfo> list = orderInfoService.list(wrapper);
+		return getDataTable(list);
+	}
+
 
 	/**
 	 * 查询数量
