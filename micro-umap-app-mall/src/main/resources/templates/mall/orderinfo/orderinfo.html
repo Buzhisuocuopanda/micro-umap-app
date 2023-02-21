@@ -12,7 +12,10 @@
                         <ul>
                             <li>
                                 <label>是否支付：</label>
-                                <input type="text" name="isPay"/>
+                                <select name="isPay" th:with="type=${@dict.getType('is_pay')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
                             </li>
                             <li>
                                 <label>订单名：</label>
@@ -42,9 +45,15 @@
         var editFlag = [[${@permission.hasPermi('mall:orderinfo:edit')}]];
         var removeFlag = [[${@permission.hasPermi('mall:orderinfo:remove')}]];
         var prefix = ctx + "/orderinfo";
+        var isPay = [[${@dict.getType('is_pay')}]];
 
         $(function() {
             var options = {
+                pagination: false,
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
                 url: prefix + "/list",
                 createUrl: prefix + "/add",
                 updateUrl: prefix + "/edit/{id}",
@@ -69,7 +78,10 @@
                 },
                 {
                     field: 'isPay',
-                    title: '是否支付'
+                    title: '是否支付',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(isPay, value);
+                    }
                 },
                 {
                     field: 'name',

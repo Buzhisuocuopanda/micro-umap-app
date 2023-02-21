@@ -97,7 +97,8 @@ public class OrderInfoController extends BaseController {
 		startPage();
 
 		QueryWrapper<OrderInfo> wrapper = Wrappers.query();
-//		if(orderInfo.getName() != null  && orderInfo.getName().trim() != "") {wrapper.like("name", orderInfo.getName());}
+		if(orderInfo.getIsPay() != null  && orderInfo.getIsPay().trim() != "") {wrapper.eq("is_pay", orderInfo.getIsPay());}
+		if(orderInfo.getName() != null  && orderInfo.getName().trim() != "") {wrapper.like("name", orderInfo.getName());}
 
 		List<OrderInfo> list = orderInfoService.list(wrapper);
 		return getDataTable(list);

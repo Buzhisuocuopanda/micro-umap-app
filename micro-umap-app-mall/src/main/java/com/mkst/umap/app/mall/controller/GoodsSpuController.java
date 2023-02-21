@@ -16,8 +16,10 @@ import com.mkst.mini.systemplus.common.base.AjaxResult;
 import com.mkst.mini.systemplus.common.base.BaseController;
 import com.mkst.mini.systemplus.common.enums.BusinessType;
 import com.mkst.mini.systemplus.framework.web.page.TableDataInfo;
+import com.mkst.umap.app.mall.common.entity.GoodsCategory;
 import com.mkst.umap.app.mall.common.entity.GoodsSpu;
 import com.mkst.umap.app.mall.common.vo.R;
+import com.mkst.umap.app.mall.service.GoodsCategoryService;
 import com.mkst.umap.app.mall.service.GoodsSpuService;
 
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +33,8 @@ import io.swagger.annotations.Api;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * spu商品
@@ -48,6 +52,9 @@ public class GoodsSpuController extends BaseController {
 
 	@Autowired
     private GoodsSpuService goodsSpuService;
+
+	@Autowired
+    private GoodsCategoryService goodsCategoryService;
 
 	private String prefix = "mall/goodsspu";
 
@@ -84,8 +91,22 @@ public class GoodsSpuController extends BaseController {
 
 		QueryWrapper<GoodsSpu> wrapper = Wrappers.query();
 		if(goodsSpu.getName() != null  && goodsSpu.getName().trim() != "") {wrapper.like("name", goodsSpu.getName());}
+		if(goodsSpu.getCategoryFirst() != null  && goodsSpu.getCategoryFirst().trim() != "") {wrapper.eq("category_first", goodsSpu.getCategoryFirst());}
+		if(goodsSpu.getCategorySecond() != null  && goodsSpu.getCategorySecond().trim() != "") {wrapper.eq("category_second", goodsSpu.getCategorySecond());}
+		if(goodsSpu.getShelf() != null  && goodsSpu.getShelf().trim() != "") {wrapper.eq("shelf", goodsSpu.getShelf());}
 
 		List<GoodsSpu> list = goodsSpuService.list(wrapper);
+
+		Map<String, List<GoodsCategory>> cateGoryMap = goodsCategoryService.list().stream().collect(Collectors.groupingBy(GoodsCategory::getId));
+		list = list.stream().map(t -> {
+			if (cateGoryMap.get(t.getCategoryFirst()) != null) {
+				t.setCategoryFirstName(cateGoryMap.get(t.getCategoryFirst()).get(0).getName());
+			}
+			if (cateGoryMap.get(t.getCategorySecond()) != null) {
+				t.setCategorySecondName(cateGoryMap.get(t.getCategorySecond()).get(0).getName());
+			}
+			return t;
+		}).collect(Collectors.toList());
 		return getDataTable(list);
 	}
 

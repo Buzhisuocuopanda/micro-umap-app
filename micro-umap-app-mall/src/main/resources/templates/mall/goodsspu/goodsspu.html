@@ -14,11 +14,26 @@
                             </li>
                             <li>
                                 <label>一级分类：</label>
-                                <input type="text" name="categoryFirst"/>
+                                <div class="col-sm-8">
+                                    <select name="categoryFirst" id="categoryFirst" class="form-control " >
+                                        <option value="">所有</option>
+                                    </select>
+                                </div>
                             </li>
+<!--                            <li>-->
+<!--                                <label>二级分类：</label>-->
+<!--                                <div class="col-sm-8">-->
+<!--                                    <select name="categorySecond" id="categorySecond" class="form-control" >-->
+<!--                                        <option value="">请选择</option>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                            </li>-->
                             <li>
-                                <label>是否上架：</label>
-                                <input type="text" name="shelf"/>
+                                <label>上下架：</label>
+                                <select name="shelf" th:with="type=${@dict.getType('is_shelf')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
                             </li>
                             <li>
                                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
@@ -33,12 +48,12 @@
                 <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="mall:goodsspu:add">
                     <i class="fa fa-plus"></i> 添加
                 </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="mall:goodsspu:edit">
-                    <i class="fa fa-edit"></i> 修改
-                </a>
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="mall:goodsspu:remove">
-                    <i class="fa fa-remove"></i> 删除
-                </a>
+<!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="mall:goodsspu:edit">-->
+<!--                    <i class="fa fa-edit"></i> 修改-->
+<!--                </a>-->
+<!--                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="mall:goodsspu:remove">-->
+<!--                    <i class="fa fa-remove"></i> 删除-->
+<!--                </a>-->
                 <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="mall:goodsspu:export">
                     <i class="fa fa-download"></i> 导出
                 </a>
@@ -53,18 +68,22 @@
         var editFlag = [[${@permission.hasPermi('mall:goodsspu:edit')}]];
         var removeFlag = [[${@permission.hasPermi('mall:goodsspu:remove')}]];
         var prefix = ctx + "/goodsspu";
+        var isShelf = [[${@dict.getType('is_shelf')}]];
 
         $(function() {
             var options = {
+                pagination: false,
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
                 url: prefix + "/list",
                 createUrl: prefix + "/add",
                 updateUrl: prefix + "/edit/{id}",
                 removeUrl: prefix + "/remove",
                 exportUrl: prefix + "/export",
                 modalName: "商品",
-                columns: [{
-                    checkbox: true
-                },
+                columns: [
                 {
                     field: 'id',
                     title: 'PK',
@@ -79,12 +98,19 @@
                 //     title: '描述'
                 // },
                 {
-                    field: 'categoryFirst',
+                    field: 'categoryFirstName',
                     title: '一级分类'
                 },
                 {
+                    field: 'categorySecondName',
+                    title: '二级分类'
+                },
+                {
                     field: 'shelf',
-                    title: '是否上架'
+                    title: '上下架',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(isShelf, value);
+                    }
                 },
                 {
                     field: 'priceDown',
@@ -103,6 +129,56 @@
             };
             $.table.init(options);
         });
+
+        $(function() {
+            getCategoryFirst();
+        })
+
+        // 获取一级分类
+        function getCategoryFirst() {
+            let url = ctx + "/goodscategory/getCategoryFirst";
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (res) {
+                    const data = res.data.map(v => ({id: v.id, text: v.name}));
+                    $('#categoryFirst').select2({
+                        data: data
+                    })
+                    // $('#categoryFirst').on('change', function () {
+                    //     const parentId = $(this).val();
+                    //     $('#categorySecond').empty();
+                    //     getCategorySecond(parentId);
+                    // })
+                },
+                error: function () {
+                    $.modal.alertError("获取失败");
+                },
+                dataType: "json"
+            });
+        }
+
+        // 获取二级分类
+        function getCategorySecond(parentId) {
+            let url = ctx + "/goodscategory/getCategorySecond";
+            $.ajax({
+                url: url,
+                data: {
+                    parentId
+                },
+                type: "GET",
+                success: function (res) {
+                    const data = res.data.map(v => ({id: v.id, text: v.name}));
+                    $('#categorySecond').select2({
+                        data: data
+                    })
+                },
+                error: function () {
+                    $.modal.alertError("获取失败");
+                },
+                dataType: "json"
+            });
+        }
     </script>
 </body>
 </html>

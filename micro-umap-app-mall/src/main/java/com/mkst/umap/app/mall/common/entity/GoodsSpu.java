@@ -76,11 +76,23 @@ private static final long serialVersionUID = 1L;
 	 */
 	@ApiModelProperty(value = "一级分类ID")
     private String categoryFirst;
+    /**
+	 * 一级分类名称
+	 */
+	@ApiModelProperty(value = "一级分类名称")
+	@TableField(exist = false)
+    private String categoryFirstName;
 	/**
 	 * 二级分类ID
 	 */
 	@ApiModelProperty(value = "二级分类ID")
 	private String categorySecond;
+	/**
+	 * 二级分类名称
+	 */
+	@ApiModelProperty(value = "二级分类名称")
+	@TableField(exist = false)
+	private String categorySecondName;
     /**
    * 商品主图
    */
