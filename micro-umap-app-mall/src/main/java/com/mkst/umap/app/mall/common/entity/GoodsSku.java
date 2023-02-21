@@ -51,6 +51,7 @@ private static final long serialVersionUID = 1L;
    * 所属租户
    */
 	@ApiModelProperty(value = "所属租户")
+	@TableField(fill = FieldFill.INSERT)
     private String tenantId;
     /**
    * sku编码

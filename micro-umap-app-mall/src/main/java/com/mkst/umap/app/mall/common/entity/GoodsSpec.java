@@ -7,6 +7,7 @@
  */
 package com.mkst.umap.app.mall.common.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -44,6 +45,7 @@ private static final long serialVersionUID = 1L;
    * 所属租户
    */
 	@ApiModelProperty(value = "所属租户")
+	@TableField(fill = FieldFill.INSERT)
     private String tenantId;
     /**
    * 名称

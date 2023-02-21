@@ -9,6 +9,8 @@ package com.mkst.umap.app.mall.common.entity;
 
 import java.time.LocalDateTime;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.mkst.umap.app.mall.common.dto.TreeNode;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -29,6 +31,7 @@ public class GoodsCategoryTree  extends TreeNode {
    * 所属租户
    */
 	@ApiModelProperty(value = "所属租户")
+	@TableField(fill = FieldFill.INSERT)
     private String tenantId;
 	/**
 	 * （1：开启；0：关闭）

@@ -7,6 +7,7 @@
  */
 package com.mkst.umap.app.mall.common.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -48,6 +49,7 @@ public class CouponUser extends Model<CouponUser> {
 	 * 所属租户
 	 */
 	@ApiModelProperty(value = "所属租户")
+	@TableField(fill = FieldFill.INSERT)
 	private String tenantId;
 	/**
 	 * 逻辑删除标记（0：显示；1：隐藏）

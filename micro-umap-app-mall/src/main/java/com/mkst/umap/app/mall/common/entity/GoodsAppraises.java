@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 import org.apache.ibatis.type.JdbcType;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -46,6 +47,7 @@ public class GoodsAppraises extends Model<GoodsAppraises> {
    * 所属租户
    */
 	@ApiModelProperty(value = "所属租户")
+	@TableField(fill = FieldFill.INSERT)
     private String tenantId;
     /**
    * 创建时间

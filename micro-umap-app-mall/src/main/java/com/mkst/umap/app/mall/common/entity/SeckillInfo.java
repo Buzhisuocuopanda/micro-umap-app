@@ -43,6 +43,7 @@ public class SeckillInfo extends Model<SeckillInfo> {
      */
     @NotNull(message = "所属租户不能为空")
     @ApiModelProperty(value = "所属租户")
+	@TableField(fill = FieldFill.INSERT)
     private String tenantId;
     /**
      * 逻辑删除标记（0：显示；1：隐藏）
