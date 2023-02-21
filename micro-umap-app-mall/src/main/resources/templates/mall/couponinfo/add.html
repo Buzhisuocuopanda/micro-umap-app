@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-couponinfo-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">排序：</label>
+                <div class="col-sm-8">
+                    <input name="sort" class="form-control" type="number" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b" th:with="type=${@dict.getType('mall_coupon_type')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">库存：</label>
+                <div class="col-sm-8">
+                    <input name="stock" class="form-control" type="number" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">有效类型：</label>
+                <div class="col-sm-8">
+                    <select name="expireType" class="form-control m-b" th:with="type=${@dict.getType('mall_coupon_valid_type')}" onchange="changeValidType(this.options[this.options.selectedIndex].value)" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" id="validDaysDiv">    
+                <label class="col-sm-3 control-label">有效天数：</label>
+                <div class="col-sm-8">
+                    <input id="validDays" name="validDays" class="form-control" type="number">
+                </div>
+            </div>
+            <div class="form-group" id="validTimeDiv">    
+                <label class="col-sm-3 control-label">有效时间：</label>
+                <div class="col-sm-8">
+                	<div class="input-daterange input-group">
+                        <input type="text" class="input-sm form-control" id="validBeginTime" name="validBeginTime" placeholder="开始时间"/>
+                        <span class="input-group-addon">到</span>
+                        <input type="text" class="input-sm form-control" id="validEndTime" name="validEndTime" placeholder="结束时间"/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">适用商品：</label>
+                <div class="col-sm-8">
+                    <select name="suitType" class="form-control m-b" th:with="type=${@dict.getType('mall_coupon_suit_type')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">是否启用：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('sys_normal_disable')}">
+                        <input type="radio" th:id="${'enable_' + dict.dictCode}" name="enable" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                        <label th:for="${'enable_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="remarks" class="form-control" type="text"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "couponinfo"
+        $("#form-couponinfo-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-couponinfo-add').serialize());
+            }
+        }
+
+        layui.use(['element', 'layer', 'laydate'], function(){
+     		//得到各种内置组件
+     	  	var laydate = layui.laydate;
+     	  	var startDate = laydate.render({
+		        elem: '#validBeginTime',
+		        type: 'date',
+		        min: minDate(),
+		        //max: $('#laydate-endTime').val(),
+		        theme: 'molv',
+		        trigger: 'click',
+		        done: function(value, date) {
+		            // 结束时间大于开始时间
+		            if (value != '') {
+		                endDate.config.min.year = date.year;
+		                endDate.config.min.month = date.month - 1;
+		                endDate.config.min.date = date.date;
+		            } else {
+		                endDate.config.min.year = '';
+		                endDate.config.min.month = '';
+		                endDate.config.min.date = '';
+		            }
+		        }
+		    });
+       		
+		    var endDate = laydate.render({
+		        elem: '#validEndTime',
+		        type: 'date',
+		        min: $('#validBeginTime').val(),
+		        theme: 'molv',
+		        trigger: 'click',
+		        done: function(value, date) {
+		            // 开始时间小于结束时间
+		            if (value != '') {
+		                startDate.config.max.year = date.year;
+		                startDate.config.max.month = date.month - 1;
+		                startDate.config.max.date = date.date;
+		            } else {
+		                startDate.config.max.year = '';
+		                startDate.config.max.month = '';
+		                startDate.config.max.date = '';
+		            }
+		        }
+		    });
+		    $("#validDaysDiv").show();
+ 			$("#validTimeDiv").hide();
+        });
+     	// 设置最小可选的日期
+        function minDate(){
+            var now = new Date();
+            var nowDate = now.getFullYear()+"-" + (now.getMonth()+1) + "-" + now.getDate();
+            return nowDate;
+        }
+     	
+     	function changeValidType(obj) {
+     		console.log(obj);
+     		if(obj === '1') {
+     			$("#validDaysDiv").show();
+     			$("#validTimeDiv").hide();
+     			$("#validBeginTime").val('');
+     			$("#validEndTime").val('');
+     		}else {
+     			$("#validDays").val('');
+     			$("#validDaysDiv").hide();
+     			$("#validTimeDiv").show();
+     		}
+     	}
+    </script>
+</body>
+</html>

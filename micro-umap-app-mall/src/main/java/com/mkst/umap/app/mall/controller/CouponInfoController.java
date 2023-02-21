@@ -7,22 +7,30 @@
  */
 package com.mkst.umap.app.mall.controller;
 
+import java.util.List;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.gexin.rp.sdk.base.uitls.StringUtils;
 import com.mkst.mini.systemplus.common.annotation.Log;
+import com.mkst.mini.systemplus.common.base.AjaxResult;
+import com.mkst.mini.systemplus.common.base.BaseController;
 import com.mkst.mini.systemplus.common.enums.BusinessType;
+import com.mkst.mini.systemplus.framework.web.page.TableDataInfo;
 import com.mkst.umap.app.mall.common.entity.CouponInfo;
-import com.mkst.umap.app.mall.common.vo.R;
 import com.mkst.umap.app.mall.service.CouponInfoService;
 
-import io.swagger.annotations.ApiOperation;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
-
-import java.util.List;
 
 /**
  * 电子券
@@ -32,91 +40,90 @@ import java.util.List;
  * @Email lijinghui@szmkst.com
  * @Date 2023-12-14 11:30:58
  */
-@Slf4j
-@RestController
-@AllArgsConstructor
+@Controller
 @RequestMapping("/couponinfo")
 @Api(value = "couponinfo", tags = "电子券管理")
-public class CouponInfoController {
+public class CouponInfoController extends BaseController {
 
-    private final CouponInfoService couponInfoService;
+	private String prefix = "mall/couponInfo";
+	@Autowired
+	private CouponInfoService couponInfoService;
 
-    /**
-     * 分页查询
-     * @param page 分页对象
-     * @param couponInfo 电子券
-     * @return
-     */
-	@ApiOperation(value = "分页列表")
-    @GetMapping("/page")
-    @RequiresPermissions("mall:couponinfo:index")
-    public R getPage(Page page, CouponInfo couponInfo) {
-        return R.ok(couponInfoService.page(page, Wrappers.query(couponInfo)));
-    }
-
-	/**
-	 * list查询
-	 * @param couponInfo
-	 * @return
-	 */
-	@ApiOperation(value = "list查询")
-	@GetMapping("/list")
 	@RequiresPermissions("mall:couponinfo:index")
-	public List<CouponInfo> getList(CouponInfo couponInfo) {
-		return couponInfoService.list(Wrappers.query(couponInfo).lambda()
-				.select(CouponInfo::getId,
-						CouponInfo::getName));
+	@GetMapping()
+	public String view() {
+		return prefix + "/list";
 	}
 
-    /**
-     * 通过id查询电子券
-     * @param id
-     * @return R
-     */
-	@ApiOperation(value = "通过id查询电子券")
-    @GetMapping("/{id}")
-    @RequiresPermissions("mall:couponinfo:get")
-    public R getById(@PathVariable("id") String id) {
-        return R.ok(couponInfoService.getById2(id));
-    }
+	/**
+	 * 分页查询
+	 * 
+	 * @param couponInfo 电子券
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/list")
+	@RequiresPermissions("mall:couponinfo:index")
+	public TableDataInfo list(CouponInfo couponInfo) {
+		LambdaQueryWrapper<CouponInfo> wrapper = Wrappers.lambdaQuery();
+		wrapper.eq(StringUtils.isNotBlank(couponInfo.getType()), CouponInfo::getType, couponInfo.getType());
+		wrapper.eq(StringUtils.isNotBlank(couponInfo.getExpireType()), CouponInfo::getExpireType, couponInfo.getExpireType());
+		wrapper.eq(StringUtils.isNotBlank(couponInfo.getSuitType()), CouponInfo::getSuitType, couponInfo.getSuitType());
+		wrapper.eq(StringUtils.isNotBlank(couponInfo.getEnable()), CouponInfo::getEnable, couponInfo.getEnable());
+		wrapper.orderByAsc(CouponInfo::getSort);
+		List<CouponInfo> list = couponInfoService.list(wrapper);
+		return getDataTable(list);
+	}
 
-    /**
-     * 新增电子券
-     * @param couponInfo 电子券
-     * @return R
-     */
-	@ApiOperation(value = "新增电子券")
-    @Log(title = "电子券", businessType = BusinessType.INSERT)
-    @PostMapping
-    @RequiresPermissions("mall:couponinfo:add")
-    public R save(@RequestBody CouponInfo couponInfo) {
-        return R.ok(couponInfoService.save(couponInfo));
-    }
+	/**
+	 * 新增卡券管理
+	 */
+	@GetMapping("/add")
+	public String add() {
+		return prefix + "/add";
+	}
 
-    /**
-     * 修改电子券
-     * @param couponInfo 电子券
-     * @return R
-     */
-	@ApiOperation(value = "修改电子券")
-    @Log(title = "电子券", businessType = BusinessType.UPDATE)
-    @PutMapping
-    @RequiresPermissions("mall:couponinfo:edit")
-    public R updateById(@RequestBody CouponInfo couponInfo) {
-        return R.ok(couponInfoService.updateById1(couponInfo));
-    }
+	/**
+	 * 新增保存卡券管理
+	 */
+	@RequiresPermissions("mall:couponinfo:add")
+	@Log(title = "卡券管理", businessType = BusinessType.INSERT)
+	@PostMapping("/add")
+	@ResponseBody
+	public AjaxResult addSave(CouponInfo couponInfo) {
+		return toAjax(couponInfoService.save(couponInfo));
+	}
 
-    /**
-     * 通过id删除电子券
-     * @param id
-     * @return R
-     */
-	@ApiOperation(value = "通过id删除电子券")
-    @Log(title = "删除电子券", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{id}")
-    @RequiresPermissions("mall:couponinfo:del")
-    public R removeById(@PathVariable String id) {
-        return R.ok(couponInfoService.removeById(id));
-    }
+	/**
+	 * 修改卡券管理
+	 */
+	@GetMapping("/edit/{id}")
+	public String edit(@PathVariable("id") String id, ModelMap mmap) {
+		CouponInfo couponInfo = couponInfoService.getById2(id);
+		mmap.put("couponInfo", couponInfo);
+		return prefix + "/edit";
+	}
+
+	/**
+	 * 修改保存卡券管理
+	 */
+	@RequiresPermissions("mall:couponinfo:edit")
+	@Log(title = "卡券管理", businessType = BusinessType.UPDATE)
+	@PostMapping("/edit")
+	@ResponseBody
+	public AjaxResult editSave(CouponInfo couponInfo) {
+		return toAjax(couponInfoService.updateById1(couponInfo));
+	}
+
+	/**
+	 * 删除卡券管理
+	 */
+	@RequiresPermissions("mall:couponinfo:del")
+	@Log(title = "卡券管理", businessType = BusinessType.DELETE)
+	@PostMapping("/remove/{id}")
+	@ResponseBody
+	public AjaxResult remove(@PathVariable("id") String id) {
+		return toAjax(couponInfoService.removeById(id));
+	}
 
 }

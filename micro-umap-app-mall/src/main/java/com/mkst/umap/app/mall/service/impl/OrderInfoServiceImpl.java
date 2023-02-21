@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,9 +29,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.binarywang.wxpay.bean.request.WxPayOrderQueryRequest;
-import com.github.binarywang.wxpay.bean.result.WxPayOrderQueryResult;
-import com.github.binarywang.wxpay.constant.WxPayConstants;
-import com.itextpdf.text.pdf.security.SecurityConstants;
 import com.mkst.umap.app.mall.common.constant.MallConstants;
 import com.mkst.umap.app.mall.common.dto.PlaceOrderDTO;
 import com.mkst.umap.app.mall.common.entity.BargainUser;
@@ -52,7 +50,6 @@ import com.mkst.umap.app.mall.common.enums.OrderInfoEnum;
 import com.mkst.umap.app.mall.common.enums.OrderItemEnum;
 import com.mkst.umap.app.mall.common.enums.OrderLogisticsEnum;
 import com.mkst.umap.app.mall.common.util.LocalDateTimeUtils;
-import com.mkst.umap.app.mall.common.vo.R;
 import com.mkst.umap.app.mall.config.TenantContextHolder;
 import com.mkst.umap.app.mall.mapper.BargainUserMapper;
 import com.mkst.umap.app.mall.mapper.GoodsSkuSpecValueMapper;
@@ -323,10 +320,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 						if(!MallConstants.COUPON_USER_STATUS_0.equals(couponUser.getStatus())){
 							throw new RuntimeException("优惠券已经使用");
 						}
-						if(couponUser.getValidBeginTime().isAfter(LocalDateTime.now())){
+						if(couponUser.getValidBeginTime().after(new Date())){
 							throw new RuntimeException("优惠券未在使用期");
 						}
-						if(couponUser.getValidEndTime().isBefore(LocalDateTime.now())){
+						if(couponUser.getValidEndTime().before(new Date())){
 							throw new RuntimeException("优惠券已过期");
 						}
 						couponUser.setStatus(MallConstants.COUPON_USER_STATUS_1);

@@ -8,9 +8,11 @@
 package com.mkst.umap.app.mall.api;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,8 +115,8 @@ public class CouponUserApi {
 		couponUser.setStatus(MallConstants.NO);
 		//计数有效期
 		if(MallConstants.COUPON_EXPIRE_TYPE_1.equals(cuponInfo.getExpireType())){
-			couponUser.setValidBeginTime(LocalDateTime.now());
-			couponUser.setValidEndTime(LocalDateTime.now().plusDays(cuponInfo.getValidDays()));
+			couponUser.setValidBeginTime(new Date());
+			couponUser.setValidEndTime(DateUtils.addDays(new Date(), cuponInfo.getValidDays()));
 		}
 		if(MallConstants.COUPON_EXPIRE_TYPE_2.equals(cuponInfo.getExpireType())){
 			couponUser.setValidBeginTime(cuponInfo.getValidBeginTime());
