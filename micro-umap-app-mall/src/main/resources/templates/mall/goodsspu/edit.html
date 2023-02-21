@@ -87,6 +87,8 @@
     <div th:include="include::select2-js"></div>
     <script th:inline="javascript">
         var url = [[${goodsSpu.picUrls}]]
+        var categoryFirst = [[${goodsSpu.categoryFirst}]]
+        var categorySecond = [[${goodsSpu.categorySecond}]]
 
         if (!url) {
             $("#preview").css({
@@ -110,10 +112,18 @@
                 url: url,
                 type: "GET",
                 success: function (res) {
-                    const data = res.data.map(v => ({id: v.id, text: v.name}));
+                    const data = res.data.map(v => {
+                        let item = {id: v.id, text: v.name}
+                        if(v.id === categoryFirst){
+                            item.selected = true
+                        }
+                        return item
+                    });
                     $('#categoryFirst').select2({
                         data: data
                     })
+                    $('#categorySecond').empty();
+                    getCategorySecond(categoryFirst);
                     $('#categoryFirst').on('change', function () {
                         const parentId = $(this).val();
                         $('#categorySecond').empty();
@@ -138,7 +148,13 @@
                 },
                 type: "GET",
                 success: function (res) {
-                    const data = res.data.map(v => ({id: v.id, text: v.name}));
+                    const data = res.data.map(v => {
+                        let item = {id: v.id, text: v.name}
+                        if(v.id === categorySecond){
+                            item.selected = true
+                        }
+                        return item
+                    });
                     $('#categorySecond').select2({
                         data: data
                     })
