@@ -2,6 +2,11 @@ package com.mkst.umap.app.admin.api;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.mkst.umap.app.admin.domain.UserBalance;
+import com.mkst.umap.app.mall.common.constant.MallConstants;
+import com.mkst.umap.app.mall.common.entity.CouponUser;
+import com.mkst.umap.app.mall.service.CouponUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +29,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+import java.time.LocalDateTime;
+
 /**
  * @ClassName UserSpendApi
  * @Description
@@ -31,13 +38,41 @@ import io.swagger.annotations.ApiParam;
  * @Modified By:
  * @Date 2020-11-03 19:21
  */
-@Api(value = "请假接口")
+@Api(value = "用户消费接口")
 @RestController
 @RequestMapping(value = "/api/spend")
 public class UserSpendApi extends BaseApi {
 
     @Autowired
     private IUserSpendService spendService;
+    @Autowired
+    private CouponUserService couponUserService;
+
+
+    @Login
+    @ApiOperation(value = "查询我的饭卡余额和点券余额")
+    @PostMapping(value = "/getUserBalance")
+    @Log(title = "查询我的饭卡余额和点券余额", businessType = BusinessType.OTHER)
+    public Result getUserBalance(HttpServletRequest request){
+        Long userId = getUserId(request);
+        UserBalance userBalance = new UserBalance();
+
+        UserSpend userLastBalance = spendService.getUserLastBalance(userId);
+
+        if (null != userLastBalance) {
+            userBalance.setBalance(userLastBalance.getBalance());
+        }
+        CouponUser couponUser = couponUserService.getOne(Wrappers.<CouponUser>lambdaQuery()
+                .eq(CouponUser::getUserId, userId)
+                .eq(CouponUser::getStatus, MallConstants.NO)
+                .gt(CouponUser::getValidEndTime, LocalDateTime.now()).last("limit 1"));
+
+        if (null != couponUser) {
+            userBalance.setCouponBalance(couponUser.getReduceAmount());
+        }
+
+        return ResultGenerator.genSuccessResult("success", userBalance);
+    }
 
     @Login
     @ApiOperation(value = "查询我的饭卡余额")
