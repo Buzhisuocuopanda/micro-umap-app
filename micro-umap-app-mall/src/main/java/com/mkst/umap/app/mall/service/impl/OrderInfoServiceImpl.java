@@ -275,16 +275,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 		orderInfo.setPaymentPoints(0);
 		orderInfo.setPaymentCouponPrice(BigDecimal.ZERO);
 		orderInfo.setPaymentPointsPrice(BigDecimal.ZERO);
+
 		List<OrderItem> listOrderItem = new ArrayList<>();
 		List<GoodsSku> listGoodsSku = new ArrayList<>();
 		List<CouponUser> listCouponUser = new ArrayList<>();
 		List<PointsRecord> listPointsRecord = new ArrayList<>();
+
 		placeOrderDTO.getSkus().forEach(placeOrderSkuDTO -> {//过滤
 			GoodsSku goodsSku = goodsSkuService.getOne(Wrappers.<GoodsSku>lambdaQuery()
 					.eq(GoodsSku::getSpuId,placeOrderSkuDTO.getSpuId())
 					.eq(GoodsSku::getId,placeOrderSkuDTO.getSkuId())
 					.ge(GoodsSku::getStock,placeOrderSkuDTO.getQuantity())
 					.eq(GoodsSku::getEnable,MallConstants.YES));
+
 			if(goodsSku != null){
 				GoodsSpu goodsSpu = goodsSpuService.getOne(Wrappers.<GoodsSpu>lambdaQuery()
 						.eq(GoodsSpu::getId,goodsSku.getSpuId())
@@ -300,6 +303,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 					orderItem.setPicUrl(StrUtil.isNotBlank(goodsSku.getPicUrl()) ? goodsSku.getPicUrl() : goodsSpu.getPicUrls()[0]);
 					orderItem.setQuantity(placeOrderSkuDTO.getQuantity());
 					orderItem.setSalesPrice(goodsSku.getSalesPrice());
+
 					if(MallConstants.DELIVERY_WAY_1.equals(orderInfo.getDeliveryWay())){//快递配送要算运费
 						orderItem.setFreightPrice(placeOrderSkuDTO.getFreightPrice());
 					}else{//自提配送不算运费
@@ -310,6 +314,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 					orderItem.setPaymentCouponPrice(placeOrderSkuDTO.getPaymentCouponPrice());
 					orderItem.setPaymentPointsPrice(placeOrderSkuDTO.getPaymentPointsPrice());
 					orderItem.setCouponUserId(placeOrderSkuDTO.getCouponUserId());
+
 					BigDecimal quantity = new BigDecimal(placeOrderSkuDTO.getQuantity());
 					if(StrUtil.isNotBlank(orderItem.getCouponUserId())){
 						//校验电子券
@@ -560,6 +565,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 			//删除旧订单
 			baseMapper.deleteById(orderInfo.getId());
 		}
+	}
+
+	@Override
+	public void orderPayment(OrderInfo orderInfo) {
+		// todo 扣用户余额
+
+		orderInfo.setPaymentTime(LocalDateTime.now());
+		orderInfo.setIsPay(MallConstants.YES);
+		orderInfo.setStatus(OrderInfoEnum.STATUS_1.getValue());
+		baseMapper.updateById(orderInfo);
+
+		List<OrderItem> listOrderItem = orderItemService.list(Wrappers.<OrderItem>lambdaQuery()
+				.eq(OrderItem::getOrderId,orderInfo.getId()));
+
+		Map<String, List<OrderItem>> resultList = listOrderItem.stream().collect(Collectors.groupingBy(OrderItem::getSpuId));
+		List<GoodsSpu> listGoodsSpu = goodsSpuService.listByIds(resultList.keySet());
+
+		listGoodsSpu.forEach(goodsSpu -> {
+			resultList.get(goodsSpu.getId()).forEach(orderItem -> {
+				//更新销量
+				goodsSpu.setSaleNum(goodsSpu.getSaleNum()+orderItem.getQuantity());
+			});
+			goodsSpuService.updateById(goodsSpu);
+		});
 	}
 
 	@Override
