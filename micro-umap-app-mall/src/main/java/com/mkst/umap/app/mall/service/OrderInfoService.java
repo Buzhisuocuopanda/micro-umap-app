@@ -58,6 +58,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
 	void notifyOrder(OrderInfo orderInfo);
 
 	/**
+	 * 订单支付
+	 * @param orderInfo
+	 */
+	void orderPayment(OrderInfo orderInfo);
+
+	/**
 	 * 物流信息回调
 	 * @param jsonObject
 	 */
