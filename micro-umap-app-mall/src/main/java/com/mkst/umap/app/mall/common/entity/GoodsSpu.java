@@ -205,4 +205,7 @@ private static final long serialVersionUID = 1L;
 
 	@TableField(exist = false)
 	private DeliveryPlace deliveryPlace;
+
+	@TableField(exist = false)
+	private String specIds;
 }

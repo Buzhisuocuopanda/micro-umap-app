@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header"/>
+    <link th:href="@{/css/common/cardList.css}" rel="stylesheet"/>
+    <link th:href="@{/css/common/mtui.css}" rel="stylesheet"/>
+
+</head>
+<style>
+    .addChildProductList-btn-bg {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+
+    }
+
+    .addChildProductList-btn-tip {
+        width: max-content;
+        margin-right: 12px;
+        color: #898989;
+    }
+
+</style>
+
+<body class="gray-bg ">
+<div class="container-div ">
+    <div class="row">
+        <input type="hidden" id="specId">
+        <input type="hidden" id="specName">
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:src="@{/js/newWindows.js}"></script>
+<script th:inline="javascript">
+    var prefix = ctx + "/goodsspec";
+    var options;
+    const ids = [[${ids}]];
+    $(function () {
+        options = {
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            url: prefix + "/list",
+            clickToSelect: true,
+            modalName: "规格",
+            onCheck: function (row) {
+                $('#specId').val(row.id)
+                $('#specName').val(row.name)
+            },
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: 'ID',
+                    visible: false
+                },
+                {
+                    field: 'name',
+                    title: '规格名称'
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                }]
+        };
+        if(ids){
+            options.queryParams = {
+                ids:ids
+            }
+        }
+        $.table.init(options);
+        $.table.search();
+    });
+
+    function submitHandler() {
+        var ids = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns($.table._option.uniqueId);
+        parent.document.querySelector('#specIds').value = ids.join()
+        var names = $.table.selectColumns('name');
+        parent.document.querySelector('#specNames').value = names.join()
+        $.modal.close();
+    }
+</script>
+</body>
+</html>

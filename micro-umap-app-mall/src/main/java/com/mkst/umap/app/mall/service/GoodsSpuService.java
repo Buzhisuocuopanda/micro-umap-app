@@ -26,6 +26,8 @@ public interface GoodsSpuService extends IService<GoodsSpu> {
 
 	boolean save1(GoodsSpu goodsSpu);
 
+	boolean save2(GoodsSpu goodsSpu);
+
 	boolean updateById1(GoodsSpu goodsSpu);
 
 	GoodsSpu getById1(String id);

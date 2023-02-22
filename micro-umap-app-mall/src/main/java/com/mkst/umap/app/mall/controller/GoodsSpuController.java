@@ -127,7 +127,8 @@ public class GoodsSpuController extends BaseController {
     * @return R
     */
 	@ApiOperation(value = "通过id查询spu商品")
-    @GetMapping("/{id}")
+    @GetMapping("getGoodsSpu/{id}")
+	@ResponseBody
     @RequiresPermissions("mall:goodsspu:get")
     public R getById(@PathVariable("id") String id){
         return R.ok(goodsSpuService.getById1(id));
@@ -153,7 +154,7 @@ public class GoodsSpuController extends BaseController {
 	@ResponseBody
     @RequiresPermissions("mall:goodsspu:add")
     public AjaxResult save(GoodsSpu goodsSpu){
-        return toAjax(goodsSpuService.save1(goodsSpu));
+        return toAjax(goodsSpuService.save2(goodsSpu));
     }
 
 	/**
