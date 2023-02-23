@@ -166,8 +166,9 @@
 			<if test="query.orderType != null">
 				AND order_info.`order_type` = #{query.orderType}
 			</if>
-			<if test="query.isPay != null">
+			<if test="query.isPay != null and query.isPay != ''">
 				AND order_info.`is_pay` = #{query.isPay}
+				AND order_info.`status` != '5'
 			</if>
 		</where>
 	</select>
