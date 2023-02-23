@@ -333,6 +333,64 @@ public class OrderInfoApi {
 	}
 
 	/**
+	 * 商家接单
+	 *
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = "商家接单")
+	@PostMapping("/receiveOrder")
+	public R receiveOrder(HttpServletRequest request, @RequestBody OrderInfo orderInfo) {
+		//检验用户session登录
+		R checkThirdSession = MallBaseApi.checkThirdSession(null, request);
+		if (!checkThirdSession.isOk()) {//检验失败，直接返回失败信息
+			return checkThirdSession;
+		}
+
+		log.info("商家接单，订单id[{}]", orderInfo.getId());
+		OrderInfo order = orderInfoService.getById(orderInfo.getId());
+
+		if (order == null) {
+			return R.failed(MyReturnCode.ERR_70005.getCode(), MyReturnCode.ERR_70005.getMsg());
+		}
+
+		OrderInfo info = new OrderInfo();
+		info.setId(order.getId());
+		info.setOrderStatus(MallConstants.ORDER_STATUS_1);
+		orderInfoService.updateById(order);
+		return R.ok();
+	}
+
+	/**
+	 * 商家制作完成
+	 *
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = "商家制作完成")
+	@PostMapping("/complete")
+	public R complete(HttpServletRequest request, @RequestBody OrderInfo orderInfo) {
+		//检验用户session登录
+		R checkThirdSession = MallBaseApi.checkThirdSession(null, request);
+		if (!checkThirdSession.isOk()) {//检验失败，直接返回失败信息
+			return checkThirdSession;
+		}
+
+		log.info("商家制作完成，订单id[{}]", orderInfo.getId());
+		OrderInfo order = orderInfoService.getById(orderInfo.getId());
+
+		if (order == null) {
+			return R.failed(MyReturnCode.ERR_70005.getCode(), MyReturnCode.ERR_70005.getMsg());
+		}
+
+		OrderInfo info = new OrderInfo();
+		info.setId(order.getId());
+		info.setOrderStatus(MallConstants.ORDER_STATUS_2);
+		orderInfoService.updateById(order);
+		return R.ok();
+	}
+
+	/**
 	 * 物流信息回调
 	 * @param request
 	 * @return

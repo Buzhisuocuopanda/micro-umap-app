@@ -301,7 +301,7 @@ public class UserSpendServiceImpl implements IUserSpendService
 		// 更新订单状态
 		orderInfo.setPaymentTime(LocalDateTime.now());
 		orderInfo.setIsPay(MallConstants.YES);
-		orderInfo.setOrderStatus(MallConstants.ORDER_STATUS_1);
+		orderInfo.setOrderStatus(MallConstants.ORDER_STATUS_0);
 		orderInfo.setStatus(OrderInfoEnum.STATUS_1.getValue());
 		orderInfo.setStatus(OrderInfoEnum.STATUS_1.getValue());
 		// todo 生成取餐码
