@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.mkst.mini.systemplus.system.domain.SysUser;
+import com.mkst.mini.systemplus.system.service.ISysUserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,6 +109,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 	private final BargainUserMapper bargainUserMapper;
 	private final GrouponInfoMapper grouponInfoMapper;
 	private final GrouponUserMapper grouponUserMapper;
+	private final ISysUserService sysUserService;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -165,7 +168,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 	@Override
 	public IPage<OrderInfo> page2(IPage<OrderInfo> page, OrderInfo orderInfo) {
-		return baseMapper.selectPage2(page,orderInfo);
+		IPage<OrderInfo> orderInfoIPage = baseMapper.selectPage2(page, orderInfo);
+		orderInfoIPage.getRecords().forEach(t -> {
+			String userId = t.getUserId();
+			SysUser user = sysUserService.selectUserById(Long.valueOf(userId));
+			if (user != null) {
+				t.setUserName(user.getUserName());
+			}
+		});
+		return orderInfoIPage;
 	}
 
 	@Override

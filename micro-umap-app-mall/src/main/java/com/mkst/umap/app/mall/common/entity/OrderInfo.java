@@ -84,6 +84,11 @@ public class OrderInfo extends Model<OrderInfo> {
 	@ApiModelProperty(value = "用户id")
 	private String userId;
 	/**
+	 * 用户名
+	 */
+	@TableField(exist = false)
+	private String userName;
+	/**
 	 * 订单单号
 	 */
 	@ApiModelProperty(value = "订单单号")
