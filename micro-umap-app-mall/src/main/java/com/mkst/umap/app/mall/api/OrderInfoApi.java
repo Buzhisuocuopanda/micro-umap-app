@@ -313,22 +313,22 @@ public class OrderInfoApi {
 	 * @return
 	 */
 	@ApiOperation(value = "订单支付")
-	@PostMapping("/orderPayment/{id}")
-	public R orderPayment(HttpServletRequest request, @PathVariable String id) {
+	@PostMapping("/orderPayment")
+	public R orderPayment(HttpServletRequest request, @RequestBody OrderInfo orderInfo) {
 		//检验用户session登录
 		R checkThirdSession = MallBaseApi.checkThirdSession(null, request);
 		if (!checkThirdSession.isOk()) {//检验失败，直接返回失败信息
 			return checkThirdSession;
 		}
 
-		log.info("订单支付，订单id[{}]", id);
-		OrderInfo orderInfo = orderInfoService.getById(id);
+		log.info("订单支付，订单id[{}]", orderInfo.getId());
+		OrderInfo order = orderInfoService.getById(orderInfo.getId());
 
-		if (orderInfo == null) {
+		if (order == null) {
 			return R.failed(MyReturnCode.ERR_70005.getCode(), MyReturnCode.ERR_70005.getMsg());
 		}
 
-		orderInfoService.orderPayment(orderInfo);
+		orderInfoService.orderPayment(order);
 		return R.ok();
 	}
 
