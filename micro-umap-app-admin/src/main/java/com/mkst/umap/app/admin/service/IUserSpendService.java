@@ -10,6 +10,7 @@ import com.mkst.umap.app.admin.domain.UserSpendLog;
 import com.mkst.umap.app.admin.dto.userspend.TransactionAmount;
 import com.mkst.umap.app.admin.dto.userspend.UserSpendQrery;
 import com.mkst.umap.app.admin.dto.userspend.UserTransactionAmount;
+import com.mkst.umap.app.mall.common.entity.OrderInfo;
 
 /**
  * 我的消费 服务层
@@ -72,4 +73,12 @@ public interface IUserSpendService
 	TransactionAmount getTotalTransactionAmount(String transactionMonth);
 
 	List<SpentStatisticsResult> selectStatistics(SpendParam param);
+
+
+	/**
+	 * 订单支付
+	 *
+	 * @param order
+	 */
+	void orderPayment(OrderInfo order);
 }

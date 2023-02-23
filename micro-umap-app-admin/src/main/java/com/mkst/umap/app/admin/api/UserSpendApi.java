@@ -6,7 +6,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.mkst.umap.app.admin.domain.UserBalance;
 import com.mkst.umap.app.mall.common.constant.MallConstants;
 import com.mkst.umap.app.mall.common.entity.CouponUser;
+import com.mkst.umap.app.mall.common.entity.OrderInfo;
 import com.mkst.umap.app.mall.service.CouponUserService;
+import com.mkst.umap.app.mall.service.OrderInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,12 +45,15 @@ import java.time.LocalDateTime;
 @Api(value = "用户消费接口")
 @RestController
 @RequestMapping(value = "/api/spend")
+@Slf4j
 public class UserSpendApi extends BaseApi {
 
     @Autowired
     private IUserSpendService spendService;
     @Autowired
     private CouponUserService couponUserService;
+    @Autowired
+    private OrderInfoService orderInfoService;
 
 
     @Login
@@ -83,6 +89,21 @@ public class UserSpendApi extends BaseApi {
         userBalance.setAwardTicketNum(count);
 
         return ResultGenerator.genSuccessResult("success", userBalance);
+    }
+
+    @Login
+    @ApiOperation(value = "订单支付")
+    @PostMapping(value = "/orderPayment")
+    @Log(title = "订单支付", businessType = BusinessType.OTHER)
+    public Result orderPayment(HttpServletRequest request, @RequestBody OrderInfo orderInfo) {
+        log.info("订单支付，订单id[{}]", orderInfo.getId());
+        OrderInfo order = orderInfoService.getById(orderInfo.getId());
+        if (order == null) {
+            return ResultGenerator.genFailResult("订单无效");
+        }
+        spendService.orderPayment(order);
+
+        return ResultGenerator.genSuccessResult("支付成功");
     }
 
     @Login

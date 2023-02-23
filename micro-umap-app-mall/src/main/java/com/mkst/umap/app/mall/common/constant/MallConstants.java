@@ -112,6 +112,12 @@ public interface MallConstants {
 	String COUPON_EXPIRE_TYPE_2 = "2";
 
 	/**
+	 * 到期类型1、点券；2：奖励券
+	 */
+	String COUPON_TYPE_1 = "1";
+	String COUPON_TYPE_2 = "2";
+
+	/**
 	 * 用户电子券状态0、未使用；1、已使用；2、已过期
 	 */
 	String COUPON_USER_STATUS_0 = "0";
@@ -124,6 +130,13 @@ public interface MallConstants {
 	String BARGAIN_INFO_STATUS_0 = "0";
 	String BARGAIN_INFO_STATUS_1 = "1";
 	String BARGAIN_INFO_STATUS_2 = "2";
+
+	/**
+	 * 订单状态0、已下单；1、制作中；2、可取餐
+	 */
+	String ORDER_STATUS_0 = "0";
+	String ORDER_STATUS_1 = "1";
+	String ORDER_STATUS_2 = "2";
 
 	/**
 	 * 砍价记录状态（0：砍价中；1：完成砍价；2：已过期）

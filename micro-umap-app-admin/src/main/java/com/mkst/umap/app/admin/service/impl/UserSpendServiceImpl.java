@@ -1,13 +1,24 @@
 package com.mkst.umap.app.admin.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.mkst.umap.app.mall.common.constant.MallConstants;
+import com.mkst.umap.app.mall.common.entity.GoodsSpu;
+import com.mkst.umap.app.mall.common.entity.OrderInfo;
+import com.mkst.umap.app.mall.common.entity.OrderItem;
+import com.mkst.umap.app.mall.common.enums.OrderInfoEnum;
+import com.mkst.umap.app.mall.service.GoodsSpuService;
+import com.mkst.umap.app.mall.service.OrderInfoService;
+import com.mkst.umap.app.mall.service.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +60,12 @@ public class UserSpendServiceImpl implements IUserSpendService
 	private UserSpendMapper userSpendMapper;
 	@Autowired
 	private ISysUserService sysUserService;
+	@Autowired
+	private OrderInfoService orderInfoService;
+	@Autowired
+	private GoodsSpuService goodsSpuService;
+	@Autowired
+	private OrderItemService orderItemService;
 
 	/**
      * 查询我的消费信息
@@ -255,5 +272,54 @@ public class UserSpendServiceImpl implements IUserSpendService
 			monthResult.add(here);
 		}
 		return monthResult;
+	}
+
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void orderPayment(OrderInfo orderInfo) {
+
+		UserSpend userLastBalance = userSpendMapper.getUserLastBalance(Long.valueOf(orderInfo.getUserId()));
+		if (null == userLastBalance || userLastBalance.getBalance() == null) {
+			throw  new RuntimeException("未查询到该订单的用户余额");
+		}
+
+		// 扣减用户余额并新增消费记录
+		UserSpend insertUserSpend = new UserSpend();
+		insertUserSpend.setType("2");
+		insertUserSpend.setAmount(orderInfo.getPaymentPrice());
+		insertUserSpend.setPayTime(new Date());
+		insertUserSpend.setBalance(userLastBalance.getBalance().subtract(orderInfo.getPaymentPrice()));
+		insertUserSpend.setCreateTime(new Date());
+		insertUserSpend.setUserId(Long.valueOf(orderInfo.getUserId()));
+		SysUser user = sysUserService.selectUserById(Long.valueOf(orderInfo.getUserId()));
+		if (null != user) {
+			insertUserSpend.setUserName(user.getUserName());
+		}
+		userSpendMapper.insertUserSpend(insertUserSpend);
+
+		// 更新订单状态
+		orderInfo.setPaymentTime(LocalDateTime.now());
+		orderInfo.setIsPay(MallConstants.YES);
+		orderInfo.setOrderStatus(MallConstants.ORDER_STATUS_1);
+		orderInfo.setStatus(OrderInfoEnum.STATUS_1.getValue());
+		orderInfo.setStatus(OrderInfoEnum.STATUS_1.getValue());
+		// todo 生成取餐码
+		orderInfo.setQueueNumber("5555");
+		orderInfoService.updateById(orderInfo);
+
+		List<OrderItem> listOrderItem = orderItemService.list(Wrappers.<OrderItem>lambdaQuery()
+				.eq(OrderItem::getOrderId,orderInfo.getId()));
+
+		Map<String, List<OrderItem>> resultList = listOrderItem.stream().collect(Collectors.groupingBy(OrderItem::getSpuId));
+		List<GoodsSpu> listGoodsSpu = goodsSpuService.listByIds(resultList.keySet());
+
+		listGoodsSpu.forEach(goodsSpu -> {
+			resultList.get(goodsSpu.getId()).forEach(orderItem -> {
+				//更新销量
+				goodsSpu.setSaleNum(goodsSpu.getSaleNum()+orderItem.getQuantity());
+			});
+			goodsSpuService.updateById(goodsSpu);
+		});
 	}
 }

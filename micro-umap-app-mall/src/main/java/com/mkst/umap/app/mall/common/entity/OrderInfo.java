@@ -179,6 +179,16 @@ public class OrderInfo extends Model<OrderInfo> {
 	@ApiModelProperty(value = "评价状态0、未评；1、已评；2、已追评")
 	private String appraisesStatus;
 	/**
+	 * 订单状态0、已下单；1、制作中；2、可取餐
+	 */
+	@ApiModelProperty(value = "订单状态0、已下单；1、制作中；2、可取餐")
+	private String orderStatus;
+	/**
+	 * 取餐号
+	 */
+	@ApiModelProperty(value = "取餐号")
+	private String queueNumber;
+	/**
 	 * 买家留言
 	 */
 	@ApiModelProperty(value = "买家留言")
