@@ -29,6 +29,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -55,21 +56,31 @@ public class UserSpendApi extends BaseApi {
     @Log(title = "查询我的饭卡余额和点券余额", businessType = BusinessType.OTHER)
     public Result getUserBalance(HttpServletRequest request){
         Long userId = getUserId(request);
-        UserBalance userBalance = new UserBalance();
+        UserBalance userBalance = new UserBalance(new BigDecimal(0), new BigDecimal(0), 0);
 
+        // 用户余额
         UserSpend userLastBalance = spendService.getUserLastBalance(userId);
-
         if (null != userLastBalance) {
             userBalance.setBalance(userLastBalance.getBalance());
         }
+
+        // 卡券余额
         CouponUser couponUser = couponUserService.getOne(Wrappers.<CouponUser>lambdaQuery()
                 .eq(CouponUser::getUserId, userId)
                 .eq(CouponUser::getStatus, MallConstants.NO)
+                .eq(CouponUser::getType, MallConstants.COUPON_TYPE_1)
                 .gt(CouponUser::getValidEndTime, LocalDateTime.now()).last("limit 1"));
-
         if (null != couponUser) {
             userBalance.setCouponBalance(couponUser.getReduceAmount());
         }
+
+        // 奖励券数量
+        int count = couponUserService.count(Wrappers.<CouponUser>lambdaQuery()
+                .eq(CouponUser::getUserId, userId)
+                .eq(CouponUser::getStatus, MallConstants.NO)
+                .eq(CouponUser::getType, MallConstants.COUPON_TYPE_2)
+                .gt(CouponUser::getValidEndTime, LocalDateTime.now()));
+        userBalance.setAwardTicketNum(count);
 
         return ResultGenerator.genSuccessResult("success", userBalance);
     }
